@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 AzgathCore
+ * Copyright (C) 2021 AzgathCore
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  *
  * This program is free software; you can redistribute it and/or modify it

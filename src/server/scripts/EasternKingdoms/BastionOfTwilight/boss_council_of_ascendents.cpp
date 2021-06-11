@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 AzgathCore
+ * Copyright (C) 2021 AzgathCore
  * Copyright (C) 2008-2014 Forgotten Lands <http://www.forgottenlands.eu/>
  *
  * This program is free software; you can redistribute it and/or modify it

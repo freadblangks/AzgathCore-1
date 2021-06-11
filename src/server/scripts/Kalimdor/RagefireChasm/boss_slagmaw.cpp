@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 AzgathCore
+ * Copyright (C) 2021 AzgathCore
  *
  * This SourceCode is NOT free a software. Please hold everything Private
  * and read our Terms
