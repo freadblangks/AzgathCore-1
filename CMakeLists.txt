@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+# Copyright (C) 2020 AzgathCore
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 # We require CMake >= 3.2
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.8)
 
 # add this options before PROJECT keyword
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -20,13 +20,12 @@ project(AzgathCore)
 
 # CMake policies (can not be handled elsewhere)
 cmake_policy(SET CMP0005 NEW)
-if(POLICY CMP0043)
-  cmake_policy(SET CMP0043 NEW) # Disable 'Ignore COMPILE_DEFINITIONS_<Config> properties'
+if (CMAKE_VERSION VERSION_LESS "3.16.0")
+  cmake_policy(SET CMP0043 OLD) # Disable 'Ignore COMPILE_DEFINITIONS_<Config> properties'
+else()
+  cmake_policy(SET CMP0043 NEW) # Cotire isn't used so set to NEW
 endif()
-
-if(POLICY CMP0054)
-  cmake_policy(SET CMP0054 NEW) # Only interpret if() arguments as variables or keywords when unquoted - prevents intepreting if (SOME_STRING_VARIABLE MATCHES "MSVC") as if (SOME_STRING_VARIABLE MATCHES "1")
-endif()
+cmake_policy(SET CMP0054 NEW) # Only interpret if() arguments as variables or keywords when unquoted - prevents intepreting if (SOME_STRING_VARIABLE MATCHES "MSVC") as if (SOME_STRING_VARIABLE MATCHES "1")
 
 if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW) # find_package() uses <PackageName>_ROOT variables
@@ -40,8 +39,12 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH 1)
 
 # set macro-directory
 list(APPEND CMAKE_MODULE_PATH
-  "${CMAKE_SOURCE_DIR}/cmake/macros"
-  "${CMAKE_SOURCE_DIR}/dep/cotire/CMake")
+  "${CMAKE_SOURCE_DIR}/cmake/macros")
+
+if (CMAKE_VERSION VERSION_LESS "3.16.0")
+  list(APPEND CMAKE_MODULE_PATH
+          "${CMAKE_SOURCE_DIR}/dep/cotire/CMake")
+endif()
 
 # build in Release-mode by default if not explicitly set
 if(CMAKE_GENERATOR STREQUAL "Ninja Multi-Config")
