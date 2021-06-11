@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -250,10 +250,22 @@ namespace WorldPackets
 
             void Read() override;
 
-            uint32 PetNumber;
-            uint8 DestSlot;
+            uint32 PetNumber = 0;
+            uint8 DestSlot = 0;
             ObjectGuid StableMaster;
         };
+
+        class OpenAlliedRaceDetails final : public ServerPacket
+        {
+        public:
+            OpenAlliedRaceDetails() : ServerPacket(SMSG_ALLIED_RACE_DETAILS, 12) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid Guid;
+            uint32 RaceId = 0;
+        };
+
     }
 }
 

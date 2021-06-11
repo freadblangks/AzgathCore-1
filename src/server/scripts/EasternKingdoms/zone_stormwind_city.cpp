@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -31,6 +31,7 @@ enum StormwindQuests
 
     NPC_TIDES_OF_WAR_JAINA                      = 120590,
     NPC_VISION_OF_SAILOR_MEMORY                 = 139645,
+    QUEST_THE_MISSION = 29548,
 };
 
 // 120756
@@ -116,7 +117,8 @@ public:
 
     void sGossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/) override
     {
-        player->CastSpell(player, SPELL_STORMWIND_TO_BORALUS_TRANSITION, true);
+        if (player->getLevel() >= 110)
+            player->CastSpell(player, SPELL_STORMWIND_TO_BORALUS_TRANSITION, true);
     }
 };
 
@@ -155,10 +157,26 @@ class aura_stormwind_to_harbor_teleport : public AuraScript
     }
 };
 
+class npc_captain_rodgers_66292 : public ScriptedAI
+{
+public:
+    npc_captain_rodgers_66292(Creature* creature) : ScriptedAI(creature) { }
+
+    void sGossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/) override
+    {
+        if (player->GetQuestStatus(QUEST_THE_MISSION) == QUEST_STATUS_INCOMPLETE)
+        {
+            player->ForceCompleteQuest(QUEST_THE_MISSION);
+            player->TeleportTo(870, -676.116f, -1482.635f, 1.922f, 4.731f);
+        }
+    }
+};
+
 void AddSC_stormwind_city()
 {
     RegisterCreatureAI(npc_anduin_tides_of_war);
     RegisterConversationScript(conversation_tides_of_war);
     RegisterCreatureAI(npc_jaina_tides_of_war);
     RegisterAuraScript(aura_stormwind_to_harbor_teleport);
+    RegisterCreatureAI(npc_captain_rodgers_66292);
 }

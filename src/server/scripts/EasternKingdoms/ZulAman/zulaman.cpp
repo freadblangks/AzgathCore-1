@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -180,7 +180,7 @@ class npc_voljin_zulaman : public CreatureScript
                             break;
                         case EVENT_START_DOOR_OPENING_7:
                             if (Creature* hexLordTrigger = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_HEXLORD_TRIGGER)))
-                                sCreatureTextMgr->SendChat(hexLordTrigger, SAY_HEXLOR_INTRO, 0, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_MAP);
+                                sCreatureTextMgr->SendChat(hexLordTrigger, SAY_HEXLOR_INTRO, nullptr, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_MAP);
                             break;
                         default:
                             break;

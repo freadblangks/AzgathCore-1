@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -378,7 +377,7 @@ Aura::Aura(SpellInfo const* spellproto, ObjectGuid castId, WorldObject* owner, U
 m_spellInfo(spellproto), m_castGuid(castId), m_casterGuid(!casterGUID.IsEmpty() ? casterGUID : caster->GetGUID()),
 m_castItemGuid(castItem ? castItem->GetGUID() : castItemGuid), m_castItemId(castItem ? castItem->GetEntry() : castItemId),
 m_castItemLevel(castItemLevel), m_spellXSpellVisualId(caster ? caster->GetCastSpellXSpellVisualId(spellproto) : spellproto->GetSpellXSpellVisualId()),
-m_applyTime(time(NULL)), m_owner(owner), m_timeCla(0), m_updateTargetMapInterval(0),
+m_applyTime(time(nullptr)), m_owner(owner), m_timeCla(0), m_updateTargetMapInterval(0),
 m_casterLevel(caster ? caster->getLevel() : m_spellInfo->SpellLevel), m_procCharges(0), m_stackAmount(1),
 m_isRemoved(false), m_isSingleTarget(false), m_isUsingCharges(false), m_dropEvent(nullptr),
 m_procCooldown(std::chrono::steady_clock::time_point::min()),
@@ -427,7 +426,7 @@ void Aura::_InitEffects(uint32 effMask, Unit* caster, int32 *baseAmount)
     for (SpellEffectInfo const* effect : GetSpellEffectInfos())
     {
         if (effect && effMask & (1 << effect->EffectIndex))
-            _effects[effect->EffectIndex] = new AuraEffect(this, effect->EffectIndex, baseAmount ? baseAmount + effect->EffectIndex : NULL, caster);
+            _effects[effect->EffectIndex] = new AuraEffect(this, effect->EffectIndex, baseAmount ? baseAmount + effect->EffectIndex : nullptr, caster);
     }
 }
 
@@ -484,7 +483,7 @@ void Aura::_ApplyForTarget(Unit* target, Unit* caster, AuraApplication * auraApp
     {
         if (m_spellInfo->IsCooldownStartedOnEvent())
         {
-            Item* castItem = !m_castItemGuid.IsEmpty() ? caster->ToPlayer()->GetItemByGuid(m_castItemGuid) : NULL;
+            Item* castItem = !m_castItemGuid.IsEmpty() ? caster->ToPlayer()->GetItemByGuid(m_castItemGuid) : nullptr;
             caster->GetSpellHistory()->StartCooldown(m_spellInfo, castItem ? castItem->GetEntry() : 0, nullptr, true);
         }
     }
@@ -708,8 +707,8 @@ void Aura::UpdateOwner(uint32 diff, WorldObject* owner)
     Unit* caster = GetCaster();
     // Apply spellmods for channeled auras
     // used for example when triggered spell of spell:10 is modded
-    Spell* modSpell = NULL;
-    Player* modOwner = NULL;
+    Spell* modSpell = nullptr;
+    Player* modOwner = nullptr;
     if (caster)
     {
         modOwner = caster->GetSpellModOwner();
@@ -796,7 +795,7 @@ void Aura::Update(uint32 diff, Unit* caster)
 
 int32 Aura::CalcMaxDuration(Unit* caster) const
 {
-    Player* modOwner = NULL;
+    Player* modOwner = nullptr;
     int32 maxDuration;
 
     if (caster)
@@ -1052,6 +1051,9 @@ bool Aura::IsDeathPersistent() const
 
 bool Aura::CanBeSaved() const
 {
+    if (m_spellInfo->HasAura(SPELL_AURA_ENABLE_EXTRA_TALENT))
+        return false;
+
     if (IsPassive())
         return false;
 
@@ -1307,7 +1309,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     if (*itr < 0)
                         target->RemoveAurasDueToSpell(-(*itr));
                     else if (removeMode != AURA_REMOVE_BY_DEATH && target->IsInWorld() && !target->IsDuringRemoveFromWorld())
-                        target->CastSpell(target, *itr, true, NULL, NULL, GetCasterGUID());
+                        target->CastSpell(target, *itr, true, nullptr, nullptr, GetCasterGUID());
                 }
             }
             if (std::vector<int32> const* spellTriggered = sSpellMgr->GetSpellLinked(GetId() + SPELL_LINK_AURA))
@@ -1370,7 +1372,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     if (caster->HasAura(64760))
                     {
                         int32 heal = GetEffect(EFFECT_0)->GetAmount();
-                        caster->CastCustomSpell(target, 64801, &heal, NULL, NULL, true, NULL, GetEffect(EFFECT_0));
+                        caster->CastCustomSpell(target, 64801, &heal, nullptr, nullptr, true, nullptr, GetEffect(EFFECT_0));
                     }
                 }
                 break;
@@ -1387,7 +1389,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     case 66: // Invisibility
                         if (removeMode != AURA_REMOVE_BY_EXPIRE)
                             break;
-                        target->CastSpell(target, 32612, true, NULL, GetEffect(1));
+                        target->CastSpell(target, 32612, true, nullptr, GetEffect(1));
                         target->CombatStop();
                         break;
                     default:
@@ -1422,15 +1424,38 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                         {
                             float multiplier = float(aurEff->GetAmount());
                             int32 basepoints0 = int32(CalculatePct(caster->GetMaxPower(POWER_MANA), multiplier));
-                            caster->CastCustomSpell(caster, 47755, &basepoints0, NULL, NULL, true);
+                            caster->CastCustomSpell(caster, 47755, &basepoints0, nullptr, nullptr, true);
                         }
                     }
                 }
                 break;
             case SPELLFAMILY_ROGUE:
-                // Remove Vanish on stealth remove
-                if (GetId() == 1784)
-                    target->RemoveAurasWithFamily(SPELLFAMILY_ROGUE, flag128(0x0000800, 0, 0, 0), target->GetGUID());
+            {
+                switch (GetId())
+                {
+                case 1784:  // Stealth
+                {
+                    caster->RemoveAurasDueToSpell(158185);
+                    break;
+                }
+                case 11327: // Vanish
+                {
+                    if (removeMode != AURA_REMOVE_BY_EXPIRE)
+                        break;
+
+                    if (Player* player = caster->ToPlayer())
+                    {
+                        caster->GetSpellHistory()->ResetCooldown(1784, false);
+                        caster->CastSpell(caster, 1784, true);
+                    }
+                    break;
+                }
+                default:
+                    break;
+                }
+                break;
+            }
+            default:
                 break;
         }
     }
@@ -1438,6 +1463,76 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
     // mods at aura apply or remove
     switch (GetSpellInfo()->SpellFamilyName)
     {
+    case SPELLFAMILY_ROGUE:
+    {
+        if (!caster)
+            return;
+
+        switch (GetId())
+        {
+       
+        case 1784:   // Stealth
+        case 11327:  // Vanish
+        {
+            if (!apply && (removeMode == AURA_REMOVE_BY_INTERRUPT || removeMode == AURA_REMOVE_BY_DEFAULT))
+            {
+                if (caster->HasAura(108208))
+                    caster->CastSpell(caster, 115192, true);
+            }
+            if (caster->HasAura(231718)) // Shadowstrike (lvl 2)
+            {
+                if (apply)
+                {
+                    caster->AddAura(245623, caster);
+                }
+                else
+                {
+                    if (!caster->HasAura(1784) && !caster->HasAura(11327))
+                    {
+                        caster->RemoveAurasDueToSpell(245623);
+                    }
+                }
+            }
+        }
+        case 115192: // Subterfuge
+        case 185313: // Shadowdance (Shapeshift)
+        {
+            bool removeTalentAura = false;
+
+            if (apply)
+            {
+                caster->AddAura(158188, caster);
+            }
+            else
+            {
+                if (!caster->HasAura(1784) && !caster->HasAura(11327) && !caster->HasAura(185313))
+                {
+                    removeTalentAura = true;
+
+                    if (!caster->HasAura(115192))
+                        caster->RemoveAurasDueToSpell(158188);
+                }
+            }
+
+            if (caster->HasAura(108209)) // Shadow Focus
+            {
+                if (apply)
+                {
+                    caster->AddAura(112942, caster);
+                }
+                else if (removeTalentAura)
+                {
+                    caster->RemoveAurasDueToSpell(112942);
+                }
+            }
+
+            break;
+        }
+        default:
+            break;
+        }
+        break;
+    }
         case SPELLFAMILY_HUNTER:
             switch (GetId())
             {
@@ -1654,7 +1749,7 @@ bool Aura::CanStackWith(Aura const* existingAura) const
 
     if (HasEffectType(SPELL_AURA_CONTROL_VEHICLE) && existingAura->HasEffectType(SPELL_AURA_CONTROL_VEHICLE))
     {
-        Vehicle* veh = NULL;
+        Vehicle* veh = nullptr;
         if (GetOwner()->ToUnit())
             veh = GetOwner()->ToUnit()->GetVehicleKit();
 
@@ -2399,7 +2494,7 @@ void UnitAura::FillTargetMap(std::unordered_map<Unit*, uint32>& targets, Unit* c
                     case SPELL_EFFECT_APPLY_AREA_AURA_RAID:
                     {
                         units.push_back(GetUnitOwner());
-                        Trinity::AnyGroupedUnitInObjectRangeCheck u_check(GetUnitOwner(), GetUnitOwner(), radius, effect->Effect == SPELL_EFFECT_APPLY_AREA_AURA_RAID, m_spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS), false, true);
+                        Trinity::AnyGroupedUnitInObjectRangeCheck u_check(GetUnitOwner(), GetUnitOwner(), radius, effect->Effect == SPELL_EFFECT_APPLY_AREA_AURA_RAID, m_spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS));
                         Trinity::UnitListSearcher<Trinity::AnyGroupedUnitInObjectRangeCheck> searcher(GetUnitOwner(), units, u_check);
                         Cell::VisitAllObjects(GetUnitOwner(), searcher, radius);
                         break;
@@ -2407,21 +2502,21 @@ void UnitAura::FillTargetMap(std::unordered_map<Unit*, uint32>& targets, Unit* c
                     case SPELL_EFFECT_APPLY_AREA_AURA_FRIEND:
                     {
                         units.push_back(GetUnitOwner());
-                        Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(GetUnitOwner(), GetUnitOwner(), radius, m_spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS), false, true);
+                        Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(GetUnitOwner(), GetUnitOwner(), radius, m_spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS));
                         Trinity::UnitListSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(GetUnitOwner(), units, u_check);
                         Cell::VisitAllObjects(GetUnitOwner(), searcher, radius);
                         break;
                     }
                     case SPELL_EFFECT_APPLY_AREA_AURA_ENEMY:
                     {
-                        Trinity::AnyAoETargetUnitInObjectRangeCheck u_check(GetUnitOwner(), GetUnitOwner(), radius, m_spellInfo, false, true); // No GetCharmer in searcher
+                        Trinity::AnyAoETargetUnitInObjectRangeCheck u_check(GetUnitOwner(), GetUnitOwner(), radius, m_spellInfo); // No GetCharmer in searcher
                         Trinity::UnitListSearcher<Trinity::AnyAoETargetUnitInObjectRangeCheck> searcher(GetUnitOwner(), units, u_check);
                         Cell::VisitAllObjects(GetUnitOwner(), searcher, radius);
                         break;
                     }
                     case SPELL_EFFECT_APPLY_AREA_AURA_PET:
                         units.push_back(GetUnitOwner());
-                        /* fallthrough */
+                        // no break
                     case SPELL_EFFECT_APPLY_AREA_AURA_OWNER:
                     {
                         if (Unit* owner = GetUnitOwner()->GetCharmerOrOwner())
@@ -2483,13 +2578,13 @@ void DynObjAura::FillTargetMap(std::unordered_map<Unit*, uint32>& targets, Unit*
         if (effect->TargetB.GetTarget() == TARGET_DEST_DYNOBJ_ALLY
             || effect->TargetB.GetTarget() == TARGET_UNIT_DEST_AREA_ALLY)
         {
-            Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(GetDynobjOwner(), dynObjOwnerCaster, radius, m_spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS), false, true);
+            Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(GetDynobjOwner(), dynObjOwnerCaster, radius, m_spellInfo->HasAttribute(SPELL_ATTR3_ONLY_TARGET_PLAYERS));
             Trinity::UnitListSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(GetDynobjOwner(), units, u_check);
             Cell::VisitAllObjects(GetDynobjOwner(), searcher, radius);
         }
         else
         {
-            Trinity::AnyAoETargetUnitInObjectRangeCheck u_check(GetDynobjOwner(), dynObjOwnerCaster, radius, nullptr, false, true);
+            Trinity::AnyAoETargetUnitInObjectRangeCheck u_check(GetDynobjOwner(), dynObjOwnerCaster, radius);
             Trinity::UnitListSearcher<Trinity::AnyAoETargetUnitInObjectRangeCheck> searcher(GetDynobjOwner(), units, u_check);
             Cell::VisitAllObjects(GetDynobjOwner(), searcher, radius);
         }

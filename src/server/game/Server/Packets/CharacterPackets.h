@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -712,12 +712,23 @@ namespace WorldPackets
 
             uint32 FactionIndex = 0;
         };
-
-        class CharCustomizeResponse final : public ServerPacket
+        
+        class NeutralPlayerFactionSelectResult final : public ServerPacket
         {
         public:
-            CharCustomizeResponse() : ServerPacket(SMSG_CHAR_CUSTOMIZE, 16 + 1 + 1 + 1 + 1 + 1 + 1 + 1) { }
-            CharCustomizeResponse(CharCustomizeInfo const* customizeInfo);
+            NeutralPlayerFactionSelectResult() : ServerPacket(SMSG_NEUTRAL_PLAYER_FACTION_SELECT_RESULT, 4 + 1) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 NewRaceID = 0;
+            bool Success = false;
+        };
+
+        class CharCustomizeSuccess final : public ServerPacket
+        {
+        public:
+            CharCustomizeSuccess() : ServerPacket(SMSG_CHAR_CUSTOMIZE_SUCCESS, 16 + 1 + 1 + 1 + 1 + 1 + 1 + 1) { }
+            CharCustomizeSuccess(CharCustomizeInfo const* customizeInfo);
 
             WorldPacket const* Write() override;
 
@@ -732,10 +743,10 @@ namespace WorldPackets
             std::array<uint8, PLAYER_CUSTOM_DISPLAY_SIZE> CustomDisplay = { };
         };
 
-        class CharCustomizeFailed final : public ServerPacket
+        class CharCustomizeFailure final : public ServerPacket
         {
         public:
-            CharCustomizeFailed() : ServerPacket(SMSG_CHAR_CUSTOMIZE_FAILED, 1 + 16) { }
+            CharCustomizeFailure() : ServerPacket(SMSG_CHAR_CUSTOMIZE_FAILURE, 1 + 16) { }
 
             WorldPacket const* Write() override;
 

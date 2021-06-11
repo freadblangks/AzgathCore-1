@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -109,7 +108,7 @@ void UnitAI::SelectTargetList(std::list<Unit*>& targetList, uint32 num, SelectAg
 
 void UnitAI::DoCast(uint32 spellId)
 {
-    Unit* target = NULL;
+    Unit* target = nullptr;
 
     switch (AISpellInfo[spellId].target)
     {
@@ -156,6 +155,10 @@ void UnitAI::DoCast(uint32 spellId)
         me->CastSpell(target, spellId, false);
 }
 
+void UnitAI::DoCastAI(uint32 spellId)
+{
+}
+
 void UnitAI::DoCast(Unit* victim, uint32 spellId, bool triggered)
 {
     if (!victim || (me->HasUnitState(UNIT_STATE_CASTING) && !triggered))
@@ -177,7 +180,7 @@ void UnitAI::DoCastAOE(uint32 spellId, bool triggered)
     if (!triggered && me->HasUnitState(UNIT_STATE_CASTING))
         return;
 
-    me->CastSpell((Unit*)NULL, spellId, triggered);
+    me->CastSpell((Unit*)nullptr, spellId, triggered);
 }
 
 void UnitAI::DoCastRandom(uint32 spellId, float dist, bool triggered, int32 aura, uint32 position)
@@ -366,6 +369,40 @@ bool NonTankTargetSelector::operator()(Unit const* target) const
         return target->GetGUID() != currentVictim->getUnitGuid();
 
     return target != _source->GetVictim();
+}
+
+bool BehindTargetSelector::operator()(Unit const* target) const
+{
+    if (!me)
+        return false;
+
+    if (!target)
+        return false;
+
+    if (m_playerOnly && !target->IsPlayer())
+        return false;
+
+    if (m_dist > 0.0f && !me->IsWithinCombatRange(target, m_dist))
+        return false;
+
+    if (m_dist < 0.0f && me->IsWithinCombatRange(target, -m_dist))
+        return false;
+
+    if (m_aura)
+    {
+        if (m_aura > 0)
+        {
+            if (!target->HasAura(m_aura))
+                return false;
+        }
+        else
+        {
+            if (target->HasAura(-m_aura))
+                return false;
+        }
+    }
+
+    return !me->HasInArc(static_cast<float>(3 * 4 / M_PI), target);
 }
 
 void UnitAI::UpdateOperations(uint32 const diff)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2020 WoWLEgacy <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the

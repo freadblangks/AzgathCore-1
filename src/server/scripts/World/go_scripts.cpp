@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,7 +23,6 @@ go_ethereum_stasis
 go_sacred_fire_of_life
 go_shrine_of_the_birds
 go_southfury_moonstone
-go_orb_of_command
 go_resonite_cask
 go_tablet_of_madness
 go_tablet_of_the_seven
@@ -50,7 +48,7 @@ EndContentData */
 #include "GameObjectAI.h"
 #include "Log.h"
 #include "Map.h"
-#include "MiscPackets.h"
+#include "NPCPackets.h"
 #include "MotionMaster.h"
 #include "Player.h"
 #include "ScriptedCreature.h"
@@ -127,23 +125,6 @@ public:
     }
 };
 
-/*######
-## go_orb_of_command
-######*/
-
-class go_orb_of_command : public GameObjectScript
-{
-public:
-    go_orb_of_command() : GameObjectScript("go_orb_of_command") { }
-
-    bool OnGossipHello(Player* player, GameObject* /*go*/) override
-    {
-        if (player->GetQuestRewardStatus(7761))
-            player->CastSpell(player, 23460, true);
-
-        return true;
-    }
-};
 
 /*######
 ## go_tablet_of_madness
@@ -172,7 +153,7 @@ class go_tablet_of_the_seven : public GameObjectScript
 public:
     go_tablet_of_the_seven() : GameObjectScript("go_tablet_of_the_seven") { }
 
-    /// @todo use gossip option ("Transcript the Tablet") instead, if Trinity adds support.
+    /// @todo use gossip option ("Transcript the Tablet") instead.
     bool OnGossipHello(Player* player, GameObject* go) override
     {
         if (go->GetGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
@@ -360,7 +341,7 @@ public:
         uint32 BirdEntry = 0;
 
         float fX, fY, fZ;
-        go->GetClosePoint(fX, fY, fZ, go->GetCombatReach(), INTERACTION_DISTANCE);
+        go->GetClosePoint(fX, fY, fZ, go->GetObjectSize(), INTERACTION_DISTANCE);
 
         switch (go->GetEntry())
         {
@@ -1502,10 +1483,10 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* go) override
     {
-        WorldPackets::Misc::OpenAlliedRaceDetailsGiver openAlliedRaceDetailsGiver;
-        openAlliedRaceDetailsGiver.Guid = go->GetGUID();
-        openAlliedRaceDetailsGiver.RaceId = _raceId;
-        player->SendDirectMessage(openAlliedRaceDetailsGiver.Write());
+        WorldPackets::NPC::OpenAlliedRaceDetails openAlliedRaceDetails;
+        openAlliedRaceDetails.Guid = go->GetGUID();
+        openAlliedRaceDetails.RaceId = _raceId;
+        player->SendDirectMessage(openAlliedRaceDetails.Write());
         return false;
     }
 
@@ -1517,7 +1498,6 @@ void AddSC_go_scripts()
     new go_cat_figurine();
     new go_barov_journal();
     new go_gilded_brazier();
-    new go_orb_of_command();
     new go_shrine_of_the_birds();
     new go_southfury_moonstone();
     new go_tablet_of_madness();
@@ -1553,8 +1533,15 @@ void AddSC_go_scripts()
     new go_midsummer_music();
     new go_darkmoon_faire_music();
     new go_pirate_day_music();
-    new go_allied_race_infos("go_allied_race_infos_nightborne", 27);
-    new go_allied_race_infos("go_allied_race_infos_tauren",     28);
-    new go_allied_race_infos("go_allied_race_infos_voidelf",    29);
-    new go_allied_race_infos("go_allied_race_infos_draenei",    30);
+    new go_allied_race_infos("go_allied_race_infos_nightborne",         27);
+    new go_allied_race_infos("go_allied_race_infos_highmountaintauren", 28);
+    new go_allied_race_infos("go_allied_race_infos_voidelf",            29);
+    new go_allied_race_infos("go_allied_race_infos_lightforgeddraenei", 30);
+    new go_allied_race_infos("go_allied_race_infos_zandalaritroll",     31);
+    new go_allied_race_infos("go_allied_race_infos_kultiran",           32);
+    new go_allied_race_infos("go_allied_race_infos_human",              33); // NYU
+    new go_allied_race_infos("go_allied_race_infos_darkirondwarf",      34);
+    new go_allied_race_infos("go_allied_race_infos_vulpera",            35);
+    new go_allied_race_infos("go_allied_race_infos_magharorc",          36);
+    new go_allied_race_infos("go_allied_race_infos_mechagnome",         37);
 }

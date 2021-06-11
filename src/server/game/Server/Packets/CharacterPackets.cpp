@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -550,8 +550,17 @@ WorldPacket const* WorldPackets::Character::SetFactionVisible::Write()
     return &_worldPacket;
 }
 
-WorldPackets::Character::CharCustomizeResponse::CharCustomizeResponse(WorldPackets::Character::CharCustomizeInfo const* info)
-    : ServerPacket(SMSG_CHAR_CUSTOMIZE, 16 + 1 + 1 + 1 + 1 + 1 + 1 + 1)
+WorldPacket const* WorldPackets::Character::NeutralPlayerFactionSelectResult::Write()
+{
+    _worldPacket << NewRaceID;
+    _worldPacket.WriteBit(Success);
+    _worldPacket.FlushBits();
+
+    return &_worldPacket;
+}
+
+WorldPackets::Character::CharCustomizeSuccess::CharCustomizeSuccess(WorldPackets::Character::CharCustomizeInfo const* info)
+    : ServerPacket(SMSG_CHAR_CUSTOMIZE_SUCCESS, 16 + 1 + 1 + 1 + 1 + 1 + 1 + 1)
 {
     CharGUID = info->CharGUID;
     SexID = info->SexID;
@@ -564,7 +573,7 @@ WorldPackets::Character::CharCustomizeResponse::CharCustomizeResponse(WorldPacke
     CustomDisplay = info->CustomDisplay;
 }
 
-WorldPacket const* WorldPackets::Character::CharCustomizeResponse::Write()
+WorldPacket const* WorldPackets::Character::CharCustomizeSuccess::Write()
 {
     _worldPacket << CharGUID;
     _worldPacket << uint8(SexID);
@@ -581,7 +590,7 @@ WorldPacket const* WorldPackets::Character::CharCustomizeResponse::Write()
     return &_worldPacket;
 }
 
-WorldPacket const* WorldPackets::Character::CharCustomizeFailed::Write()
+WorldPacket const* WorldPackets::Character::CharCustomizeFailure::Write()
 {
     _worldPacket << uint8(Result);
     _worldPacket << CharGUID;

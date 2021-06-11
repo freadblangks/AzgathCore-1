@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -50,11 +50,11 @@ public:
         };
         static std::vector<ChatCommand> channelCommandTable =
         {
-            { "set", rbac::RBAC_PERM_COMMAND_CHANNEL_SET, true, NULL, "", channelSetCommandTable },
+            { "set", rbac::RBAC_PERM_COMMAND_CHANNEL_SET, true, nullptr, "", channelSetCommandTable },
         };
         static std::vector<ChatCommand> commandTable =
         {
-            { "channel",        rbac::RBAC_PERM_COMMAND_CHANNEL,        true, NULL,                         "", channelCommandTable  },
+            { "channel",        rbac::RBAC_PERM_COMMAND_CHANNEL,        true, nullptr,                      "", channelCommandTable  },
             { "nameannounce",   rbac::RBAC_PERM_COMMAND_NAMEANNOUNCE,   true, &HandleNameAnnounceCommand,   "" },
             { "gmnameannounce", rbac::RBAC_PERM_COMMAND_GMNAMEANNOUNCE, true, &HandleGMNameAnnounceCommand, "" },
             { "announce",       rbac::RBAC_PERM_COMMAND_ANNOUNCE,       true, &HandleAnnounceCommand,       "" },
@@ -239,7 +239,7 @@ public:
 
         if (argStr == "remove")
         {
-            std::string name = strtok(NULL, " ");
+            std::string name = strtok(nullptr, " ");
             if (normalizePlayerName(name))
             {
                 if (Player* player = ObjectAccessor::FindPlayerByName(name))

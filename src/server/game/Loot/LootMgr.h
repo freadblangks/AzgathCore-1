@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -25,6 +24,7 @@
 #include "SharedDefines.h"
 #include <list>
 #include <set>
+class ChallengeModeMgr;
 #include <unordered_map>
 #include <vector>
 
@@ -46,6 +46,7 @@ struct TC_GAME_API LootStoreItem
     uint32  mincount;                                       // mincount for drop items
     uint32  maxcount;                                       // max drop count for the item mincount or Ref multiplicator
     ConditionContainer conditions;                               // additional loot condition
+    std::vector<int32> bonus;
 
     // Constructor
     // displayid is filled in IsValid() which must be called after
@@ -74,7 +75,7 @@ class TC_GAME_API LootStore
         void Verify() const;
 
         uint32 LoadAndCollectLootIds(LootIdSet& ids_set);
-        void CheckLootRefs(LootIdSet* ref_set = NULL) const; // check existence reference and remove it from ref_set
+        void CheckLootRefs(LootIdSet* ref_set = nullptr) const; // check existence reference and remove it from ref_set
         void ReportUnusedIds(LootIdSet const& ids_set) const;
         void ReportNonExistingId(uint32 lootId) const;
         void ReportNonExistingId(uint32 lootId, const char* ownerType, uint32 ownerId) const;
@@ -112,9 +113,12 @@ class TC_GAME_API LootTemplate
         // Adds an entry to the group (at loading stage)
         void AddEntry(LootStoreItem* item);
         // Rolls for every item in the template and adds the rolled items the the loot
+       // void ProcessOploteChest(Loot& loot) const;
         void Process(Loot& loot, bool rate, uint16 lootMode, uint8 groupId = 0, Player const* player = nullptr, bool specOnly = false) const;
+      //  void ProcessChallengeChest(Loot& loot, uint32 lootId, ChallengeModeMgr* _challenge) const;
         void CopyConditions(const ConditionContainer& conditions);
         void CopyConditions(LootItem* li) const;
+        void FillAutoAssignationLoot(std::unordered_map<uint32, std::vector<int32>>& itemList, Player* player = nullptr, bool isBGReward = false) const;
 
         // True if template includes at least 1 quest drop entry
         bool HasQuestDrop(LootTemplateMap const& store, uint8 groupId = 0) const;

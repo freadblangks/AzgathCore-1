@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -34,6 +33,7 @@
 #include "SpellAuraDefines.h"
 #include "SpellInfo.h"
 #include <G3D/g3dmath.h>
+#include "Containers.h"
 
 PetFamilySpellsStore sPetFamilySpellsStore;
 
@@ -172,7 +172,7 @@ SpellChainNode const* SpellMgr::GetSpellChainNode(uint32 spell_id) const
 {
     SpellChainMap::const_iterator itr = mSpellChains.find(spell_id);
     if (itr == mSpellChains.end())
-        return NULL;
+        return nullptr;
 
     return &itr->second;
 }
@@ -258,7 +258,7 @@ SpellLearnSkillNode const* SpellMgr::GetSpellLearnSkill(uint32 spell_id) const
     if (itr != mSpellLearnSkills.end())
         return &itr->second;
     else
-        return NULL;
+        return nullptr;
 }
 
 SpellLearnSpellMapBounds SpellMgr::GetSpellLearnSpellMapBounds(uint32 spell_id) const
@@ -285,7 +285,7 @@ SpellTargetPosition const* SpellMgr::GetSpellTargetPosition(uint32 spell_id, Spe
     SpellTargetPositionMap::const_iterator itr = mSpellTargetPositions.find(std::make_pair(spell_id, effIndex));
     if (itr != mSpellTargetPositions.end())
         return &itr->second;
-    return NULL;
+    return nullptr;
 }
 
 SpellSpellGroupMapBounds SpellMgr::GetSpellSpellGroupMapBounds(uint32 spell_id) const
@@ -371,14 +371,10 @@ bool SpellMgr::AddSameEffectStackRuleSpellGroups(SpellInfo const* spellInfo, int
 
 SpellGroupStackRule SpellMgr::CheckSpellGroupStackRules(SpellInfo const* spellInfo1, SpellInfo const* spellInfo2) const
 {
-    ASSERT(spellInfo1);
-    ASSERT(spellInfo2);
-
     uint32 spellid_1 = spellInfo1->GetFirstRankSpell()->Id;
     uint32 spellid_2 = spellInfo2->GetFirstRankSpell()->Id;
     if (spellid_1 == spellid_2)
         return SPELL_GROUP_STACK_RULE_DEFAULT;
-
     // find SpellGroups which are common for both spells
     SpellSpellGroupMapBounds spellGroup1 = GetSpellSpellGroupMapBounds(spellid_1);
     std::set<SpellGroup> groups;
@@ -432,7 +428,7 @@ SpellProcEntry const* SpellMgr::GetSpellProcEntry(uint32 spellId) const
     SpellProcMap::const_iterator itr = mSpellProcMap.find(spellId);
     if (itr != mSpellProcMap.end())
         return &itr->second;
-    return NULL;
+    return nullptr;
 }
 
 bool SpellMgr::CanSpellTriggerProcOnEvent(SpellProcEntry const& procEntry, ProcEventInfo& eventInfo)
@@ -538,7 +534,7 @@ SpellThreatEntry const* SpellMgr::GetSpellThreatEntry(uint32 spellID) const
         if (itr != mSpellThreatMap.end())
             return &itr->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 SkillLineAbilityMapBounds SpellMgr::GetSkillLineAbilityMapBounds(uint32 spell_id) const
@@ -552,7 +548,7 @@ PetAura const* SpellMgr::GetPetAura(uint32 spell_id, uint8 eff) const
     if (itr != mSpellPetAuraMap.end())
         return &itr->second;
     else
-        return NULL;
+        return nullptr;
 }
 
 SpellEnchantProcEntry const* SpellMgr::GetSpellEnchantProcEvent(uint32 enchId) const
@@ -560,7 +556,7 @@ SpellEnchantProcEntry const* SpellMgr::GetSpellEnchantProcEvent(uint32 enchId) c
     SpellEnchantProcEventMap::const_iterator itr = mSpellEnchantProcEventMap.find(enchId);
     if (itr != mSpellEnchantProcEventMap.end())
         return &itr->second;
-    return NULL;
+    return nullptr;
 }
 
 bool SpellMgr::IsArenaAllowedEnchancment(uint32 ench_id) const
@@ -571,7 +567,7 @@ bool SpellMgr::IsArenaAllowedEnchancment(uint32 ench_id) const
 const std::vector<int32>* SpellMgr::GetSpellLinked(int32 spell_id) const
 {
     SpellLinkedMap::const_iterator itr = mSpellLinkedMap.find(spell_id);
-    return itr != mSpellLinkedMap.end() ? &(itr->second) : NULL;
+    return itr != mSpellLinkedMap.end() ? &(itr->second) : nullptr;
 }
 
 PetLevelupSpellStore const* SpellMgr::GetPetLevelupSpellList(uint32 petFamily) const
@@ -580,7 +576,7 @@ PetLevelupSpellStore const* SpellMgr::GetPetLevelupSpellList(uint32 petFamily) c
     if (itr != mPetLevelupSpellMap.end())
         return &itr->second;
     else
-        return NULL;
+        return nullptr;
 }
 
 PetDefaultSpellsEntry const* SpellMgr::GetPetDefaultSpellsEntry(int32 id) const
@@ -588,7 +584,7 @@ PetDefaultSpellsEntry const* SpellMgr::GetPetDefaultSpellsEntry(int32 id) const
     PetDefaultSpellsMap::const_iterator itr = mPetDefaultSpellsMap.find(id);
     if (itr != mPetDefaultSpellsMap.end())
         return &itr->second;
-    return NULL;
+    return nullptr;
 }
 
 SpellAreaMapBounds SpellMgr::GetSpellAreaMapBounds(uint32 spell_id) const
@@ -644,7 +640,7 @@ bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32
             return false;
 
     if (questEnd)                                // is not in expected forbidden quest state
-        if (!player || (((1 << player->GetQuestStatus(questEnd)) & questEndStatus) != 0))
+        if (!player || (((1 << player->GetQuestStatus(questEnd)) & questEndStatus) == 0))
             return false;
 
     if (auraSpell)                               // does not have expected aura
@@ -721,7 +717,7 @@ bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32
 void SpellMgr::UnloadSpellInfoChains()
 {
     for (SpellChainMap::iterator itr = mSpellChains.begin(); itr != mSpellChains.end(); ++itr)
-        mSpellInfoMap[itr->first]->ChainEntry = NULL;
+        mSpellInfoMap[itr->first]->ChainEntry = nullptr;
 
     mSpellChains.clear();
 }
@@ -1976,7 +1972,7 @@ bool LoadPetDefaultSpells_helper(CreatureTemplate const* cInfo, PetDefaultSpells
         return false;
 
     // remove duplicates with levelupSpells if any
-    if (PetLevelupSpellStore const* levelupSpells = cInfo->family ? sSpellMgr->GetPetLevelupSpellList(cInfo->family) : NULL)
+    if (PetLevelupSpellStore const* levelupSpells = cInfo->family ? sSpellMgr->GetPetLevelupSpellList(cInfo->family) : nullptr)
     {
         for (uint8 j = 0; j < MAX_CREATURE_SPELL_DATA_SLOT; ++j)
         {
@@ -2265,7 +2261,7 @@ void SpellMgr::LoadSpellInfoStore()
     uint32 oldMSTime = getMSTime();
 
     UnloadSpellInfoStore();
-    mSpellInfoMap.resize(sSpellNameStore.GetNumRows(), NULL);
+    mSpellInfoMap.resize(sSpellNameStore.GetNumRows(), nullptr);
     std::unordered_map<uint32, SpellInfoLoadHelper> loadData;
 
     std::unordered_map<int32, BattlePetSpeciesEntry const*> battlePetSpeciesByCreature;
@@ -2385,7 +2381,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
 {
     uint32 oldMSTime = getMSTime();
     uint32 oldMSTime2 = oldMSTime;
-    SpellInfo* spellInfo = NULL;
+    SpellInfo* spellInfo = nullptr;
 
     QueryResult result = WorldDatabase.Query("SELECT entry, attributes FROM spell_custom_attr");
 
@@ -2560,6 +2556,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                     case SPELL_EFFECT_APPLY_AREA_AURA_ENEMY:
                     case SPELL_EFFECT_APPLY_AREA_AURA_PET:
                     case SPELL_EFFECT_APPLY_AREA_AURA_OWNER:
+                    {
                         if (effect->ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE ||
                             effect->ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE_PERCENT ||
                             effect->ApplyAuraName == SPELL_AURA_DUMMY ||
@@ -2567,7 +2564,7 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
                             effect->ApplyAuraName == SPELL_AURA_PERIODIC_HEALTH_FUNNEL ||
                             effect->ApplyAuraName == SPELL_AURA_PERIODIC_DUMMY)
                             break;
-                        /* fallthrough */
+                    }
                     default:
                     {
                         // No value and not interrupt cast or crowd control without SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY flag
@@ -2709,6 +2706,30 @@ void SpellMgr::LoadSpellInfoCorrections()
 {
     uint32 oldMSTime = getMSTime();
 
+    ApplySpellFix({
+        201633,  // Earthen Shield
+        200851,  // Rage of the Sleeper
+        209426,  // Darkness
+        195181,  // Bone Shield
+        207319,  // Corpse Shield
+        206977,  // Blood Mirror
+        203975,  // Earthwarden
+        208771,  // Smite
+        197268,  // Ray of Hope (PvP Talent)
+        144331,  // Iron Prison
+        142906,  // Ancient Miasma Dmg
+        29604,   // Jom Gabbar
+        204266,  // Swelling Waves (PvP Talent)
+        108366,  // Soul Leech
+        233263,  // Embrace of the Eclipse
+        233264,  // Embrace of the Eclipse
+        215300,  // Web of Pain
+        215307   // Web of Pain
+    }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->AttributesEx6 |= SPELL_ATTR6_NO_DONE_PCT_DAMAGE_MODS;
+    });
+
     // Ring of Frost
     ApplySpellFix({ 82691 }, [](SpellInfo* spellInfo)
     {
@@ -2762,6 +2783,8 @@ void SpellMgr::LoadSpellInfoCorrections()
     {
         spellInfo->AttributesEx4 |= SPELL_ATTR4_FIXED_DAMAGE;
     });
+	
+	
 
     // Howl of Azgalor
     ApplySpellFix({ 31344 }, [](SpellInfo* spellInfo)
@@ -2783,11 +2806,11 @@ void SpellMgr::LoadSpellInfoCorrections()
         const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->TriggerSpell = 36325; // They Must Burn Bomb Drop (DND)
     });
 
-    // Execute
-    ApplySpellFix({ 5308 }, [](SpellInfo* spellInfo)
-    {
-        spellInfo->AttributesEx3 |= SPELL_ATTR3_CANT_TRIGGER_PROC;
-    });
+    //// Execute
+    // ApplySpellFix({ 5308 }, [](SpellInfo* spellInfo)
+    // {
+    //    spellInfo->AttributesEx3 |= SPELL_ATTR3_CANT_TRIGGER_PROC;
+    //});
 
     // Chi Torpedo
     ApplySpellFix({ 115008 }, [](SpellInfo* spellInfo) { const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_2))->BasePoints = 410; });
@@ -2935,6 +2958,13 @@ void SpellMgr::LoadSpellInfoCorrections()
     ApplySpellFix({ 51912 }, [](SpellInfo* spellInfo)
     {
         const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->ApplyAuraPeriod = 3000;
+    });
+
+    //Vanish
+    ApplySpellFix({ 11327 }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->AttributesEx4 |= SPELL_ATTR4_TRIGGER_ACTIVATE;
+        spellInfo->AuraInterruptFlags[0] |= AURA_INTERRUPT_FLAG_MELEE_ATTACK;
     });
 
     // Nether Portal - Perseverence
@@ -3188,6 +3218,14 @@ void SpellMgr::LoadSpellInfoCorrections()
         spellInfo->AttributesEx |= SPELL_ATTR1_DISPEL_AURAS_ON_IMMUNITY;
     });
 
+    // Blizzard (Thorim)
+    ApplySpellFix({ 62576, 62602 }, [](SpellInfo* spellInfo)
+    {
+        // DBC data is wrong for EFFECT_0, it's a different dynobject target than EFFECT_1
+        // Both effects should be shared by the same DynObject
+        const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->TargetA = SpellImplicitTargetInfo(TARGET_DEST_CASTER_LEFT);
+    });
+
     // Spinning Up (Mimiron)
     ApplySpellFix({ 63414 }, [](SpellInfo* spellInfo)
     {
@@ -3354,6 +3392,15 @@ void SpellMgr::LoadSpellInfoCorrections()
         spellInfo->RequiredAreasID = 0; // originally, these require area 4522, which is... outside of Icecrown Citadel
     });
 
+    // WARLOC SPELLS
+    ApplySpellFix({ 108415, 108446 }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Attributes &= ~SPELL_ATTR0_NOT_SHAPESHIFT;
+        spellInfo->AttributesEx3 &= ~SPELL_ATTR3_CANT_TRIGGER_PROC;
+        spellInfo->AttributesEx3 |= SPELL_ATTR3_CAN_PROC_WITH_TRIGGERED;
+    });
+    // END WARLOC SPELLS
+
     // Corruption
     ApplySpellFix({ 70602 }, [](SpellInfo* spellInfo)
     {
@@ -3420,7 +3467,7 @@ void SpellMgr::LoadSpellInfoCorrections()
     // Val'kyr Target Search
     ApplySpellFix({ 69030 }, [](SpellInfo* spellInfo)
     {
-         spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
+        spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
     });
 
     // Raging Spirit Visual
@@ -3468,6 +3515,8 @@ void SpellMgr::LoadSpellInfoCorrections()
     // Jump
     ApplySpellFix({ 71809 }, [](SpellInfo* spellInfo)
     {
+        spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(3); // 20yd
+        const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_25_YARDS); // 25yd
         spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(5); // 40yd
         const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_10_YARDS); // 10yd
         const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->MiscValue = 190;
@@ -3476,6 +3525,7 @@ void SpellMgr::LoadSpellInfoCorrections()
     // Broken Frostmourne
     ApplySpellFix({ 72405 }, [](SpellInfo* spellInfo)
     {
+        const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_1))->RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_200_YARDS); // 200yd
         const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_1))->RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_20_YARDS); // 20yd
         spellInfo->AttributesEx |= SPELL_ATTR1_NO_THREAT;
     });
@@ -3889,6 +3939,13 @@ void SpellMgr::LoadSpellInfoCorrections()
         }
     });
 
+    //Atal Dazar Correction
+    ApplySpellFix({ 255836 }, [](SpellInfo* spellInfo)
+        {
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->BasePoints = spellInfo->GetEffect(EFFECT_0)->BasePoints / 100;
+
+        });
+    //End Atal Dazar Correction
 
     ApplySpellFix({
         70661, // See quest invis 1
@@ -3962,7 +4019,59 @@ void SpellMgr::LoadSpellInfoCorrections()
     });
     /// Gilneas END ///
 
-    SpellInfo* spellInfo = NULL;
+    // UNDERROT: Creeping Rot and Blood Mirror
+    ApplySpellFix({ 260894, 264704 }, [](SpellInfo* spellInfo)
+        {
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->MiscValue = 0; // don't summon by spell because its script handled
+        });
+    // UNDERROT: Charge disable spawn larva, handle through script
+    ApplySpellFix({ 260292 }, [](SpellInfo* spellInfo)
+        {
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_2))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_3))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_4))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_5))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_6))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_7))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_8))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_9))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_10))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_11))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_12))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_13))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_14))->Effect = 0;
+        });
+    // UNDERROT: Indigestion disable spawn larva, handle through script
+    ApplySpellFix({ 260793 }, [](SpellInfo* spellInfo)
+        {
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_1))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_2))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_3))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_4))->Effect = 0;
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_5))->Effect = 0;
+        });
+        // SHAMAN SPELL: searing assault proc 0 spell, handle script 
+    ApplySpellFix({ 192087 }, [](SpellInfo* spellInfo)
+        {
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->TriggerSpell = 0;
+        });
+    // SHAMAN SPELL: flametongue proc effect 
+    ApplySpellFix({ 194084 }, [](SpellInfo* spellInfo)
+        {
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->ApplyAuraName = SPELL_AURA_PROC_TRIGGER_SPELL;
+        });
+        // SHAMAN SPELL: gathering storms value modified, should be 5 instead of 2
+    ApplySpellFix({ 198300 }, [](SpellInfo* spellInfo)
+        {
+            const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_0))->BasePoints = 5;
+        });
+    // Nyalotha
+    ApplySpellFix({ 308679 }, [](SpellInfo* spellInfo)
+    {
+        const_cast<SpellEffectInfo*>(spellInfo->GetEffect(EFFECT_1))->Effect = 0;
+    });
+
+    SpellInfo* spellInfo = nullptr;
     for (uint32 i = 0; i < GetSpellInfoStoreSize(); ++i)
     {
         spellInfo = (SpellInfo*)mSpellInfoMap[i];
@@ -4008,10 +4117,6 @@ void SpellMgr::LoadSpellInfoCorrections()
         // disable proc for magnet auras, they're handled differently
         if (spellInfo->HasAura(DIFFICULTY_NONE, SPELL_AURA_SPELL_MAGNET))
             spellInfo->ProcFlags = 0;
-
-        // due to the way spell system works, unit would change orientation in Spell::_cast
-        if (spellInfo->HasAura(DIFFICULTY_NONE, SPELL_AURA_CONTROL_VEHICLE))
-            spellInfo->AttributesEx5 |= SPELL_ATTR5_DONT_TURN_DURING_CAST;
 
         if (spellInfo->ActiveIconFileDataId == 135754)  // flight
             spellInfo->Attributes |= SPELL_ATTR0_PASSIVE;

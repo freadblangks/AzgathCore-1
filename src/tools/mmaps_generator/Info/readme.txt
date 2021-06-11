@@ -39,7 +39,7 @@ R"(Generator command line args
                                     false: skip battlegrounds (default)
 
 --debugOutput       [true|false]    create debugging files for use with RecastDemo
-                                    if you are only creating mmaps for use with MaNGOS,
+                                    if you are only creating mmaps for use with AzgathCore,
                                     you don't want debugging files
 
                                     false: don't create debugging files (default)

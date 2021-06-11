@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -633,48 +633,48 @@ namespace WorldPackets
             int32 Value = 0;
         };
 
-        class WorldQuestUpdate final : public ServerPacket
+        class WorldQuestUpdateResponse final : public ServerPacket
         {
         public:
-            WorldQuestUpdate() : ServerPacket(SMSG_WORLD_QUEST_UPDATE, 100) { }
+            WorldQuestUpdateResponse() : ServerPacket(SMSG_WORLD_QUEST_UPDATE_RESPONSE, 100) { }
 
             WorldPacket const* Write() override;
 
             std::vector<WorldPackets::Quest::WorldQuestUpdateInfo> WorldQuestUpdates;
         };
 
-        class QueryQuestReward final : public ClientPacket
+        class QueryTreasurePicker final : public ClientPacket
         {
         public:
-            QueryQuestReward(WorldPacket&& packet) : ClientPacket(CMSG_QUERY_TREASURE_PICKER, std::move(packet)) { }
+            QueryTreasurePicker(WorldPacket&& packet) : ClientPacket(CMSG_QUERY_TREASURE_PICKER, std::move(packet)) { }
 
             void Read() override;
 
-            uint32 QuestID;
-            uint32 Unk;
+            int32 QuestID;
+            uint32 QuestRewardID;
         };
 
         class QueryQuestRewardResponse final : public ServerPacket
         {
         public:
-            QueryQuestRewardResponse() : ServerPacket(SMSG_QUERY_TREASURE_PICKER_RESPONSE) { }
+            QueryQuestRewardResponse() : ServerPacket(SMSG_TREASURE_PICKER_RESPONSE) { }
 
             WorldPacket const* Write() override;
 
             struct CurrencyReward
             {
                 uint32 CurrencyID = 0;
-                uint32 Quantity = 0;
+                uint32 Amount = 0;
             };
 
             struct ItemReward
             {
                 WorldPackets::Item::ItemInstance Item;
-                uint32 Quantity = 0;
+                uint32 ItemCount = 0;
             };
 
             uint32 QuestID;
-            uint32 Unk1 = 0;
+            uint32 QuestRewardID = 0;
             uint64 Money = 0;
             std::vector<CurrencyReward> CurrencyRewards;
             std::vector<ItemReward> ItemRewards;

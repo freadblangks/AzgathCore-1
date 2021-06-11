@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -31,10 +31,10 @@ namespace WorldPackets
 {
     namespace Battleground
     {
-        class PVPSeason final : public ServerPacket
+        class SeasonInfo final : public ServerPacket
         {
         public:
-            PVPSeason() : ServerPacket(SMSG_PVP_SEASON, 4 + 4 + 4 + 4) { }
+            SeasonInfo() : ServerPacket(SMSG_SEASON_INFO, 4 + 4 + 4 + 4) { }
 
             WorldPacket const* Write() override;
 
@@ -91,8 +91,13 @@ namespace WorldPackets
             void Read() override { }
         };
 
-        struct PVPLogData
+        class PVPMatchStatistics final : public ServerPacket
         {
+        public:
+            PVPMatchStatistics() : ServerPacket(SMSG_PVP_MATCH_STATISTICS, 0) { }
+
+            WorldPacket const* Write() override;
+
             struct RatingData
             {
                 int32 Prematch[2] = { };
@@ -141,16 +146,6 @@ namespace WorldPackets
             std::vector<PVPMatchPlayerStatistics> Statistics;
             Optional<RatingData> Ratings;
             std::array<int8, 2> PlayerCount = { };
-        };
-
-        class PVPLogDataMessage final : public ServerPacket
-        {
-        public:
-            PVPLogDataMessage() : ServerPacket(SMSG_PVP_LOG_DATA, 0) { }
-
-            WorldPacket const* Write() override;
-
-            PVPLogData Data;
         };
 
         struct BattlefieldStatusHeader
@@ -322,12 +317,12 @@ namespace WorldPackets
 
             WorldPacket const* Write() override;
 
-            bool WargameArenas = false;
-            bool RatedArenas = false;
-            bool WargameBattlegrounds = false;
-            bool ArenaSkirmish = false;
-            bool PugBattlegrounds = false;
-            bool RatedBattlegrounds = false;
+            bool WargameArenas = true;
+            bool RatedArenas = true;
+            bool WargameBattlegrounds = true;
+            bool ArenaSkirmish = true;
+            bool PugBattlegrounds = true;
+            bool RatedBattlegrounds = true;
         };
 
         class RequestBattlefieldStatus final : public ClientPacket
@@ -449,10 +444,10 @@ namespace WorldPackets
             uint32 Ranking;
         };
 
-        class RatedBattleFieldInfo final : public ServerPacket
+        class RatedPvpInfo final : public ServerPacket
         {
         public:
-            RatedBattleFieldInfo() : ServerPacket(SMSG_RATED_BATTLEFIELD_INFO, MAX_PVP_SLOT * sizeof(RatedInfo)) { }
+            RatedPvpInfo() : ServerPacket(SMSG_RATED_PVP_INFO, MAX_PVP_SLOT * sizeof(RatedInfo)) { }
 
             WorldPacket const* Write() override;
 
@@ -480,17 +475,18 @@ namespace WorldPackets
             float PvpCPExpCoefficient = 0.0f;
             float PvpCPNumerator = 0.0f;
         };
-	
+
         class SendPvpBrawlInfo final : public ServerPacket
         {
         public:
-            SendPvpBrawlInfo() : ServerPacket(SMSG_REQUEST_PVP_BRAWL_INFO_RESPONSE) { }
+            SendPvpBrawlInfo() : ServerPacket(SMSG_REQUEST_SCHEDULED_PVP_INFO_RESPONSE) { }
 
             WorldPacket const* Write() override;
 
             uint32 BrawlType = 0;
             int32 TimeToEnd = 0;
             bool IsActive = false;
+
         };
 
         class RequestPvpBrawlInfo final : public ClientPacket
@@ -501,41 +497,83 @@ namespace WorldPackets
             void Read() override { }
         };
 
-        class PVPMatchInit final : public ServerPacket
+        class AcceptWargameInvite final : public ClientPacket
         {
         public:
-            PVPMatchInit() : ServerPacket(SMSG_PVP_MATCH_INIT, 4 + 1 + 4 + 4 + 1 + 4 + 1) { }
+            AcceptWargameInvite(WorldPacket&& packet) : ClientPacket(CMSG_ACCEPT_WARGAME_INVITE, std::move(packet)) { }
+
+            void Read() override { }
+
+            ObjectGuid OpposingPartyMember;
+            uint64 QueueID = 0;
+            bool Accept = false;
+        };
+
+        class StartWargame final : public ClientPacket
+        {
+        public:
+            StartWargame(WorldPacket&& packet) : ClientPacket(CMSG_START_WAR_GAME, std::move(packet)) { }
+
+            void Read() override;
+
+            ObjectGuid OpposingPartyMember;
+            uint64 QueueID = 0;
+            uint32 OpposingPartyMemberVirtualRealmAddress = 0;
+            uint16 UnkShort = 0;
+            bool TournamentRules = false;
+        };
+
+        class CheckWargameEntry final : public ServerPacket
+        {
+        public:
+            CheckWargameEntry() : ServerPacket(SMSG_CHECK_WARGAME_ENTRY, 16 + 8 + 8 + 4 + 1 + 1) { }
 
             WorldPacket const* Write() override;
 
-            enum MatchState : uint8
-            {
-                InProgress = 1,
-                Complete = 3,
-                Inactive = 4
-            };
-
-            uint32 MapID = 0;
-            MatchState State = Inactive;
-            time_t StartTime = time_t(0);
-            int32 Duration = 0;
-            uint8 ArenaFaction = 0;
-            uint32 BattlemasterListID = 0;
-            bool Registered = false;
-            bool AffectsRating = false;
+            ObjectGuid OpposingPartyBnetAccountID;
+            ObjectGuid OpposingPartyMember;
+            uint64 QueueID = 0;
+            uint32 TimeoutSeconds = 0;
+            uint32 RealmID = 0;
+            uint16 UnkShort = 0;
+            uint8 OpposingPartyUserServer = 0;
+            bool TournamentRules = false;
         };
 
-        class PVPMatchEnd final : public ServerPacket
+        class WargameRequestSuccessfullySentToOpponent final : public ServerPacket
         {
         public:
-            PVPMatchEnd() : ServerPacket(SMSG_PVP_MATCH_END) { }
+            WargameRequestSuccessfullySentToOpponent() : ServerPacket(SMSG_WARGAME_REQUEST_SUCCESSFULLY_SENT_TO_OPPONENT, 6) { }
 
             WorldPacket const* Write() override;
 
-            uint8 Winner = 0;
-            int32 Duration = 0;
-            Optional<PVPLogData> LogData;
+            Optional<uint32> UnkInt2;
+            Optional<uint32> UnkInt3;
+            uint32 UnkInt = 0;
         };
+
+        class BattlegroundInit final : public ServerPacket
+        {
+        public:
+            BattlegroundInit(uint16 maxPoints) : ServerPacket(SMSG_BATTLEGROUND_INIT, 2 + 4), MaxPoints(maxPoints) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 ServerTime = getMSTime();
+            uint16 MaxPoints = 0;
+        };
+
+        class BattlegroundPoints final : public ServerPacket
+        {
+        public:
+            BattlegroundPoints() : ServerPacket(SMSG_BATTLEGROUND_POINTS, 3) { }
+
+            WorldPacket const* Write() override;
+
+            uint16 BgPoints = 0;
+            bool Team = false; // 0 - alliance; 1 - horde
+        };
+
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -207,7 +207,7 @@ class spell_oakheart_strangling_roots_summon : public SpellScript
 
     void HandleSummon(Creature* creature)
     {
-        creature->setFaction(GetCaster()->getFaction());
+        creature->SetFaction(GetCaster()->getFaction());
         //creature->CastSpell(creature, SPELL_STRANGLING_ROOTS_AT, false);
     }
 

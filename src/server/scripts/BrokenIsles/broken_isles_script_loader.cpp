@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
- * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,12 +17,32 @@
 
 // This is where scripts' loading functions should be declared:
 
+//invasion argus
+void AddSC_invasion_point_argus();
+void AddSC_zone_argus();
+
+// Antorus Raid
+void AddSC_antorus();
+void AddSC_instance_antorus();
+void AddSC_boss_worldbreaker();
+void AddSC_boss_aggramar();
+void AddSC_boss_antoran();
+void AddSC_boss_argus();
+void AddSC_boss_coven_shivarres();
+void AddSC_boss_eonar();
+void AddSC_boss_felhounds();
+void AddSC_boss_hasabel();
+void AddSC_boss_imonar();
+void AddSC_boss_kingaroth();
+void AddSC_boss_varimathras();
+
 // Portals
 void AddSC_legion_portal_at_scripts();
 
 // Zones
 void AddSC_dalaran_legion();
 void AddSC_azsuna();
+void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
 void AddSC_suramar();
@@ -54,8 +73,10 @@ void AddSC_class_hall_warrior();
 void AddSC_legion_profession_blacksmithing();
 
 // WorldBoss
+void AddSC_boss_apocron();
 void AddSC_boss_nithogg();
 void AddSC_boss_ana_mouz();
+void AddSC_boss_world_brutallus();
 void AddSC_boss_calamir();
 void AddSC_boss_drugon_the_frostblood();
 void AddSC_boss_flotsam();
@@ -124,13 +145,13 @@ void AddSC_instance_the_nighthold();
 void AddSC_the_nighthold();
 
 // Vault of the Wardens
-/*void AddSC_instance_vault_of_the_wardens();
+void AddSC_instance_vault_of_the_wardens();
 void AddSC_vault_of_the_wardens();
 void AddSC_boss_tirathon_saltheril();
 void AddSC_boss_inquisitor_tormentorum();
 void AddSC_boss_glazer();
 void AddSC_boss_ashgolm();
-void AddSC_boss_cordana_felsong();*/
+void AddSC_boss_cordana_felsong();
 
 // Violet Hold
 void AddSC_boss_anubesset();
@@ -181,6 +202,13 @@ void AddSC_boss_advisor_melandrus();
 void AddSC_court_of_stars();
 void AddSC_instance_court_of_stars();
 
+void AddSC_instance_cathedral_of_eternal_night(); //Cathedral of Eternal Night
+void AddSC_boss_agronox();
+void AddSC_boss_thrashbite_the_scornful();
+void AddSC_boss_domatrax();
+void AddSC_boss_mephistroth();
+void AddSC_cathedral_of_eternal_night();
+
 // Seat of Triumvirate
 void AddSC_boss_zuraal_the_ascended();
 void AddSC_boss_saprish();
@@ -213,16 +241,52 @@ void AddSC_boss_sisters_of_moon();
 void AddSC_tomb_of_sargeras();
 void AddSC_instance_tomb_of_sargeras();
 
+void AddSC_trial_of_valor();                      //Trial of Valor
+void AddSC_instance_trial_of_valor();
+void AddSC_boss_odyn_tov();
+void AddSC_boss_garm();
+void AddSC_boss_helya_tov();
+
+// Scenario
+void AddSC_scenario_the_violet_hold();
+void AddSC_scenario_artifact_ursocslair();
+void AddSC_scenario_artifact_restoacqusition();
+void AddSC_scenario_artifact_ruins_of_falanaar();
+void AddSC_scenario_artifact_karazhan_catacombs();
+void AddSC_scenario_artifact_brokenshore();
+void AddSC_scenario_artifact_tirisfal_glades();
+void AddSC_scenario_the_violet_hold_dh();
+void AddSC_scenario_mage_art();
+
+// micro hollidays
+void AddSC_AuctionHouseDanceParty();
+
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
 void AddBrokenIslesScripts()
 {
+	// Antorus Raid
+	AddSC_antorus();
+	AddSC_instance_antorus();
+	AddSC_boss_worldbreaker();
+	AddSC_boss_aggramar();
+	AddSC_boss_antoran();
+	AddSC_boss_argus();
+	AddSC_boss_coven_shivarres();
+	AddSC_boss_eonar();
+	AddSC_boss_felhounds();
+	AddSC_boss_hasabel();
+	AddSC_boss_imonar();
+	AddSC_boss_kingaroth();
+	AddSC_boss_varimathras();
+	
     // Portals
     AddSC_legion_portal_at_scripts();
 
     // Zones
     AddSC_dalaran_legion();
     AddSC_azsuna();
+    AddSC_broken_shore();
     AddSC_highmountain();
     AddSC_stormheim();
     AddSC_suramar();
@@ -253,7 +317,9 @@ void AddBrokenIslesScripts()
     AddSC_legion_profession_blacksmithing();
 
     // WorldBoss
+    AddSC_boss_apocron();
     AddSC_boss_ana_mouz();
+    AddSC_boss_world_brutallus();
     AddSC_boss_calamir();
     AddSC_boss_drugon_the_frostblood();
     AddSC_boss_flotsam();
@@ -315,13 +381,13 @@ void AddBrokenIslesScripts()
     AddSC_boss_dargrul_the_underking();
 
     // Vault of the Wardens
-    //AddSC_instance_vault_of_the_wardens();
-    //AddSC_vault_of_the_wardens();
-   // AddSC_boss_tirathon_saltheril();
-    //AddSC_boss_inquisitor_tormentorum();
-    //AddSC_boss_glazer();
-    //AddSC_boss_ashgolm();
-    //AddSC_boss_cordana_felsong();
+    AddSC_instance_vault_of_the_wardens();
+    AddSC_vault_of_the_wardens();
+    AddSC_boss_tirathon_saltheril();
+    AddSC_boss_inquisitor_tormentorum();
+    AddSC_boss_glazer();
+    AddSC_boss_ashgolm();
+    AddSC_boss_cordana_felsong();
 
     // Violet Hold
     AddSC_boss_anubesset();
@@ -379,6 +445,13 @@ void AddBrokenIslesScripts()
     AddSC_boss_advisor_melandrus();
     AddSC_court_of_stars();
     AddSC_instance_court_of_stars();
+	
+	AddSC_instance_cathedral_of_eternal_night(); //Cathedral of Eternal Night
+    AddSC_boss_agronox();
+    AddSC_boss_thrashbite_the_scornful();
+    AddSC_boss_domatrax();
+    AddSC_boss_mephistroth();
+    AddSC_cathedral_of_eternal_night();
 
     // Seat of Triumvirate
     AddSC_boss_zuraal_the_ascended();
@@ -411,4 +484,28 @@ void AddBrokenIslesScripts()
     AddSC_boss_sisters_of_moon();
     AddSC_tomb_of_sargeras();
     AddSC_instance_tomb_of_sargeras();
+	
+	AddSC_trial_of_valor();                     //Trial of Valor
+    AddSC_instance_trial_of_valor();
+    AddSC_boss_odyn_tov();
+    AddSC_boss_garm();
+    AddSC_boss_helya_tov();
+	
+	// Scenario
+    AddSC_scenario_the_violet_hold();
+    AddSC_scenario_artifact_ursocslair();
+    AddSC_scenario_artifact_restoacqusition();
+    AddSC_scenario_artifact_ruins_of_falanaar();
+    AddSC_scenario_artifact_karazhan_catacombs();
+    AddSC_scenario_artifact_brokenshore();
+    AddSC_scenario_artifact_tirisfal_glades();
+    AddSC_scenario_the_violet_hold_dh();
+    AddSC_scenario_mage_art();
+
+    //invasion argus
+    AddSC_invasion_point_argus();
+    AddSC_zone_argus();
+
+    // micro hollidays
+    AddSC_AuctionHouseDanceParty();
 }

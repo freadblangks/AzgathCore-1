@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1270,7 +1270,7 @@ struct BattlePetStateMeta
     {
         static DB2MetaField const fields[3] =
         {
-            { FT_STRING_NOT_LOCALIZED, 1, true },
+            { FT_STRING, 1, false },
             { FT_SHORT, 1, false },
             { FT_SHORT, 1, false },
         };
@@ -1816,16 +1816,16 @@ struct CharShipmentMeta
         static DB2MetaField const fields[9] =
         {
             { FT_SHORT, 1, false },
-            { FT_INT, 1, true },
-            { FT_INT, 1, false },
-            { FT_INT, 1, true },
-            { FT_INT, 1, true },
-            { FT_INT, 1, false },
-            { FT_BYTE, 1, false },
+            { FT_INT,   1, true },
+            { FT_INT,   1, false },
+            { FT_INT,   1, true },
+            { FT_INT,   1, true },
+            { FT_INT,   1, false },
+            { FT_BYTE,  1, false },
             { FT_SHORT, 1, false },
-            { FT_BYTE, 1, false },
+            { FT_BYTE,  1, false },
         };
-        static DB2Meta instance(972425, -1, 9, 9, 0x43F2E414, fields, 0);
+        static DB2Meta instance(972425, -1, 9, 9, 0x43F2E414, fields, -1);
         return &instance;
     }
 };
@@ -1836,8 +1836,8 @@ struct CharShipmentContainerMeta
     {
         static DB2MetaField const fields[16] =
         {
-            { FT_STRING, 1, true },
-            { FT_STRING, 1, true },
+            { FT_STRING, 1, false },
+            { FT_STRING, 1, false },
             { FT_SHORT, 1, false },
             { FT_BYTE, 1, false },
             { FT_BYTE, 1, false },

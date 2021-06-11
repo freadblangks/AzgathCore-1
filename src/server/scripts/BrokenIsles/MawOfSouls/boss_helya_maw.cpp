@@ -1,8 +1,18 @@
 /*
- Latincore bfa 2020
- ---MistiX----
- 85%
- 
+ * Copyright (C) 2020 AzgathCore
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ScriptMgr.h"
@@ -269,18 +279,6 @@ Position CorruptedBellowLeftVisualPacketPos[] =
 { 2915.148f, 917.9834f, 512.332f },
 { 2920.968f, 916.4552f, 512.332f },
 };
-
-void PlayVisual(Player * receiver, Unit * caster, Unit * target, uint32 visualKitID, Position * pos, float travelSpeed, bool speedAsTime)
-{
-    WorldPackets::Spells::PlaySpellVisual playSpellVisual;
-    playSpellVisual.Source = caster->GetGUID();
-    playSpellVisual.SpeedAsTime = speedAsTime;
-    playSpellVisual.TravelSpeed = travelSpeed;
-    playSpellVisual.Target = target ? target->GetGUID() : ObjectGuid::Empty;
-    playSpellVisual.SpellVisualID = visualKitID;
-    receiver->SendDirectMessage(playSpellVisual.Write());
-}
-
 
 class boss_helya_maw : public CreatureScript
 {
@@ -631,14 +629,8 @@ public:
                 me->GetPlayerListInGrid(players, 250.f);
                 Position pos(BrackWaterBarrageVisualPos);
 
-                if (!players.empty())
-                {
-                    for (auto & it : players)
-                    {
-                        if (it)
-                            PlayVisual(it, me, me, _brackwaterSide, &pos, 9.0f, true);
-                    }
-                }
+                for (auto& it : players)
+                    me->SendPlaySpellVisual(pos, _brackwaterSide, 0, 0, 9.0f, true);
 
                 events.ScheduleEvent(EVENT_BRACKWATER_BARRAGE, Seconds(55));
                 break;
@@ -1158,23 +1150,23 @@ public:
                 {
                     switch (GetCaster()->GetAI()->GetData(DATA_CORRUPTED_BELLOW_SIDE))
                     {
-                    case 0:
-                    {
-                        PlayVisual(it, GetCaster(), nullptr, CORRUPTED_BELLOW_ANIM, &CorruptedBellowLeftVisualPacketPos[i], 95, false);
-                        break;
-                    }
+                        case 0:
+                        {
+                            GetCaster()->SendPlaySpellVisual(CorruptedBellowLeftVisualPacketPos[i], CORRUPTED_BELLOW_ANIM, 0, 0, 95.0f, false);
+                            break;
+                        }
 
-                    case 1:
-                    {
-                        PlayVisual(it, GetCaster(), nullptr, CORRUPTED_BELLOW_ANIM, &CorruptedBellowMidVisualPacketPos[i], 95, false);
-                        break;
-                    }
+                        case 1:
+                        {
+                            GetCaster()->SendPlaySpellVisual(CorruptedBellowMidVisualPacketPos[i], CORRUPTED_BELLOW_ANIM, 0, 0, 95.0f, false);
+                            break;
+                        }
 
-                    case 2:
-                    {
-                        PlayVisual(it, GetCaster(), nullptr, CORRUPTED_BELLOW_ANIM, &CorruptedBellowRightVisualPacketPos[i], 95, false);
-                        break;
-                    }
+                        case 2:
+                        {
+                            GetCaster()->SendPlaySpellVisual(CorruptedBellowRightVisualPacketPos[i], CORRUPTED_BELLOW_ANIM, 0, 0, 95.0f, false);
+                            break;
+                        }
                     }
                 }
             }
@@ -1464,7 +1456,7 @@ void AddSC_boss_helya_maw()
     new npc_mos_helya_dummy();
     new at_mos_swirling_water();
 
-    // Spell for Boss - By MistiX
+    // Spells for Bosses
     new spell_mos_knockdown();
     new spell_mos_smash();
     new spell_helya_maw_submerged();

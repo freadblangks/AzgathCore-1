@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
+* Copyright (C) 2020 AzgathCore
 * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
 *
 * This program is free software; you can redistribute it and/or modify it
@@ -41,8 +41,22 @@
 #include "Vehicle.h"
 #include "Player.h"
 #include "SpellScript.h"
+#include "AreaTrigger.h"
+#include "AreaTriggerAI.h"
 
 #define NPC_WOLF    49871
+
+enum
+{
+    QUEST_FEAR_NO_EVIL_WORGEN_WARRIOR = 28813,
+    QUEST_FEAR_NO_EVIL_ALLIANCE = 29082,
+    QUEST_FEAR_NO_EVIL_ALLIANCE_2 = 28809,
+    QUEST_FEAR_NO_EVIL_ALLIANCE_3 = 28808,
+    QUEST_FEAR_NO_EVIL_ALLIANCE_4 = 28811,
+    QUEST_FEAR_NO_EIVL_ALLIANCE_5 = 28810,
+    QUEST_FEAR_NO_EVIL_ALLIANCE_6 = 28806,
+    QUEST_FEAR_NO_EVIL_ALLIANCE_NIGHT_ELF_WARLOCK_DK = 28812,
+};
 
 class npc_stormwind_infantry : public CreatureScript
 {
@@ -139,71 +153,40 @@ public:
 ## npc_stormwind_injured_soldier
 ######*/
 
-#define SPELL_HEAL          93072
-#define SPELL_HEAL_VISUAL   93097
-
-class npc_stormwind_injured_soldier : public CreatureScript
+//50047
+struct npc_stormwind_injured_soldier : public ScriptedAI
 {
-public:
-    npc_stormwind_injured_soldier() : CreatureScript("npc_stormwind_injured_soldier") { }
+    npc_stormwind_injured_soldier(Creature* creature) : ScriptedAI(creature) { }
 
-    CreatureAI* GetAI(Creature* creature) const override
+    void Reset() override
     {
-        return new npc_stormwind_injured_soldierAI(creature);
+        ScriptedAI::Reset();
+        me->NearTeleportTo(me->GetHomePosition());
+        me->SetStandState(UNIT_STAND_STATE_DEAD);
     }
 
-    struct npc_stormwind_injured_soldierAI : public npc_escortAI
+    void sGossipHello(Player* player) override
     {
-        npc_stormwind_injured_soldierAI(Creature* creature) : npc_escortAI(creature) {}
-
-        void Reset() override
+        CloseGossipMenuFor(player);
+        if (player->GetQuestStatus(QUEST_FEAR_NO_EVIL_WORGEN_WARRIOR) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_FEAR_NO_EVIL_ALLIANCE) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_FEAR_NO_EVIL_ALLIANCE_2) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_FEAR_NO_EVIL_ALLIANCE_3) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_FEAR_NO_EVIL_ALLIANCE_4) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_FEAR_NO_EIVL_ALLIANCE_5) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_FEAR_NO_EVIL_ALLIANCE_6) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(QUEST_FEAR_NO_EVIL_ALLIANCE_NIGHT_ELF_WARLOCK_DK) == QUEST_STATUS_INCOMPLETE)
         {
-            _clicker = nullptr;
-
-            me->AddNpcFlag(UNIT_NPC_FLAG_SPELLCLICK);
-            me->SetStandState(UNIT_STAND_STATE_DEAD);
-        }
-
-        void OnSpellClick(Unit* Clicker, bool& /*result*/) override
-        {
-            if (!Clicker->IsPlayer())
-                return;
-
-            _clicker = Clicker;
-            me->CastSpell(me, SPELL_HEAL_VISUAL, true);
-            me->RemoveNpcFlag(UNIT_NPC_FLAG_SPELLCLICK);
+            me->RemoveNpcFlag(UNIT_NPC_FLAG_GOSSIP);
+            player->CastSpell(me, 93072, true);
             me->SetStandState(UNIT_STAND_STATE_STAND);
-
-            me->GetScheduler().Schedule(Milliseconds(1000), [this](TaskContext /*task*/)
+            me->GetScheduler().Schedule(1s, [this, player](TaskContext /*task*/)
             {
-                if (_clicker)
-                    me->SetFacingToObject(_clicker);
-
-                me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE);
+                me->SetFacingToObject(player);
+                me->HandleEmoteCommand(EMOTE_ONESHOT_SALUTE); 
+                Talk(0);
             });
-
-            me->GetScheduler().Schedule(Milliseconds(3000), [this](TaskContext /*task*/)
+            me->GetScheduler().Schedule(3s, [this](TaskContext /*task*/)
             {
-                Start(false, true);
+                me->GetMotionMaster()->MoveRandom(10.0f);
+                me->ForcedDespawn(3000, 15s);
             });
         }
 
-        void WaypointReached(uint32 waypointId) override
-        {
-            if (waypointId == 5)
-            {
-                me->DespawnOrUnsummon(1000);
-                me->SetRespawnDelay(10);
-            }
-        }
-
-        void EnterCombat(Unit* /*who*/) override
-        {
-            return;
-        }
-
-        Unit* _clicker;
-    };
+    }
 };
 
 /*######
@@ -876,13 +859,55 @@ struct npc_hogger_minion : public ScriptedAI
     }
 };
 
+//88
+struct at_fargodeep_mine : public AreaTriggerAI
+{
+    at_fargodeep_mine(AreaTrigger* at) : AreaTriggerAI(at) { }
+
+    void OnUnitEnter(Unit* unit) override
+    {
+        if (unit->IsPlayer())
+        {
+            if (Player* player = unit->ToPlayer())
+            {
+                if (player->GetQuestStatus(62) == QUEST_STATUS_INCOMPLETE)
+                {
+                    player->ForceCompleteQuest(62);
+                }
+            }
+        }
+    }
+};
+
+//87
+struct at_jasperlode_mine : public AreaTriggerAI
+{
+    at_jasperlode_mine(AreaTrigger* at) : AreaTriggerAI(at) { }
+
+    void OnUnitEnter(Unit* unit) override
+    {
+        if (unit->IsPlayer())
+        {
+            if (Player* player = unit->ToPlayer())
+            {
+                if (player->GetQuestStatus(76) == QUEST_STATUS_INCOMPLETE)
+                {
+                    player->ForceCompleteQuest(76);
+                }
+            }
+        }
+    }
+};
+
 void AddSC_elwyn_forest()
 {
     new npc_stormwind_infantry();
-    new npc_stormwind_injured_soldier();
+    RegisterCreatureAI(npc_stormwind_injured_soldier);
     new npc_training_dummy_start_zones();
     new spell_quest_fear_no_evil();
     new spell_quest_extincteur();
     RegisterCreatureAI(npc_hogger);
     RegisterCreatureAI(npc_hogger_minion);
+    RegisterAreaTriggerAI(at_fargodeep_mine);
+    RegisterAreaTriggerAI(at_jasperlode_mine);
 }

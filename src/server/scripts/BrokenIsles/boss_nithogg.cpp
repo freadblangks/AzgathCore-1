@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -174,7 +174,7 @@ struct boss_nithogg : public WorldBossAI
                     //What I do here is make the cast happen from higher up, making the missiles travel more than they do at the moment.
                     if (TempSummon* tempSumm = me->SummonCreature(WORLD_TRIGGER, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 14, 0, TEMPSUMMON_TIMED_DESPAWN, 10000))
                     {
-                        tempSumm->setFaction(me->getFaction());
+                        tempSumm->SetFaction(me->getFaction());
                         tempSumm->SetSummonerGUID(me->GetGUID());
                         PhasingHandler::InheritPhaseShift(tempSumm, me);
                         tempSumm->SetLevel(me->getLevel());

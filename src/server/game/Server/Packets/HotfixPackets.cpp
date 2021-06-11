@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,25 +20,25 @@
 
 namespace WorldPackets
 {
-namespace Hotfix
-{
-ByteBuffer& operator>>(ByteBuffer& data, DB2Manager::HotfixRecord& hotfixRecord)
-{
-    data >> hotfixRecord.TableHash;
-    data >> hotfixRecord.RecordID;
-    data >> hotfixRecord.HotfixID;
-    return data;
-}
+    namespace Hotfix
+    {
+        ByteBuffer& operator>>(ByteBuffer& data, DB2Manager::HotfixRecord& hotfixRecord)
+        {
+            data >> hotfixRecord.TableHash;
+            data >> hotfixRecord.RecordID;
+            data >> hotfixRecord.HotfixID;
+            return data;
+        }
 
-ByteBuffer& operator<<(ByteBuffer& data, DB2Manager::HotfixRecord const& hotfixRecord)
-{
-    data << uint32(hotfixRecord.TableHash);
-    data << int32(hotfixRecord.RecordID);
-    data << int32(hotfixRecord.HotfixID);
-    return data;
-}
+        ByteBuffer& operator<<(ByteBuffer& data, DB2Manager::HotfixRecord const& hotfixRecord)
+        {
+            data << uint32(hotfixRecord.TableHash);
+            data << int32(hotfixRecord.RecordID);
+            data << int32(hotfixRecord.HotfixID);
+            return data;
+        }
 
-void DBQueryBulk::Read()
+        void DBQueryBulk::Read()
 {
     _worldPacket >> TableHash;
 
@@ -85,7 +85,7 @@ void HotfixRequest::Read()
         _worldPacket >> hotfixRecord;
 }
 
-ByteBuffer& operator<<(ByteBuffer& data, HotfixResponse::HotfixData const& hotfixData)
+ByteBuffer& operator<<(ByteBuffer& data, HotfixConnect::HotfixData const& hotfixData)
 {
     data << hotfixData.Record;
     if (hotfixData.Size)
@@ -103,7 +103,7 @@ ByteBuffer& operator<<(ByteBuffer& data, HotfixResponse::HotfixData const& hotfi
     return data;
 }
 
-WorldPacket const* HotfixResponse::Write()
+WorldPacket const* HotfixConnect::Write()
 {
     _worldPacket << uint32(Hotfixes.size());
     for (HotfixData const& hotfix : Hotfixes)

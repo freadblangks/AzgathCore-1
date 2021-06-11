@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -57,7 +57,7 @@ public:
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "pet", rbac::RBAC_PERM_COMMAND_PET, false, NULL, "", petCommandTable },
+            { "pet", rbac::RBAC_PERM_COMMAND_PET, false, nullptr, "", petCommandTable },
         };
         return commandTable;
     }
@@ -102,7 +102,7 @@ public:
         creatureTarget->SetHealth(0); // just for nice GM-mode view
 
         pet->SetCreatorGUID(player->GetGUID());
-        pet->setFaction(player->getFaction());
+        pet->SetFaction(player->getFaction());
 
         if (!pet->InitStatsForLevel(creatureTarget->getLevel()))
         {

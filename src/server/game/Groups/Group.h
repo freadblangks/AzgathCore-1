@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -166,7 +165,7 @@ struct InstanceGroupBind
     bool perm;
     /* permanent InstanceGroupBinds exist if the leader has a permanent
        PlayerInstanceBind for the same instance. */
-    InstanceGroupBind() : save(NULL), perm(false) { }
+    InstanceGroupBind() : save(nullptr), perm(false) { }
 };
 
 struct RaidMarker
@@ -186,7 +185,7 @@ struct RaidMarker
 class TC_GAME_API Group
 {
     public:
-        Ashamane::AnyData Variables;
+        AzgathCore::AnyData Variables;
 
         struct MemberSlot
         {
@@ -219,7 +218,7 @@ class TC_GAME_API Group
         void   RemoveAllInvites();
         bool   AddLeaderInvite(Player* player);
         bool   AddMember(Player* player);
-        bool   RemoveMember(ObjectGuid guid, const RemoveMethod &method = GROUP_REMOVEMETHOD_DEFAULT, ObjectGuid kicker = ObjectGuid::Empty, const char* reason = NULL);
+        bool   RemoveMember(ObjectGuid guid, const RemoveMethod &method = GROUP_REMOVEMETHOD_DEFAULT, ObjectGuid kicker = ObjectGuid::Empty, const char* reason = nullptr);
         void   ChangeLeader(ObjectGuid guid, int8 partyIndex = 0);
  static void   ConvertLeaderInstancesToGroup(Player* player, Group* group, bool switchLeader);
         void   SetLootMethod(LootMethod method);
@@ -322,7 +321,7 @@ class TC_GAME_API Group
         //void SendInit(WorldSession* session);
         void SendTargetIconList(WorldSession* session, int8 partyIndex = 0);
         void SendUpdate();
-        void SendUpdateToPlayer(ObjectGuid playerGUID, MemberSlot* slot = NULL);
+        void SendUpdateToPlayer(ObjectGuid playerGUID, MemberSlot* slot = nullptr);
         void SendUpdateDestroyGroupToPlayer(Player* player) const;
         void UpdatePlayerOutOfRange(Player* player);
 
@@ -371,6 +370,14 @@ class TC_GAME_API Group
 
         // FG: evil hacks
         void BroadcastGroupUpdate(void);
+        bool InChallenge();
+        bool GetMaxCountOfRolesForArenaQueue(uint8 role);
+        ObjectGuid m_challengeOwner;
+        ObjectGuid m_challengeItem;
+        MapChallengeModeEntry const* m_challengeEntry;
+        uint32 m_challengeLevel;
+        uint32 m_challengeInstanceID;
+        std::array<uint32, 3> m_affixes{};
 
     protected:
         bool _setMembersGroup(ObjectGuid guid, uint8 group);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -75,12 +75,12 @@ namespace WorldPackets
             WorldPacket const* Write() override;
 
             Optional<AreaTriggerSplineInfo> AreaTriggerSpline;
-            Optional<AreaTriggerCircularMovementInfo> AreaTriggerCircularMovement;
+            Optional<AreaTriggerOrbitInfo> AreaTriggerOrbit;
             ObjectGuid TriggerGUID;
         };
     }
 }
 
-ByteBuffer& operator<<(ByteBuffer& data, AreaTriggerCircularMovementInfo const& areaTriggerCircularMovement);
+ByteBuffer& operator<<(ByteBuffer& data, AreaTriggerOrbitInfo const& areaTriggerCircularMovement);
 
 #endif // AreaTriggerPackets_h__

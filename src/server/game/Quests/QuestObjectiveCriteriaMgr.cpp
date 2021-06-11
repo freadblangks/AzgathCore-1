@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -169,7 +169,7 @@ void QuestObjectiveCriteriaMgr::ResetCriteria(CriteriaTypes type, uint64 miscVal
     if (_owner->IsGameMaster())
         return;
 
-    CriteriaList const& playerCriteriaList = GetCriteriaByType(type, uint32(miscValue1));
+    CriteriaList const& playerCriteriaList = GetCriteriaByType(type);
     for (Criteria const* playerCriteria : playerCriteriaList)
     {
         if (playerCriteria->Entry->FailEvent != miscValue1 || (playerCriteria->Entry->FailAsset && playerCriteria->Entry->FailAsset != int64(miscValue2)))
@@ -326,7 +326,7 @@ std::string QuestObjectiveCriteriaMgr::GetOwnerInfo() const
     return Trinity::StringFormat("%s %s", _owner->GetGUID().ToString().c_str(), _owner->GetName().c_str());
 }
 
-CriteriaList const& QuestObjectiveCriteriaMgr::GetCriteriaByType(CriteriaTypes type, uint32 /*asset*/) const
+CriteriaList const& QuestObjectiveCriteriaMgr::GetCriteriaByType(CriteriaTypes type) const
 {
     return sCriteriaMgr->GetQuestObjectiveCriteriaByType(type);
 }

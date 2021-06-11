@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -376,13 +375,13 @@ bool IsDisabledFor(DisableType type, uint32 entry, Unit const* unit, uint8 flags
 
 bool IsVMAPDisabledFor(uint32 entry, uint8 flags)
 {
-    return IsDisabledFor(DISABLE_TYPE_VMAP, entry, NULL, flags);
+    return IsDisabledFor(DISABLE_TYPE_VMAP, entry, nullptr, flags);
 }
 
 bool IsPathfindingEnabled(uint32 mapId)
 {
     return sWorld->getBoolConfig(CONFIG_ENABLE_MMAPS)
-        && !IsDisabledFor(DISABLE_TYPE_MMAP, mapId, NULL, MMAP_DISABLE_PATHFINDING);
+        && !IsDisabledFor(DISABLE_TYPE_MMAP, mapId, nullptr, MMAP_DISABLE_PATHFINDING);
 }
 
 } // Namespace

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -106,6 +106,17 @@ struct  npc_nathanos_team_meeting : public ScriptedAI
         Talk(0);
         player->SummonGameObject(GOB_BLIGHTCALLER_EASY_DEATH, 1577.965f, -4455.622f, 16.55939f, 0.f, QuaternionData(0.f, 0.f, 0.f, 1.f), 0, true);
     }
+    
+    void sGossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/)
+    {
+        if (player->getLevel() >= 110 && player->GetQuestStatus(50769) == QUEST_STATUS_INCOMPLETE)
+        {            
+            player->AddItem(160251, 1);
+            player->KilledMonsterCredit(135211);
+            player->KilledMonsterCredit(135203);
+            player->CastSpell(player, 263948);
+        }
+    }
 };
 
 // 50769
@@ -140,6 +151,21 @@ struct npc_skyhorn_eagle : public ScriptedAI
     }
 };
 
+class npc_general_nazgrim_55054 : public ScriptedAI
+{
+public:
+    npc_general_nazgrim_55054(Creature* creature) : ScriptedAI(creature) { }
+
+    void sGossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/) override
+    {
+        if (player->GetQuestStatus(29690) == QUEST_STATUS_INCOMPLETE) //Into the Mists
+        {
+            player->ForceCompleteQuest(29690);
+            player->TeleportTo(870, 3169.132f, -689.578f, 230.825f, 5.635f);
+        }
+    }
+};
+
 void AddSC_orgrimmar()
 {
     RegisterCreatureAI(npc_orgri_mission_orders_speak_sylvanas);
@@ -148,4 +174,5 @@ void AddSC_orgrimmar()
     RegisterCreatureAI(npc_nathanos_team_meeting);
     RegisterQuestScript(quest_stormwind_extraction);
     RegisterCreatureAI(npc_skyhorn_eagle);
+    RegisterCreatureAI(npc_general_nazgrim_55054);
 }

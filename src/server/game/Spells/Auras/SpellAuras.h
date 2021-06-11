@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -118,7 +117,7 @@ class TC_GAME_API Aura
 {
     friend Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint32 effMask, Unit* caster, int32 *baseAmount, Item* castItem, ObjectGuid casterGUID, bool resetPeriodicTimer, ObjectGuid castItemGuid, uint32 castItemId, int32 castItemLevel);
     public:
-        Ashamane::AnyData Variables;
+        AzgathCore::AnyData Variables;
 
         typedef std::map<ObjectGuid, AuraApplication*> ApplicationMap;
 
@@ -139,6 +138,7 @@ class TC_GAME_API Aura
         uint32 GetCastItemId() const { return m_castItemId; }
         int32 GetCastItemLevel() const { return m_castItemLevel; }
         uint32 GetSpellXSpellVisualId() const { return m_spellXSpellVisualId; }
+        void SetSpellXSpellVisualId(uint32 visual) { m_spellXSpellVisualId = visual; }
         Unit* GetCaster() const;
         WorldObject* GetOwner() const { return m_owner; }
         Unit* GetUnitOwner() const { ASSERT(GetType() == UNIT_AURA_TYPE); return (Unit*)m_owner; }
@@ -225,7 +225,7 @@ class TC_GAME_API Aura
         void SetLoadedState(int32 maxDuration, int32 duration, int32 charges, uint8 stackAmount, uint32 recalculateMask, int32* amount);
 
         // helpers for aura effects
-        bool HasEffect(uint8 effIndex) const { return GetEffect(effIndex) != NULL; }
+        bool HasEffect(uint8 effIndex) const { return GetEffect(effIndex) != nullptr; }
         bool HasEffectType(AuraType type) const;
         AuraEffect* GetEffect(uint32 index) const;
         uint32 GetEffectMask() const;
@@ -235,8 +235,8 @@ class TC_GAME_API Aura
         // Helpers for targets
         ApplicationMap const& GetApplicationMap() { return m_applications; }
         void GetApplicationList(Unit::AuraApplicationList& applicationList) const;
-        const AuraApplication* GetApplicationOfTarget(ObjectGuid guid) const { ApplicationMap::const_iterator itr = m_applications.find(guid); if (itr != m_applications.end()) return itr->second; return NULL; }
-        AuraApplication* GetApplicationOfTarget(ObjectGuid guid) { ApplicationMap::iterator itr = m_applications.find(guid); if (itr != m_applications.end()) return itr->second; return NULL; }
+        const AuraApplication* GetApplicationOfTarget(ObjectGuid guid) const { ApplicationMap::const_iterator itr = m_applications.find(guid); if (itr != m_applications.end()) return itr->second; return nullptr; }
+        AuraApplication* GetApplicationOfTarget(ObjectGuid guid) { ApplicationMap::iterator itr = m_applications.find(guid); if (itr != m_applications.end()) return itr->second; return nullptr; }
         bool IsAppliedOnTarget(ObjectGuid guid) const { return m_applications.find(guid) != m_applications.end(); }
 
         void SetNeedClientUpdateForTargets() const;
@@ -314,7 +314,7 @@ class TC_GAME_API Aura
         ObjectGuid const m_castItemGuid;                    // it is NOT safe to keep a pointer to the item because it may get deleted
         uint32 m_castItemId;
         int32 m_castItemLevel;
-        uint32 const m_spellXSpellVisualId;
+        uint32 m_spellXSpellVisualId;
         time_t const m_applyTime;
         WorldObject* const m_owner;
 

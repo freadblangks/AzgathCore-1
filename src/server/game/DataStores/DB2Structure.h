@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -153,8 +153,31 @@ struct AreaTableEntry
     // Checks if zone activates pvp talents.
     bool ActivatesPvpTalents() const
     {
-        return (!IsSanctuary() && (Flags[0] & (AREA_FLAG_ARENA | AREA_FLAG_WINTERGRASP)) != 0) || ID == 5095 /*Tol Barad*/;
+        return (!IsSanctuary() && (Flags[0] & (AREA_FLAG_ARENA | AREA_FLAG_COMBAT)) != 0) || ID == 5095 /*Tol Barad*/;
     }
+};
+
+// FileOptions: None
+struct AlliedRaceEntry
+{
+    int32       BannerColor;
+    int32       ID;
+    int32       RaceID;
+    int32       CrestTextureID;
+    int32       ModelBackgroundTextureID;
+    int32       MaleCreatureDisplayID;
+    int32       FemaleCreatureDisplayID;
+    int32       UiUnlockAchievementID;
+};
+
+// FileOptions: Index, None
+struct AlliedRaceRacialAbilityEntry
+{
+    int32       ID;
+    LocalizedString* Name;
+    LocalizedString* Description;
+    uint8       OrderIndex;
+    int32       IconFileDataID;
 };
 
 struct AreaTriggerEntry
@@ -525,6 +548,14 @@ struct BattlePetSpeciesXAbilityEntry
     uint32 BattlePetSpeciesID;
 };
 
+struct BattlePetStateEntry
+{
+    uint32      ID;
+    LocalizedString* LuaName;
+    uint16      Flags;
+    uint16      BattlePetVisualID;
+};
+
 struct BattlemasterListEntry
 {
     uint32 ID;
@@ -583,6 +614,13 @@ struct CharacterFacialHairStylesEntry
     uint8 VariationID;
 };
 
+struct CharBaseInfoEntry
+{
+    uint32 ID;
+    uint8 RaceID;
+    uint8 ClassID;
+};
+
 struct CharBaseSectionEntry
 {
     uint32 ID;
@@ -601,6 +639,41 @@ struct CharSectionsEntry
     int8 ColorIndex;
     int16 Flags;
     int32 MaterialResourcesID[3];
+};
+
+struct CharShipmentEntry
+{
+    uint32 ID;
+    uint16 ContainerID;
+    int32 DummyItemID;
+    uint32 TreasureID;
+    int32 SpellID;
+    int32 OnCompleteSpellID;
+    uint32 Duration;
+    uint8  MaxShipments;
+    uint16 GarrFollowerID;
+    uint8  Flags;
+};
+
+struct CharShipmentContainerEntry
+{
+    uint32 ID;
+    LocalizedString* Description_Lang;
+    LocalizedString* PendingText_Lang;
+    uint16 UiTextureKitID;
+    uint8 GarrTypeID;
+    uint8 GarrBuildingType;
+    uint8 BaseCapacity;
+    uint16 SmallDisplayInfoID;
+    uint16 MediumDisplayInfoID;
+    uint16 LargeDisplayInfoID;
+    uint16 WorkingDisplayInfoID;
+    uint32 WorkingSpellVisualID;    
+    uint32 CompleteSpellVisualID;
+    uint8 MediumThreshold;
+    uint8 LargeThreshold;
+    int8 Faction;
+    uint16 CrossFactionID;       
 };
 
 #define MAX_OUTFIT_ITEMS 24
@@ -996,6 +1069,9 @@ struct CriteriaEntry
         // CRITERIA_TYPE_USE_GAMEOBJECT         = 68
         // CRITERIA_TYPE_FISH_IN_GAMEOBJECT     = 72
         int32 GameObjectID;
+
+        //CRITERIA_TYPE_SEND_EVENT              = 73
+        uint32 EventID;
 
         //CRITERIA_TYPE_SEND_EVENT_SCENARIO     = 92
         uint32 ScenarioEventID;
@@ -1602,6 +1678,40 @@ struct GlyphRequiredSpecEntry
     uint32 ID;
     uint16 ChrSpecializationID;
     uint32 GlyphPropertiesID;
+};
+
+struct GroupFinderActivityEntry
+{
+    uint32       ID;
+    LocalizedString* FullName;
+    LocalizedString* ShortName;
+    uint8       GroupFinderCategoryID;
+    int8       OrderIndex;
+    uint16        GroupFinderActivityGrpID;
+    uint8       MinLevel;
+    uint8       MaxLevelSuggestion;
+    uint32        Flags;
+    uint16      MinGearLevelSuggestion;
+    uint16      MapID;
+    uint8       DifficultyID;
+    uint16      AreaID;
+    uint8       MaxPlayers;
+    uint8       DisplayType;
+};
+
+struct GroupFinderActivityGrpEntry
+{
+    uint32       ID;
+    LocalizedString* Name;
+    uint8       OrderIndex;
+};
+
+struct GroupFinderCategoryEntry
+{
+    uint32       ID;
+    LocalizedString* Name;
+    uint8       OrderIndex;
+    uint8       Flags;
 };
 
 struct GuildColorBackgroundEntry
@@ -3348,6 +3458,18 @@ struct SpellXSpellVisualEntry
     uint16 CasterUnitConditionID;
     uint32 CasterPlayerConditionID;
     uint32 SpellID;
+};
+
+
+struct SpellEntry
+{
+    int32       ID;
+    LocalizedString* Name;
+    LocalizedString* NameSubtext;
+    LocalizedString* Description;
+    LocalizedString* AuraDescription;
+
+    SpellEffectEntry const* GetSpellEffect(uint32 eff, uint8 diff = 0) const;
 };
 
 struct SummonPropertiesEntry

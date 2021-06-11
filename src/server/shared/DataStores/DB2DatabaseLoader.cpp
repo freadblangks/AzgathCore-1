@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -68,11 +68,11 @@ char* DB2DatabaseLoader::Load(bool custom, uint32& records, char**& indexTable, 
     else
         stringHolders = nullptr;
 
-    // Resize index tablelause)
-    uint32 indexTableSize = records;
-    if (PreparedQueryResult maxIdResult = HotfixDatabase.Query(HotfixDatabase.GetPreparedStatement(HotfixDatabaseStatements(_loadInfo->Statement + 1))))
-        if (uint32((*maxIdResult)[0].GetUInt64()) > records)
-            indexTableSize = uint32((*maxIdResult)[0].GetUInt64());
+    // Resize index table
+    // database query *MUST* contain ORDER BY `index_field` DESC clause
+    uint32 indexTableSize = (*result)[indexField].GetUInt32() + 1;
+    if (indexTableSize < records)
+        indexTableSize = records;
 
     if (indexTableSize > records)
     {
@@ -207,7 +207,7 @@ char* DB2DatabaseLoader::Load(bool custom, uint32& records, char**& indexTable, 
 
 void DB2DatabaseLoader::LoadStrings(bool custom, uint32 locale, uint32 records, char** indexTable, std::vector<char*>& stringPool)
 {
-    HotfixDatabasePreparedStatement* stmt = HotfixDatabase.GetPreparedStatement(HotfixDatabaseStatements(_loadInfo->Statement + 2));
+    HotfixDatabasePreparedStatement* stmt = HotfixDatabase.GetPreparedStatement(HotfixDatabaseStatements(_loadInfo->Statement + 1));
     stmt->setBool(0, !custom);
     stmt->setString(1, localeNames[locale]);
     PreparedQueryResult result = HotfixDatabase.Query(stmt);

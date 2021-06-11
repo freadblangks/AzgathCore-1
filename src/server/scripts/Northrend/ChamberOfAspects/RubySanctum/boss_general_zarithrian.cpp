@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -156,7 +156,6 @@ class boss_general_zarithrian : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_SUMMON_ADDS:
-                            /* fallthrough */
                         {
                             if (Creature* stalker1 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_ZARITHRIAN_SPAWN_STALKER_1)))
                                 stalker1->CastSpell(stalker1, SPELL_SUMMON_FLAMECALLER, false);

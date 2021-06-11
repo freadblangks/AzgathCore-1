@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -49,60 +48,60 @@ void WorldSession::HandleUseItemOpcode(WorldPackets::Spells::UseItem& packet)
     Item* item = user->GetUseableItemByPos(packet.PackSlot, packet.Slot);
     if (!item)
     {
-        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
 
     if (item->GetGUID() != packet.CastItem)
     {
-        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
 
     ItemTemplate const* proto = item->GetTemplate();
     if (!proto)
     {
-        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, item, NULL);
+        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, item, nullptr);
         return;
     }
 
     // some item classes can be used only in equipped state
     if (proto->GetInventoryType() != INVTYPE_NON_EQUIP && !item->IsEquipped())
     {
-        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, item, NULL);
+        user->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, item, nullptr);
         return;
     }
 
     InventoryResult msg = user->CanUseItem(item);
     if (msg != EQUIP_ERR_OK)
     {
-        user->SendEquipError(msg, item, NULL);
+        user->SendEquipError(msg, item, nullptr);
         return;
     }
 
     // only allow conjured consumable, bandage, poisons (all should have the 2^21 item flag set in DB)
     if (proto->GetClass() == ITEM_CLASS_CONSUMABLE && !(proto->GetFlags() & ITEM_FLAG_IGNORE_DEFAULT_ARENA_RESTRICTIONS) && user->InArena())
     {
-        user->SendEquipError(EQUIP_ERR_NOT_DURING_ARENA_MATCH, item, NULL);
+        user->SendEquipError(EQUIP_ERR_NOT_DURING_ARENA_MATCH, item, nullptr);
         return;
     }
 
     // don't allow items banned in arena
     if (proto->GetFlags() & ITEM_FLAG_NOT_USEABLE_IN_ARENA && user->InArena())
     {
-        user->SendEquipError(EQUIP_ERR_NOT_DURING_ARENA_MATCH, item, NULL);
+        user->SendEquipError(EQUIP_ERR_NOT_DURING_ARENA_MATCH, item, nullptr);
         return;
     }
 
     if (user->IsInCombat())
     {
-        for (ItemEffectEntry const* effect : item->GetEffects())
+        for (uint32 i = 0; i < proto->Effects.size(); ++i)
         {
-            if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(effect->SpellID))
+            if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(proto->Effects[i]->SpellID))
             {
                 if (!spellInfo->CanBeUsedInCombat())
                 {
-                    user->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT, item, NULL);
+                    user->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT, item, nullptr);
                     return;
                 }
             }
@@ -229,7 +228,6 @@ void WorldSession::HandleOpenWrappedItemCallback(uint16 pos, ObjectGuid itemGuid
     item->SetGiftCreator(ObjectGuid::Empty);
     item->SetEntry(entry);
     item->SetItemFlags(ItemFieldFlags(flags));
-    item->SetMaxDurability(item->GetTemplate()->MaxDurability);
     item->SetState(ITEM_CHANGED, GetPlayer());
 
     GetPlayer()->SaveInventoryAndGoldToDB(trans);
@@ -622,7 +620,7 @@ void WorldSession::HandleMissileTrajectoryCollision(WorldPackets::Spells::Missil
 void WorldSession::HandleUpdateMissileTrajectory(WorldPackets::Spells::UpdateMissileTrajectory& packet)
 {
     Unit* caster = ObjectAccessor::GetUnit(*_player, packet.Guid);
-    Spell* spell = caster ? caster->GetCurrentSpell(CURRENT_GENERIC_SPELL) : NULL;
+    Spell* spell = caster ? caster->GetCurrentSpell(CURRENT_GENERIC_SPELL) : nullptr;
     if (!spell || spell->m_spellInfo->Id != uint32(packet.SpellID) || !spell->m_targets.HasDst() || !spell->m_targets.HasSrc())
         return;
 
@@ -638,4 +636,13 @@ void WorldSession::HandleUpdateMissileTrajectory(WorldPackets::Spells::UpdateMis
 void WorldSession::HandleRequestCategoryCooldowns(WorldPackets::Spells::RequestCategoryCooldowns& /*requestCategoryCooldowns*/)
 {
     _player->SendSpellCategoryCooldowns();
+}
+
+void WorldSession::HandleUpdateSpellVisualOpcode(WorldPackets::Spells::UpdateSpellVisual& packet)
+{
+    if (Aura* aura = GetPlayer()->GetAura(packet.SpellID))
+    {
+        aura->SetSpellXSpellVisualId(packet.SpellXSpellVisualId);
+        aura->SetNeedClientUpdateForTargets();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -23,7 +23,6 @@
 #include "Implementation/WorldDatabase.h"
 #include "Implementation/CharacterDatabase.h"
 #include "Implementation/HotfixDatabase.h"
-#include "Implementation/ShopDatabase.h"
 #include "Log.h"
 #include "MySQLPreparedStatement.h"
 #include "PreparedStatement.h"
@@ -55,8 +54,8 @@ DatabaseWorkerPool<T>::DatabaseWorkerPool()
       _async_threads(0), _synch_threads(0)
 {
     WPFatal(mysql_thread_safe(), "Used MySQL library isn't thread-safe.");
-    WPFatal(mysql_get_client_version() >= MIN_MYSQL_CLIENT_VERSION, "TrinityCore does not support MySQL versions below 5.1");
-    WPFatal(mysql_get_client_version() == MYSQL_VERSION_ID, "Used MySQL library version (%s) does not match the version used to compile TrinityCore (%s). Search on forum for TCE00011.",
+    WPFatal(mysql_get_client_version() >= MIN_MYSQL_CLIENT_VERSION, "AzgathCore does not support MySQL versions below 5.1");
+    WPFatal(mysql_get_client_version() == MYSQL_VERSION_ID, "Used MySQL library version (%s) does not match the version used to compile AzgathCore (%s). Search on forum for TCE00011.",
         mysql_get_client_info(), MYSQL_SERVER_VERSION);
 }
 
@@ -70,7 +69,7 @@ template <class T>
 void DatabaseWorkerPool<T>::SetConnectionInfo(std::string const& infoString,
     uint8 const asyncThreads, uint8 const synchThreads)
 {
-    _connectionInfo = Trinity::make_unique<MySQLConnectionInfo>(infoString);
+    _connectionInfo = std::make_unique<MySQLConnectionInfo>(infoString);
 
     _async_threads = asyncThreads;
     _synch_threads = synchThreads;
@@ -178,7 +177,7 @@ QueryResult DatabaseWorkerPool<T>::Query(const char* sql, T* connection /*= null
     if (!result || !result->GetRowCount() || !result->NextRow())
     {
         delete result;
-        return QueryResult(NULL);
+        return QueryResult(nullptr);
     }
 
     return QueryResult(result);
@@ -197,7 +196,7 @@ PreparedQueryResult DatabaseWorkerPool<T>::Query(PreparedStatement<T>* stmt)
     if (!ret || !ret->GetRowCount())
     {
         delete ret;
-        return PreparedQueryResult(NULL);
+        return PreparedQueryResult(nullptr);
     }
 
     return PreparedQueryResult(ret);
@@ -273,7 +272,7 @@ TransactionCallback DatabaseWorkerPool<T>::AsyncCommitTransaction(SQLTransaction
     {
         case 0:
             TC_LOG_DEBUG("sql.driver", "Transaction contains 0 queries. Not executing.");
-            return;
+            break;
         case 1:
             TC_LOG_DEBUG("sql.driver", "Warning: Transaction only holds 1 query, consider removing Transaction context in code.");
             break;
@@ -366,9 +365,9 @@ uint32 DatabaseWorkerPool<T>::OpenConnections(InternalIndex type, uint8 numConne
             switch (type)
             {
             case IDX_ASYNC:
-                return Trinity::make_unique<T>(_queue.get(), *_connectionInfo);
+                return std::make_unique<T>(_queue.get(), *_connectionInfo);
             case IDX_SYNCH:
-                return Trinity::make_unique<T>(*_connectionInfo);
+                return std::make_unique<T>(*_connectionInfo);
             default:
                 ABORT();
             }
@@ -382,7 +381,7 @@ uint32 DatabaseWorkerPool<T>::OpenConnections(InternalIndex type, uint8 numConne
         }
         else if (connection->GetServerVersion() < MIN_MYSQL_SERVER_VERSION)
         {
-            TC_LOG_ERROR("sql.driver", "TrinityCore does not support MySQL versions below 5.1");
+            TC_LOG_ERROR("sql.driver", "AzgathCore does not support MySQL versions below 5.1");
             return 1;
         }
         else
@@ -495,4 +494,3 @@ template class TC_DATABASE_API DatabaseWorkerPool<LoginDatabaseConnection>;
 template class TC_DATABASE_API DatabaseWorkerPool<WorldDatabaseConnection>;
 template class TC_DATABASE_API DatabaseWorkerPool<CharacterDatabaseConnection>;
 template class TC_DATABASE_API DatabaseWorkerPool<HotfixDatabaseConnection>;
-template class TC_DATABASE_API DatabaseWorkerPool<ShopDatabaseConnection>;

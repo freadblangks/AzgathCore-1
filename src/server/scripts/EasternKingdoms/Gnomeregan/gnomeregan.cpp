@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -130,7 +130,7 @@ public:
             {
                 Start(true, false, player->GetGUID());
 
-                me->setFaction(player->getFaction());
+                me->SetFaction(player->getFaction());
                 SetData(1, 0);
 
                 player->PlayerTalkClass->SendCloseGossip();
@@ -226,7 +226,7 @@ public:
             //just in case
             if (GetPlayerForEscort())
                 if (me->getFaction() != GetPlayerForEscort()->getFaction())
-                    me->setFaction(GetPlayerForEscort()->getFaction());
+                    me->SetFaction(GetPlayerForEscort()->getFaction());
 
             switch (waypointId)
             {

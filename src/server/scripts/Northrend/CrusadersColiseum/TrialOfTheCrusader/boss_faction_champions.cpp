@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -687,7 +686,7 @@ struct boss_faction_championsAI : public BossAI
         std::list<Creature*> lst = DoFindFriendlyMissingBuff(40.0f, spell);
         std::list<Creature*>::const_iterator itr = lst.begin();
         if (lst.empty())
-            return NULL;
+            return nullptr;
         advance(itr, rand32() % lst.size());
         return (*itr);
     }
@@ -702,7 +701,7 @@ struct boss_faction_championsAI : public BossAI
             if (target && target->GetPowerType() == POWER_MANA)
                 return target;
         }
-        return NULL;
+        return nullptr;
     }
 
     uint32 EnemiesInRange(float distance)
@@ -2292,7 +2291,7 @@ class spell_faction_champion_warl_unstable_affliction : public SpellScriptLoader
             void HandleDispel(DispelInfo* dispelInfo)
             {
                 if (Unit* caster = GetCaster())
-                    caster->CastSpell(dispelInfo->GetDispeller(), SPELL_UNSTABLE_AFFLICTION_DISPEL, true, NULL, GetEffect(EFFECT_0));
+                    caster->CastSpell(dispelInfo->GetDispeller(), SPELL_UNSTABLE_AFFLICTION_DISPEL, true, nullptr, GetEffect(EFFECT_0));
             }
 
             void Register() override

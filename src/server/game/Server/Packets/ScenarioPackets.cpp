@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -79,7 +79,7 @@ WorldPacket const* WorldPackets::Scenario::ScenarioCompleted::Write()
     return &_worldPacket;
 }
 
-WorldPacket const* WorldPackets::Scenario::ScenarioBoot::Write()
+WorldPacket const* WorldPackets::Scenario::ScenarioVacate::Write()
 {
     _worldPacket << int32(ScenarioID);
     _worldPacket << int32(Unk1);

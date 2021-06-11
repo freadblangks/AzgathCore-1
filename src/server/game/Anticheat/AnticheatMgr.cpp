@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2020 AzgathCore
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -124,7 +126,7 @@ void AnticheatMgr::StartHackDetection(Player* player, MovementInfo movementInfo,
     if (!sWorld->getBoolConfig(CONFIG_ANTICHEAT_ENABLE))
         return;
 
-    if (player->IsGameMaster())
+    if (player->IsGameMaster() || player->GetSession()->GetSecurity() > SEC_PLAYER)
         return;
 
     uint32 key = player->GetGUID().GetCounter();
@@ -336,10 +338,9 @@ void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
 
     if (m_Players[key].GetTotalReports() > sWorld->getIntConfig(CONFIG_ANTICHEAT_REPORTS_INGAME_NOTIFICATION))
     {
-        // display warning at the center of the screen, hacky way?
         std::string str = "";
         str = "|cFFFFFC00[AC]|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Possible cheater!";
-        sWorld->SendGlobalMessage(WorldPackets::Chat::PrintNotification(str).Write());
+        sWorld->SendGlobalGMMessage(WorldPackets::Chat::PrintNotification(str).Write());
     }
 }
 

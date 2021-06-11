@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -628,6 +628,19 @@ namespace WorldPackets
             void Read() override { }
         };
 
+        class GuildChallengeCompleted final : public ServerPacket
+        {
+        public:
+            GuildChallengeCompleted() : ServerPacket(SMSG_GUILD_CHALLENGE_COMPLETED, 4 * 4) { }
+
+            WorldPacket const* Write() override;
+
+            int32 ChallengeType = 0;
+            int32 CurrentCount = 0;
+            int32 MaxCount = 0;
+            int32 GoldAwarded = 0;
+        };
+
         class GuildChangeNameRequest final : public ClientPacket
         {
         public:
@@ -636,6 +649,18 @@ namespace WorldPackets
             void Read() override;
 
             std::string NewName;
+        };
+
+        class GuildInviteDeclined final : public ServerPacket
+        {
+        public:
+            GuildInviteDeclined() : ServerPacket(SMSG_GUILD_INVITE_DECLINED, 8) { }
+
+            WorldPacket const* Write() override;
+
+            uint32 VirtualRealmAddress = 0;
+            std::string Name;
+            bool AutoDecline = false;
         };
 
         class GuildFlaggedForRename final : public ServerPacket
@@ -1077,6 +1102,16 @@ namespace WorldPackets
             void Read() override;
 
             Array<uint32, 10> AchievementIDs;
+        };
+
+        class GuildChangeNameResult final : public ServerPacket
+        {
+        public:
+            GuildChangeNameResult() : ServerPacket(SMSG_GUILD_CHANGE_NAME_RESULT, 1) { }
+
+            WorldPacket const* Write() override;
+
+            bool Success = true;
         };
 
         class GuildNameChanged final : ServerPacket

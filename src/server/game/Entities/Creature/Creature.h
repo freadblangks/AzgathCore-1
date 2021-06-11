@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -29,6 +28,7 @@
 
 #include <list>
 
+class BattlePetInstance;
 class CreatureAI;
 class CreatureGroup;
 class Group;
@@ -44,7 +44,7 @@ struct ScriptParam;
 struct VendorItemCount
 {
     VendorItemCount(uint32 _item, uint32 _count)
-        : itemId(_item), count(_count), lastIncrementTime(time(NULL)) { }
+        : itemId(_item), count(_count), lastIncrementTime(time(nullptr)) { }
 
     uint32 itemId;
     uint32 count;
@@ -187,8 +187,6 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         CreatureData const* GetCreatureData() const { return m_creatureData; }
         CreatureAddon const* GetCreatureAddon() const;
 
-        float GetSparringHealthLimit() const;
-
         std::string GetAIName() const;
         std::string GetScriptName() const;
         uint32 GetScriptId() const;
@@ -265,7 +263,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         time_t const& GetRespawnTime() const { return m_respawnTime; }
         time_t GetRespawnTimeEx() const;
-        void SetRespawnTime(uint32 respawn) { m_respawnTime = respawn ? time(NULL) + respawn : 0; }
+        void SetRespawnTime(uint32 respawn) { m_respawnTime = respawn ? time(nullptr) + respawn : 0; }
         void Respawn(bool force = false);
         void SaveRespawnTime() override;
 
@@ -274,6 +272,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
 
         float GetRespawnRadius() const { return m_respawnradius; }
         void SetRespawnRadius(float dist) { m_respawnradius = dist; }
+
+        ObjectGuid replacementFromGUID;
+        std::shared_ptr<BattlePetInstance> m_battlePetInstance;
 
         void DoImmediateBoundaryCheck() { m_boundaryCheckTime = 0; }
         uint32 GetCombatPulseDelay() const { return m_combatPulseDelay; }
@@ -323,7 +324,7 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         CreatureGroup* GetFormation() { return m_formation; }
         void SetFormation(CreatureGroup* formation) { m_formation = formation; }
 
-        Unit* SelectVictim(bool evadeIfNoVictim = true);
+        Unit* SelectVictim(bool evadeIfNoVictim = false);
 
         void SetDisableReputationGain(bool disable) { DisableReputationGain = disable; }
         bool IsReputationGainDisabled() const { return DisableReputationGain; }
@@ -340,6 +341,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         float m_SightDistance, m_CombatDistance;
 
         bool m_isTempWorldObject; //true when possessed
+
+        float GetFollowDistance() const { return m_followDistance; }
+        void SetFollowDistance(float dist) { m_followDistance = dist; }
 
         // Handling caster facing during spellcast
         void SetTarget(ObjectGuid const& guid) override;
@@ -366,6 +370,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         void DisableHealthRegen() { m_disableHealthRegen = true; }
         void ReenableHealthRegen() { m_disableHealthRegen = false; }
         bool HealthRegenDisabled() const { return m_disableHealthRegen; }
+
+        uint16 GetShipmentContainerID() { return m_shipmentContainerID; }
+        void SetShipmentContainerID(uint16 shipmentContainerID) { m_shipmentContainerID = shipmentContainerID; }
 
     protected:
         bool CreateFromProto(ObjectGuid::LowType guidlow, uint32 entry, CreatureData const* data = nullptr, uint32 vehId = 0);
@@ -421,6 +428,9 @@ class TC_GAME_API Creature : public Unit, public GridObject<Creature>, public Ma
         bool IsInvisibleDueToDespawn() const override;
         bool CanAlwaysSee(WorldObject const* obj) const override;
 
+        uint16 m_shipmentContainerID;
+
+        float m_followDistance = 1.0f;
     private:
         bool CheckNoGrayAggroConfig(uint32 playerLevel, uint32 creatureLevel) const; // No aggro from gray creatures
 

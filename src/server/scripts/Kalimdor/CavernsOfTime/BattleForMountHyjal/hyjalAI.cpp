@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -459,7 +458,7 @@ void hyjalAI::SummonCreature(uint32 entry, float Base[4][3])
     {
         SpawnLoc[i] = Base[random][i];
     }
-    Creature* creature = NULL;
+    Creature* creature = nullptr;
     switch (entry)
     {
             case 17906:    //GARGOYLE
@@ -855,7 +854,7 @@ void hyjalAI::UpdateAI(uint32 diff)
                 if (me->IsNonMeleeSpellCast(false))
                     me->InterruptNonMeleeSpells(false);
 
-                Unit* target = NULL;
+                Unit* target = nullptr;
 
                 switch (Spells[i].TargetType)
                 {
@@ -918,7 +917,7 @@ void hyjalAI::HideNearPos(float x, float y)
         for (std::list<Creature*>::const_iterator itr = creatures.begin(); itr != creatures.end(); ++itr)
         {
             (*itr)->SetVisible(false);
-            (*itr)->setFaction(35);//make them friendly so mobs won't attack them
+            (*itr)->SetFaction(35);//make them friendly so mobs won't attack them
         }
     }
 }
@@ -996,7 +995,7 @@ void hyjalAI::DoOverrun(uint32 faction, const uint32 diff)
                     if ((*itr) && (*itr)->IsAlive())
                     {
                         (*itr)->CastSpell(*itr, SPELL_TELEPORT_VISUAL, true);
-                        (*itr)->setFaction(35);//make them friendly so mobs won't attack them
+                        (*itr)->SetFaction(35);//make them friendly so mobs won't attack them
                         (*itr)->AddUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
                     }
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -714,7 +714,7 @@ class npc_jaina_or_sylvanas_intro_hor : public CreatureScript
                     case EVENT_INTRO_LK_9:
                         if (Creature* falric = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_FALRIC)))
                             falric->AI()->Talk(SAY_FALRIC_INTRO_2);
-                        _instance->ProcessEvent(0, EVENT_SPAWN_WAVES);
+                        _instance->ProcessEvent(nullptr, EVENT_SPAWN_WAVES);
                         _events.ScheduleEvent(EVENT_INTRO_LK_10, 4000);
                         break;
                     case EVENT_INTRO_LK_10:
@@ -2054,7 +2054,7 @@ class at_hor_waves_restarter : public AreaTriggerScript
 
             if (_instance->GetData(DATA_INTRO_EVENT) == DONE && _instance->GetBossState(DATA_MARWYN) != DONE)
             {
-                _instance->ProcessEvent(0, EVENT_SPAWN_WAVES);
+                _instance->ProcessEvent(nullptr, EVENT_SPAWN_WAVES);
 
                 if (Creature* falric = ObjectAccessor::GetCreature(*player, _instance->GetGuidData(DATA_FALRIC)))
                 {
@@ -2827,9 +2827,9 @@ class spell_hor_gunship_cannon_fire : public SpellScriptLoader
                 if (!urand(0, 2))
                 {
                     if (GetTarget()->GetEntry() == NPC_GUNSHIP_CANNON_HORDE)
-                        GetTarget()->CastSpell((Unit*)NULL, SPELL_GUNSHIP_CANNON_FIRE_MISSILE_HORDE, true);
+                        GetTarget()->CastSpell(nullptr, SPELL_GUNSHIP_CANNON_FIRE_MISSILE_HORDE, true);
                     else
-                        GetTarget()->CastSpell((Unit*)NULL, SPELL_GUNSHIP_CANNON_FIRE_MISSILE_ALLIANCE, true);
+                        GetTarget()->CastSpell(nullptr, SPELL_GUNSHIP_CANNON_FIRE_MISSILE_ALLIANCE, true);
                 }
             }
 

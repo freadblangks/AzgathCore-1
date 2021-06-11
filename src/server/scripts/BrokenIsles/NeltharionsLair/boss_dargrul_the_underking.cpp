@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2018 TrinityCore <http://www.trinitycore.org/>
+* Copyright (C) 2020 AzgathCore
 *
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -252,7 +252,7 @@ public:
         mob_crystall_stalker_AI(Creature* creature) : ScriptedAI(creature)
         {
             me->SetReactState(REACT_PASSIVE);
-            me->setFaction(35);
+            me->SetFaction(35);
         }
     };
 };

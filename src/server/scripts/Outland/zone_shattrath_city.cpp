@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -65,7 +64,7 @@ public:
         if (action == GOSSIP_ACTION_INFO_DEF+1)
         {
             CloseGossipMenuFor(player);
-            creature->setFaction(FACTION_OGRE_HOSTILE);
+            creature->SetFaction(FACTION_OGRE_HOSTILE);
             creature->AI()->Talk(SAY_RALIQ_ATTACK, player);
             creature->AI()->AttackStart(player);
         }
@@ -155,7 +154,7 @@ public:
         if (action == GOSSIP_ACTION_INFO_DEF+1)
         {
             CloseGossipMenuFor(player);
-            creature->setFaction(FACTION_DEMON_HOSTILE);
+            creature->SetFaction(FACTION_DEMON_HOSTILE);
             creature->AI()->Talk(SAY_DEMONIC_AGGRO, player);
             creature->AI()->AttackStart(player);
         }

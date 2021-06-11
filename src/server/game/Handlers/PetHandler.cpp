@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -87,7 +86,7 @@ void WorldSession::HandlePetAction(WorldPackets::Pet::PetAction& packet)
 
     if (!pet->IsAlive())
     {
-        SpellInfo const* spell = (flag == ACT_ENABLED || flag == ACT_PASSIVE) ? sSpellMgr->GetSpellInfo(spellid) : NULL;
+        SpellInfo const* spell = (flag == ACT_ENABLED || flag == ACT_PASSIVE) ? sSpellMgr->GetSpellInfo(spellid) : nullptr;
         if (!spell)
             return;
         if (!spell->HasAttribute(SPELL_ATTR0_CASTABLE_WHILE_DEAD))
@@ -281,7 +280,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, ObjectGuid guid1, uint32 spe
                 case REACT_PASSIVE:                         //passive
                     pet->AttackStop();
                     pet->ClearInPetCombat();
-                    /* fallthrough */
+                    // no break;
                 case REACT_DEFENSIVE:                       //recovery
                 case REACT_AGGRESSIVE:                      //activete
                 case REACT_ASSIST:                          //
@@ -294,7 +293,7 @@ void WorldSession::HandlePetActionHelper(Unit* pet, ObjectGuid guid1, uint32 spe
         case ACT_PASSIVE:                                   // 0x01
         case ACT_ENABLED:                                   // 0xC1    spell
         {
-            Unit* unit_target = NULL;
+            Unit* unit_target = nullptr;
 
             if (!guid2.IsEmpty())
                 unit_target = ObjectAccessor::GetUnit(*_player, guid2);
@@ -533,13 +532,13 @@ void WorldSession::HandlePetRename(WorldPackets::Pet::PetRename& packet)
     PetNameInvalidReason res = ObjectMgr::CheckPetName(name);
     if (res != PET_NAME_SUCCESS)
     {
-        SendPetNameInvalid(res, name, NULL);
+        SendPetNameInvalid(res, name, nullptr);
         return;
     }
 
     if (sObjectMgr->IsReservedName(name))
     {
-        SendPetNameInvalid(PET_NAME_RESERVED, name, NULL);
+        SendPetNameInvalid(PET_NAME_RESERVED, name, nullptr);
         return;
     }
 
@@ -587,7 +586,7 @@ void WorldSession::HandlePetRename(WorldPackets::Pet::PetRename& packet)
 
     CharacterDatabase.CommitTransaction(trans);
 
-    pet->SetPetNameTimestamp(uint32(time(NULL)));
+    pet->SetPetNameTimestamp(uint32(time(nullptr)));
 }
 
 void WorldSession::HandlePetAbandon(WorldPackets::Pet::PetAbandon& packet)
@@ -683,7 +682,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPackets::Spells::PetCastSpell& 
     spell->m_misc.Raw.Data[1] = petCastSpell.Cast.Misc[1];
     spell->m_targets = targets;
 
-    SpellCastResult result = spell->CheckPetCast(NULL);
+    SpellCastResult result = spell->CheckPetCast(nullptr);
     if (result == SPELL_CAST_OK)
     {
         if (Creature* creature = caster->ToCreature())

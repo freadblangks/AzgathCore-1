@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -986,7 +986,7 @@ public:
                 // Position in sniffs has no orientation
                 pos.SetOrientation(0.0f);
                 // Set distance for current line
-                MovePosition2D(pos, caster->GetCombatReach() + _distance * line, caster->GetOrientation());
+                MovePosition2D(pos, caster->GetObjectSize() + _distance * line, caster->GetOrientation());
 
                 // Safe for position values
                 BlastToRight(pos);

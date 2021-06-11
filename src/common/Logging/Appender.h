@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -41,7 +41,7 @@ class TC_COMMON_API Appender
         void setLogLevel(LogLevel);
         void write(LogMessage* message);
         static const char* getLogLevelString(LogLevel level);
-        virtual void setRealmId(uint32 /*realmId*/, std::string /*realmName*/ = "") { }
+        virtual void setRealmId(uint32 /*realmId*/) { }
 
     private:
         virtual void _write(LogMessage const* /*message*/) = 0;

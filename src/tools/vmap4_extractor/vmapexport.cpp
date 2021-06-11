@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -479,9 +478,13 @@ int main(int argc, char ** argv)
 
         DB2CascFileSource source(CascStorage, MapLoadInfo::Instance()->Meta->FileDataId);
         DB2FileLoader db2;
-        if (!db2.Load(&source, MapLoadInfo::Instance()))
+        try
         {
-            printf("Fatal error: Invalid Map.db2 file format! %s\n", CASC::HumanReadableCASCError(GetLastError()));
+            db2.Load(&source, MapLoadInfo::Instance());
+        }
+        catch (std::exception const& e)
+        {
+            printf("Fatal error: Invalid Map.db2 file format! %s\n%s\n", CASC::HumanReadableCASCError(GetLastError()), e.what());
             exit(1);
         }
 

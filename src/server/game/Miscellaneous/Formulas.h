@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -75,6 +74,24 @@ namespace Trinity
         }
 
         return 1.0f;
+    }
+
+    inline uint32 GetNumberMultipleOfFive(uint32 averageItemLevel)
+    {
+        uint8 difference = averageItemLevel % 5;
+        uint32 average_new = averageItemLevel - difference;
+        if (difference >= 3)
+        {
+            for (uint8 i = 1; i < 4; ++i)
+            {
+                if (((averageItemLevel + i) % 5) == 0)
+                {
+                    average_new = averageItemLevel + i;
+                    break;
+                }
+            }
+        }
+        return average_new;
     }
 
     namespace Honor

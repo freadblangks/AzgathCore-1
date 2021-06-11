@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  * Copyright (C) 2014-2018 RoG_WoW Source <http://wow.rog.snet>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -1045,7 +1045,7 @@ class npc_warmaster_blackhorn_twilight_elite_dreadblade_slayer: public CreatureS
                 if ((dist * dist) >= startPos.GetExactDist2dSq(endPos.GetPositionX(), endPos.GetPositionY()))
                     return false;
 
-                float size = pTarget->GetCombatReach() / 2;
+                float size = pTarget->GetObjectSize() / 2;
                 float angle = startPos.GetAngle(&endPos);
                 return (size * size) >= pTarget->GetExactDist2dSq(startPos.GetPositionX() + std::cos(angle) * dist, startPos.GetPositionY() + std::sin(angle) * dist);
             }

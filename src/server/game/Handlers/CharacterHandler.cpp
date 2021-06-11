@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,7 +23,7 @@
 #include "Battleground.h"
 #include "BattlegroundPackets.h"
 #include "BattlePetPackets.h"
-#include "BattlePay.h"
+#include "BattlePayMgr.h"
 #include "CalendarMgr.h"
 #include "CharacterCache.h"
 #include "CharacterPackets.h"
@@ -179,7 +178,7 @@ bool LoginQueryHolder::Initialize()
 
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_MAILCOUNT);
     stmt->setUInt64(0, lowGuid);
-    stmt->setUInt64(1, uint64(time(NULL)));
+    stmt->setUInt64(1, uint64(time(nullptr)));
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_MAIL_COUNT, stmt);
 
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_MAILDATE);
@@ -253,6 +252,10 @@ bool LoginQueryHolder::Initialize()
     stmt->setUInt64(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_PVP_TALENTS, stmt);
 
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_ADVENTURE_QUEST);
+    stmt->setUInt64(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_ADVENTURE_QUEST, stmt);
+
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PLAYER_ACCOUNT_DATA);
     stmt->setUInt64(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_ACCOUNT_DATA, stmt);
@@ -300,6 +303,14 @@ bool LoginQueryHolder::Initialize()
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_ARCHAEOLOGY_HISTORY);
     stmt->setUInt64(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_ARCHAEOLOGY_HISTORY, stmt);
+
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_COMPLETED_CHALLENGE);
+    stmt->setUInt64(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_COMPLETED_CHALLENGES, stmt);
+
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PETBATTLE_ACCOUNT);
+    stmt->setUInt64(0, m_accountId);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_BATTLE_PETS, stmt);
 
     return res;
 }
@@ -747,7 +758,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPackets::Character::CreateCharact
             CharacterDatabaseTransaction characterTransaction = CharacterDatabase.BeginTransaction();
             LoginDatabaseTransaction trans = LoginDatabase.BeginTransaction();
 
-                                                                  // Player created, save it now
+            // Player created, save it now
             newChar->SaveToDB(trans, characterTransaction, true);
             createInfo->CharCount += 1;
 
@@ -852,7 +863,7 @@ void WorldSession::HandleCharDeleteOpcode(WorldPackets::Character::CharDelete& c
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin& playerLogin)
 {
-    if (PlayerLoading() || GetPlayer() != NULL)
+    if (PlayerLoading() || GetPlayer() != nullptr)
     {
         TC_LOG_ERROR("network", "Player tries to login again, AccountId = %d", GetAccountId());
         KickPlayer();
@@ -927,7 +938,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     // "GetAccountId() == db stored account id" checked in LoadFromDB (prevent login not own character using cheating tools)
     if (!pCurrChar->LoadFromDB(playerGuid, holder))
     {
-        SetPlayer(NULL);
+        SetPlayer(nullptr);
         KickPlayer();                                       // disconnect client, player no set to session and it will not deleted or saved at kick
         delete pCurrChar;                                   // delete it manually
         delete holder;                                      // delete all unprocessed queries
@@ -971,13 +982,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     // Send PVPSeason
     {
-        WorldPackets::Battleground::PVPSeason season;
-        season.PreviousSeason = sWorld->getIntConfig(CONFIG_ARENA_SEASON_ID) - sWorld->getBoolConfig(CONFIG_ARENA_SEASON_IN_PROGRESS);
+        WorldPackets::Battleground::SeasonInfo seasonInfo;
+        seasonInfo.PreviousSeason = sWorld->getIntConfig(CONFIG_ARENA_SEASON_ID) - sWorld->getBoolConfig(CONFIG_ARENA_SEASON_IN_PROGRESS);
 
         if (sWorld->getBoolConfig(CONFIG_ARENA_SEASON_IN_PROGRESS))
-            season.CurrentSeason = sWorld->getIntConfig(CONFIG_ARENA_SEASON_ID);
+            seasonInfo.CurrentSeason = sWorld->getIntConfig(CONFIG_ARENA_SEASON_ID);
 
-        SendPacket(season.Write());
+        SendPacket(seasonInfo.Write());
     }
 
     // send server info
@@ -1002,10 +1013,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         pCurrChar->SetGuildLevel(0);
     }
 
-    // TODO: Move this to BattlePetMgr::SendJournalLock() just to have all packets in one file
-    WorldPackets::BattlePet::BattlePetJournalLockAcquired lock;
-    SendPacket(lock.Write());
-
     pCurrChar->SendInitialPacketsBeforeAddToMap();
 
     //Show cinematic at the first time that player login
@@ -1017,31 +1024,23 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         {
             if (pCurrChar->getClass() == CLASS_DEMON_HUNTER)
                 pCurrChar->SendMovieStart(469);
-            else if (cEntry->CinematicSequenceID)
+            else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
                 pCurrChar->SendCinematicStart(cEntry->CinematicSequenceID);
+            else if (pCurrChar->getRace() == RACE_NIGHTBORNE && pCurrChar->getClass() != 6)
+                pCurrChar->GetSceneMgr().PlaySceneByPackageId(2007);
+            else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN && pCurrChar->getClass() != 6)
+                pCurrChar->GetSceneMgr().PlaySceneByPackageId(1984);
+            else if (pCurrChar->getRace() == RACE_VOID_ELF && pCurrChar->getClass() != 6)
+                pCurrChar->GetSceneMgr().PlaySceneByPackageId(2006);
+            else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI && pCurrChar->getClass() != 6)
+                pCurrChar->GetSceneMgr().PlaySceneByPackageId(2005);
+            else if (pCurrChar->getRace() == RACE_DARK_IRON_DWARF && pCurrChar->getClass() != 6)
+                pCurrChar->GetSceneMgr().PlaySceneByPackageId(2086);
+            else if (pCurrChar->getRace() == RACE_MAGHAR_ORC && pCurrChar->getClass() != 6)
+                pCurrChar->GetSceneMgr().PlaySceneByPackageId(2085, 2);
             else if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
             {
-                if (pCurrChar->getRace() == RACE_NIGHTBORNE)
-                    pCurrChar->GetSceneMgr().PlayScene(1900);
-                else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN)
-                    pCurrChar->GetSceneMgr().PlayScene(1901);
-                else if (pCurrChar->getRace() == RACE_VOID_ELF)
-                    pCurrChar->GetSceneMgr().PlayScene(1903);
-                else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI)
-                    pCurrChar->GetSceneMgr().PlayScene(1902);
-                else if (pCurrChar->getRace() == RACE_DARK_IRON_DWARF)
-                    pCurrChar->GetSceneMgr().PlayScene(2137);
-                else if (pCurrChar->getRace() == RACE_MAGHAR_ORC)
-                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2085, 2);
-                else if (pCurrChar->getRace() == RACE_KUL_TIRAN)
-                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2494);
-                else if (pCurrChar->getRace() == RACE_ZANDALARI_TROLL)
-                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2087);
-                else if (pCurrChar->getRace() == RACE_MECHAGNOME)
-                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2763);
-                else if (pCurrChar->getRace() == RACE_VULPERA)
-                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2790);
-                else if (rEntry->CinematicSequenceID)
+                if (pCurrChar->getRace() != RACE_PANDAREN_NEUTRAL && pCurrChar->GetMapId() != 2297)
                     pCurrChar->SendCinematicStart(rEntry->CinematicSequenceID);
             }
 
@@ -1105,7 +1104,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     stmt->setUInt64(0, pCurrChar->GetGUID().GetCounter());
     GetQueryProcessor().AddCallback(CharacterDatabase.AsyncQuery(stmt)).WithPreparedCallback([this](PreparedQueryResult favoriteAuctionResult)
     {
-        WorldPackets::AuctionHouse::AuctionFavoriteItems favoriteItems;
+        WorldPackets::AuctionHouse::AuctionFavoriteList favoriteItems;
         if (favoriteAuctionResult)
         {
             favoriteItems.Items.reserve(favoriteAuctionResult->GetRowCount());
@@ -1133,10 +1132,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     {
         // not blizz like, we must correctly save and load player instead...
         if (pCurrChar->getRace() == RACE_NIGHTELF && !pCurrChar->HasAura(20584))
-            pCurrChar->CastSpell(pCurrChar, 20584, true, 0);// auras SPELL_AURA_INCREASE_SPEED(+speed in wisp form), SPELL_AURA_INCREASE_SWIM_SPEED(+swim speed in wisp form), SPELL_AURA_TRANSFORM (to wisp form)
+            pCurrChar->CastSpell(pCurrChar, 20584, true, nullptr);// auras SPELL_AURA_INCREASE_SPEED(+speed in wisp form), SPELL_AURA_INCREASE_SWIM_SPEED(+swim speed in wisp form), SPELL_AURA_TRANSFORM (to wisp form)
 
         if (!pCurrChar->HasAura(8326))
-            pCurrChar->CastSpell(pCurrChar, 8326, true, 0);     // auras SPELL_AURA_GHOST, SPELL_AURA_INCREASE_SPEED(why?), SPELL_AURA_INCREASE_SWIM_SPEED(why?)
+            pCurrChar->CastSpell(pCurrChar, 8326, true, nullptr);     // auras SPELL_AURA_GHOST, SPELL_AURA_INCREASE_SPEED(why?), SPELL_AURA_INCREASE_SWIM_SPEED(why?)
 
         pCurrChar->SetWaterWalking(true);
     }
@@ -1258,8 +1257,8 @@ void WorldSession::SendFeatureSystemStatus()
     features.EuropaTicketSystemStatus->SuggestionsEnabled = sWorld->getBoolConfig(CONFIG_SUPPORT_SUGGESTIONS_ENABLED);
 
     features.CharUndeleteEnabled = sWorld->getBoolConfig(CONFIG_FEATURE_SYSTEM_CHARACTER_UNDELETE_ENABLED);
-    features.BpayStoreEnabled = sBattlePayMgr->IsStoreEnabled();
-    features.BpayStoreAvailable = sBattlePayMgr->IsStoreAvailable();
+    features.BpayStoreEnabled = GetBattlePayMgr()->IsAvailable();
+    features.BpayStoreAvailable = GetBattlePayMgr()->IsAvailable();
     features.WarModeFeatureEnabled = sWorld->getBoolConfig(CONFIG_FEATURE_SYSTEM_WAR_MODE_ENABLED);
     features.IsMuted = !CanSpeak();
 
@@ -1830,7 +1829,7 @@ void WorldSession::HandleUseEquipmentSet(WorldPackets::EquipmentSet::UseEquipmen
                 _player->StoreItem(itemPosCountVec, uItem, true);
             }
             else
-                _player->SendEquipError(inventoryResult, uItem,  NULL);
+                _player->SendEquipError(inventoryResult, uItem,  nullptr);
             continue;
         }
 
@@ -2599,12 +2598,12 @@ void WorldSession::SendCharCustomize(ResponseCodes result, WorldPackets::Charact
 {
     if (result == RESPONSE_SUCCESS)
     {
-        WorldPackets::Character::CharCustomizeResponse response(customizeInfo);
+        WorldPackets::Character::CharCustomizeSuccess response(customizeInfo);
         SendPacket(response.Write());
     }
     else
     {
-        WorldPackets::Character::CharCustomizeFailed failed;
+        WorldPackets::Character::CharCustomizeFailure failed;
         failed.Result = uint8(result);
         failed.CharGUID = customizeInfo->CharGUID;
         SendPacket(failed.Write());

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -137,3 +137,9 @@ void WorldPackets::Social::DelIgnore::Read()
 {
     _worldPacket >> Player;
 }
+
+void WorldPackets::Social::QuickJoinAutoAcceptRequests::Read()
+{
+    EnableAutoAccept = _worldPacket.ReadBit();
+}
+

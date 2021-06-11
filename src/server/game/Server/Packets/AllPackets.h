@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -53,6 +53,7 @@
 #include "InstancePackets.h"
 #include "ItemPackets.h"
 #include "LFGPackets.h"
+#include "LfgListPackets.h"
 #include "LootPackets.h"
 #include "MailPackets.h"
 #include "MiscPackets.h"

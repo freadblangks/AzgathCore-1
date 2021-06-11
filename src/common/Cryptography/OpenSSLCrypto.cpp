@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -59,8 +59,8 @@ void OpenSSLCrypto::threadsSetup()
 
 void OpenSSLCrypto::threadsCleanup()
 {
-    CRYPTO_set_locking_callback(NULL);
-    CRYPTO_THREADID_set_callback(NULL);
+    CRYPTO_set_locking_callback(nullptr);
+    CRYPTO_THREADID_set_callback(nullptr);
     for(int i = 0 ; i < CRYPTO_num_locks(); ++i)
     {
         delete cryptoLocks[i];

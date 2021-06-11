@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -122,6 +121,22 @@ private:
     float _dist;
     bool _playerOnly;
     bool _inLos;
+};
+
+struct TC_GAME_API BehindTargetSelector
+{
+    Unit const* me;
+    float m_dist;
+    bool m_playerOnly;
+    int32 m_aura;
+
+    // unit: the reference unit
+    // dist: if 0: ignored, if > 0: maximum distance to the reference unit, if < 0: minimum distance to the reference unit
+    // playerOnly: self explaining
+    // aura: if 0: ignored, if > 0: the target shall have the aura, if < 0, the target shall NOT have the aura
+    BehindTargetSelector(Unit const* unit, float dist = 0.f, bool playerOnly = true, int32 aura = 0) : me(unit), m_dist(dist), m_playerOnly(playerOnly), m_aura(aura) { }
+
+    bool operator()(Unit const* target) const;
 };
 
 TC_GAME_API void SortByDistanceTo(Unit* reference, std::list<Unit*>& targets);
@@ -270,6 +285,7 @@ class TC_GAME_API UnitAI
         void DoCastVictim(uint32 spellId, bool triggered = false);
         void DoCastAOE(uint32 spellId, bool triggered = false);
         void DoCastRandom(uint32 spellId, float dist, bool triggered = false, int32 aura = 0, uint32 position = 0);
+        void DoCastAI(uint32 spellId);
 
         void DoMeleeAttackIfReady();
         bool DoSpellAttackIfReady(uint32 spellId);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -195,7 +195,7 @@ public:
             {
                 damage = 0;
                 EnterEvadeMode();
-                me->setFaction(35);
+                me->SetFaction(35);
                 bDone = true;
             }
         }
@@ -323,7 +323,7 @@ public:
             {
                 damage = 0;
                 EnterEvadeMode();
-                me->setFaction(35);
+                me->SetFaction(35);
                 bDone = true;
             }
         }
@@ -668,7 +668,7 @@ class spell_paletress_summon_memory : public SpellScriptLoader
 
             void HandleScript(SpellEffIndex /*effIndex*/)
             {
-                GetHitUnit()->CastSpell(GetHitUnit(), memorySpellId[urand(0, 24)], true, NULL, NULL, GetCaster()->GetGUID());
+                GetHitUnit()->CastSpell(GetHitUnit(), memorySpellId[urand(0, 24)], true, nullptr, nullptr, GetCaster()->GetGUID());
             }
 
             void Register() override

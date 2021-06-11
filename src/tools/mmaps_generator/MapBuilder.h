@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -39,7 +38,7 @@ namespace MMAP
 {
     struct MapTiles
     {
-        MapTiles() : m_mapId(uint32(-1)), m_tiles(NULL) {}
+        MapTiles() : m_mapId(uint32(-1)), m_tiles(nullptr) {}
 
         MapTiles(uint32 id, std::set<uint32>* tiles) : m_mapId(id), m_tiles(tiles) {}
         ~MapTiles() {}
@@ -57,7 +56,7 @@ namespace MMAP
 
     struct Tile
     {
-        Tile() : chf(NULL), solid(NULL), cset(NULL), pmesh(NULL), dmesh(NULL) {}
+        Tile() : chf(nullptr), solid(nullptr), cset(nullptr), pmesh(nullptr), dmesh(nullptr) {}
         ~Tile()
         {
             rcFreeCompactHeightfield(chf);
@@ -84,7 +83,7 @@ namespace MMAP
                 bool debugOutput         = false,
                 bool bigBaseUnit         = false,
                 int mapid                = -1,
-                const char* offMeshFilePath = NULL);
+                const char* offMeshFilePath = nullptr);
 
             ~MapBuilder();
 

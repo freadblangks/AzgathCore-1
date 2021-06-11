@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -23,38 +22,46 @@
 #include "ObjectGuid.h"
 #include "NPCHandler.h"
 #include <map>
+#include "QuestDef.h"
 
 class Object;
 class Quest;
 class WorldSession;
 
-#define GOSSIP_MAX_MENU_ITEMS               32
+#define GOSSIP_MAX_MENU_ITEMS               64
 #define DEFAULT_GOSSIP_MESSAGE              0xffffff
 
 enum Gossip_Option
 {
-    GOSSIP_OPTION_NONE              = 0,                    //UNIT_NPC_FLAG_NONE                (0)
-    GOSSIP_OPTION_GOSSIP            = 1,                    //UNIT_NPC_FLAG_GOSSIP              (1)
-    GOSSIP_OPTION_QUESTGIVER        = 2,                    //UNIT_NPC_FLAG_QUESTGIVER          (2)
-    GOSSIP_OPTION_VENDOR            = 3,                    //UNIT_NPC_FLAG_VENDOR              (128)
-    GOSSIP_OPTION_TAXIVENDOR        = 4,                    //UNIT_NPC_FLAG_TAXIVENDOR          (8192)
-    GOSSIP_OPTION_TRAINER           = 5,                    //UNIT_NPC_FLAG_TRAINER             (16)
-    GOSSIP_OPTION_SPIRITHEALER      = 6,                    //UNIT_NPC_FLAG_SPIRITHEALER        (16384)
-    GOSSIP_OPTION_SPIRITGUIDE       = 7,                    //UNIT_NPC_FLAG_SPIRITGUIDE         (32768)
-    GOSSIP_OPTION_INNKEEPER         = 8,                    //UNIT_NPC_FLAG_INNKEEPER           (65536)
-    GOSSIP_OPTION_BANKER            = 9,                    //UNIT_NPC_FLAG_BANKER              (131072)
-    GOSSIP_OPTION_PETITIONER        = 10,                   //UNIT_NPC_FLAG_PETITIONER          (262144)
-    GOSSIP_OPTION_TABARDDESIGNER    = 11,                   //UNIT_NPC_FLAG_TABARDDESIGNER      (524288)
-    GOSSIP_OPTION_BATTLEFIELD       = 12,                   //UNIT_NPC_FLAG_BATTLEFIELDPERSON   (1048576)
-    GOSSIP_OPTION_AUCTIONEER        = 13,                   //UNIT_NPC_FLAG_AUCTIONEER          (2097152)
-    GOSSIP_OPTION_STABLEPET         = 14,                   //UNIT_NPC_FLAG_STABLE              (4194304)
-    GOSSIP_OPTION_ARMORER           = 15,                   //UNIT_NPC_FLAG_ARMORER             (4096)
-    GOSSIP_OPTION_UNLEARNTALENTS    = 16,                   //UNIT_NPC_FLAG_TRAINER             (16) (bonus option for GOSSIP_OPTION_TRAINER)
-    GOSSIP_OPTION_UNLEARNPETTALENTS_OLD = 17,               // deprecated
-    GOSSIP_OPTION_LEARNDUALSPEC     = 18,                   //UNIT_NPC_FLAG_TRAINER             (16) (bonus option for GOSSIP_OPTION_TRAINER)
-    GOSSIP_OPTION_OUTDOORPVP        = 19,                   //added by code (option for outdoor pvp creatures)
-    GOSSIP_OPTION_TRANSMOGRIFIER    = 20,                   //UNIT_NPC_FLAG_TRANSMOGRIFIER
-    GOSSIP_OPTION_ADVENTURE_MAP     = 21,
+    GOSSIP_OPTION_NONE                  = 0,                    //UNIT_NPC_FLAG_NONE                (0)
+    GOSSIP_OPTION_GOSSIP                = 1,                    //UNIT_NPC_FLAG_GOSSIP              (1)
+    GOSSIP_OPTION_QUESTGIVER            = 2,                    //UNIT_NPC_FLAG_QUESTGIVER          (2)
+    GOSSIP_OPTION_VENDOR                = 3,                    //UNIT_NPC_FLAG_VENDOR              (128)
+    GOSSIP_OPTION_TAXIVENDOR            = 4,                    //UNIT_NPC_FLAG_TAXIVENDOR          (8192)
+    GOSSIP_OPTION_TRAINER               = 5,                    //UNIT_NPC_FLAG_TRAINER             (16)
+    GOSSIP_OPTION_SPIRITHEALER          = 6,                    //UNIT_NPC_FLAG_SPIRITHEALER        (16384)
+    GOSSIP_OPTION_SPIRITGUIDE           = 7,                    //UNIT_NPC_FLAG_SPIRITGUIDE         (32768)
+    GOSSIP_OPTION_INNKEEPER             = 8,                    //UNIT_NPC_FLAG_INNKEEPER           (65536)
+    GOSSIP_OPTION_BANKER                = 9,                    //UNIT_NPC_FLAG_BANKER              (131072)
+    GOSSIP_OPTION_PETITIONER            = 10,                   //UNIT_NPC_FLAG_PETITIONER          (262144)
+    GOSSIP_OPTION_TABARDDESIGNER        = 11,                   //UNIT_NPC_FLAG_TABARDDESIGNER      (524288)
+    GOSSIP_OPTION_BATTLEFIELD           = 12,                   //UNIT_NPC_FLAG_BATTLEFIELDPERSON   (1048576)
+    GOSSIP_OPTION_AUCTIONEER            = 13,                   //UNIT_NPC_FLAG_AUCTIONEER          (2097152)
+    GOSSIP_OPTION_STABLEPET             = 14,                   //UNIT_NPC_FLAG_STABLE              (4194304)
+    GOSSIP_OPTION_ARMORER               = 15,                   //UNIT_NPC_FLAG_ARMORER             (4096)
+    GOSSIP_OPTION_UNLEARNTALENTS        = 16,                   //UNIT_NPC_FLAG_TRAINER             (16) (bonus option for GOSSIP_OPTION_TRAINER)
+    GOSSIP_OPTION_MAILBOX               = 18,                   //UNIT_NPC_FLAG_MAILBOX
+    GOSSIP_OPTION_OUTDOORPVP            = 19,                   //added by code (option for outdoor pvp creatures)
+    GOSSIP_OPTION_TRANSMOGRIFIER        = 20,                   //UNIT_NPC_FLAG_TRANSMOGRIFIER
+    GOSSIP_OPTION_ADVENTURE_MAP         = 21,
+    GOSSIP_OPTION_GARRISON_SHIPMENT     = 22,                   //UNIT_NPC_FLAG2_AI_OBSTACLE 
+    GOSSIP_OPTION_GARRISON_TRADESKILL   = 23,                   //UNIT_NPC_FLAG2_TRADESKILL_NPC
+    GOSSIP_OPTION_SHIPMENT_CRAFTER      = 24,                   //UNIT_NPC_FLAG2_SHIPMENT_CRAFTER
+    GOSSIP_OPTION_CLASS_HALL_UPGRADE    = 25,                   //UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE
+    GOSSIP_OPTION_CHOICE                = 26,                   //UNIT_NPC_FLAG_GOSSIP
+    GOSSIP_OPTION_ARTIFACT_RESPEC       = 27,                   //UNIT_NPC_FLAG_ARTIFACT_POWER_RESPEC
+    GOSSIP_OPTION_ALLIED_RACE_DETAILS   = 28,                   // SMSG_OPEN_ALLIED_RACE_DETAILS
+    GOSSIP_OPTION_SCENARIO              = 29,                   //UNIT_NPC_FLAG_GOSSIP
     GOSSIP_OPTION_MAX
 };
 
@@ -89,10 +96,10 @@ enum GossipOptionIcon
     GOSSIP_ICON_CHAT_26             = 26,
     GOSSIP_ICON_CHAT_27             = 27,
     GOSSIP_ICON_SHIPMENT            = 28,
-    GOSSIP_ICON_CHAT_29             = 29,
-    GOSSIP_ICON_CHAT_30             = 30,
-    GOSSIP_ICON_CHAT_31             = 31,
-    GOSSIP_ICON_CHAT_32             = 32,
+    GOSSIP_ICON_TRADESKILL          = 29,
+    GOSSIP_ICON_ADVENTURE_MAP       = 31,
+    GOSSIP_ICON_CLASS_HALL_UPGRADE  = 32,                   //UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE
+    GOSSIP_ICON_TRANSMOGRIFIER      = 34,                   // transmogrifier
     GOSSIP_ICON_MAX
 };
 
@@ -160,8 +167,6 @@ struct GossipMenuItemData
 {
     uint32 GossipActionMenuId;  // MenuId of the gossip triggered by this action
     uint32 GossipActionPoi;
-
-    uint32 TrainerId;
 };
 
 // need an ordered container
@@ -189,7 +194,7 @@ class TC_GAME_API GossipMenu
         void SetLocale(LocaleConstant locale) { _locale = locale; }
         LocaleConstant GetLocale() const { return _locale; }
 
-        void AddGossipMenuItemData(uint32 optionIndex, uint32 gossipActionMenuId, uint32 gossipActionPoi, uint32 trainerId);
+        void AddGossipMenuItemData(uint32 optionIndex, uint32 gossipActionMenuId, uint32 gossipActionPoi);
 
         uint32 GetMenuItemCount() const { return uint32(_menuItems.size()); }
         bool Empty() const { return _menuItems.empty(); }
@@ -200,7 +205,7 @@ class TC_GAME_API GossipMenu
             if (itr != _menuItems.end())
                 return &itr->second;
 
-            return NULL;
+            return nullptr;
         }
 
         GossipMenuItemData const* GetItemData(uint32 indexId) const
@@ -209,7 +214,7 @@ class TC_GAME_API GossipMenu
             if (itr != _menuItemData.end())
                 return &itr->second;
 
-            return NULL;
+            return nullptr;
         }
 
         uint32 GetMenuItemSender(uint32 menuItemId) const;

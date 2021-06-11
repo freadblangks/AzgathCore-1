@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -279,10 +279,10 @@ namespace WorldPackets
             void Read() override;
         };
 
-        class EnableEncryption final : public ServerPacket
+        class EnterEncryptedMode final : public ServerPacket
         {
         public:
-            EnableEncryption(uint8 const* encryptionKey, bool enabled) : ServerPacket(SMSG_ENABLE_ENCRYPTION, 256 + 1),
+            EnterEncryptedMode(uint8 const* encryptionKey, bool enabled) : ServerPacket(SMSG_ENTER_ENCRYPTED_MODE, 256 + 1),
                 EncryptionKey(encryptionKey), Enabled(enabled)
             {
             }

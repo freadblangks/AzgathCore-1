@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -302,7 +301,7 @@ class npc_slaincrewmember : public CreatureScript
                         break;
                     case 4:
                         me->Say(CREW_SAY_5, LANG_UNIVERSAL);
-                        me->setFaction(14);
+                        me->SetFaction(14);
                         me->AddThreat(player, 53.0f);
                         me->AI()->AttackStart(player);
                         QuestInProgress = false;

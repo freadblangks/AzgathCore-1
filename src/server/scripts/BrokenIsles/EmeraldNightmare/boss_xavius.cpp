@@ -1,7 +1,3 @@
-/*
-By MistiX Scripted Boss Form Team Cuba Developer
- */
-
 #include "Chat.h"
 #include "CombatAI.h"
 #include "Conversation.h"
@@ -1831,4 +1827,3 @@ void AddSC_xavius()
     new teleport_xavius();
     new npc_xavius_event_conroller();
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -69,7 +69,7 @@ public:
             { "reputation",   rbac::RBAC_PERM_COMMAND_MODIFY_REPUTATION,   false, &HandleModifyRepCommand,           "" },
             { "runicpower",   rbac::RBAC_PERM_COMMAND_MODIFY_RUNICPOWER,   false, &HandleModifyRunicPowerCommand,    "" },
             { "scale",        rbac::RBAC_PERM_COMMAND_MODIFY_SCALE,        false, &HandleModifyScaleCommand,         "" },
-            { "speed",        rbac::RBAC_PERM_COMMAND_MODIFY_SPEED,        false, NULL,           "", modifyspeedCommandTable },
+            { "speed",        rbac::RBAC_PERM_COMMAND_MODIFY_SPEED,        false, nullptr,           "", modifyspeedCommandTable },
             { "spell",        rbac::RBAC_PERM_COMMAND_MODIFY_SPELL,        false, &HandleModifySpellCommand,         "" },
             { "standstate",   rbac::RBAC_PERM_COMMAND_MODIFY_STANDSTATE,   false, &HandleModifyStandStateCommand,    "" },
             { "talentpoints", rbac::RBAC_PERM_COMMAND_MODIFY_TALENTPOINTS, false, &HandleModifyTalentCommand,        "" },
@@ -80,7 +80,7 @@ public:
         {
             { "morph",   rbac::RBAC_PERM_COMMAND_MORPH,   false, &HandleModifyMorphCommand,          "" },
             { "demorph", rbac::RBAC_PERM_COMMAND_DEMORPH, false, &HandleDeMorphCommand,              "" },
-            { "modify",  rbac::RBAC_PERM_COMMAND_MODIFY,  false, NULL,                 "", modifyCommandTable },
+            { "modify",  rbac::RBAC_PERM_COMMAND_MODIFY,  false, nullptr,                 "", modifyCommandTable },
         };
         return commandTable;
     }
@@ -230,13 +230,13 @@ public:
         uint32 factionid = atoul(pfactionid);
         uint32 flag;
 
-        char *pflag = strtok(NULL, " ");
+        char *pflag = strtok(nullptr, " ");
         if (!pflag)
             flag = target->m_unitData->Flags;
         else
             flag = atoul(pflag);
 
-        char* pnpcflag = strtok(NULL, " ");
+        char* pnpcflag = strtok(nullptr, " ");
 
         uint64 npcflag;
         if (!pnpcflag)
@@ -244,7 +244,7 @@ public:
         else
             npcflag = atoull(pnpcflag);
 
-        char* pdyflag = strtok(NULL, " ");
+        char* pdyflag = strtok(nullptr, " ");
 
         uint32  dyflag;
         if (!pdyflag)
@@ -261,7 +261,7 @@ public:
 
         handler->PSendSysMessage(LANG_YOU_CHANGE_FACTION, target->GetGUID().ToString().c_str(), factionid, flag, std::to_string(npcflag).c_str(), dyflag);
 
-        target->setFaction(factionid);
+        target->SetFaction(factionid);
         target->SetUnitFlags(UnitFlags(flag));
         target->SetNpcFlags(NPCFlags(npcflag & 0xFFFFFFFF));
         target->SetNpcFlags2(NPCFlags2(npcflag >> 32));
@@ -280,17 +280,17 @@ public:
         if (!pspellflatid)
             return false;
 
-        char* pop = strtok(NULL, " ");
+        char* pop = strtok(nullptr, " ");
         if (!pop)
             return false;
 
-        char* pval = strtok(NULL, " ");
+        char* pval = strtok(nullptr, " ");
         if (!pval)
             return false;
 
         uint16 mark;
 
-        char* pmark = strtok(NULL, " ");
+        char* pmark = strtok(nullptr, " ");
 
         uint8 spellflatid = atoi(pspellflatid);
         uint8 op   = atoi(pop);
@@ -301,7 +301,7 @@ public:
             mark = atoi(pmark);
 
         Player* target = handler->getSelectedPlayerOrSelf();
-        if (target == NULL)
+        if (target == nullptr)
         {
             handler->SendSysMessage(LANG_NO_CHAR_SELECTED);
             handler->SetSentErrorMessage(true);
@@ -510,7 +510,7 @@ public:
             return false;
 
         const char* mount_cstr = strtok(const_cast<char*>(args), " ");
-        const char* speed_cstr = strtok(NULL, " ");
+        const char* speed_cstr = strtok(nullptr, " ");
 
         if (!mount_cstr || !speed_cstr)
             return false;
@@ -678,7 +678,7 @@ public:
         uint32 factionId = atoi(factionTxt);
 
         int32 amount = 0;
-        char *rankTxt = strtok(NULL, " ");
+        char *rankTxt = strtok(nullptr, " ");
         if (!factionId || !rankTxt)
             return false;
 
@@ -707,7 +707,7 @@ public:
 
                 if (wrank.substr(0, wrankStr.size()) == wrankStr)
                 {
-                    char *deltaTxt = strtok(NULL, " ");
+                    char *deltaTxt = strtok(nullptr, " ");
                     if (deltaTxt)
                     {
                         int32 delta = atoi(deltaTxt);
@@ -931,16 +931,16 @@ public:
             return false;
         }
 
-        uint32 currencyId = atoi(strtok((char*)args, " "));
-        const CurrencyTypesEntry* currencyType =  sCurrencyTypesStore.LookupEntry(currencyId);
+        char* currencyId = strtok((char*)args, " ");
+        const CurrencyTypesEntry* currencyType = sCurrencyTypesStore.LookupEntry(atoi(currencyId));
         if (!currencyType)
             return false;
 
-        uint32 amount = atoi(strtok(NULL, " "));
+        char* amount = strtok(nullptr, " ");
         if (!amount)
             return false;
 
-        target->ModifyCurrency(currencyId, amount, true, true);
+        target->ModifyCurrency(atoi(currencyId), atoi(amount), true, true);
 
         return true;
     }

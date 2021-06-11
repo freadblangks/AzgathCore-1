@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -452,7 +452,7 @@ namespace WorldPackets
             RequestPVPRewardsResponse() : ServerPacket(SMSG_REQUEST_PVP_REWARDS_RESPONSE, 40 * 4) { }
 
             WorldPacket const* Write() override;
-            
+
             LfgPlayerQuestReward Rewards[(uint8)BattlegroundBracketType::Max];
             LfgPlayerQuestReward RatedBGRewards;
             LfgPlayerQuestReward ArenaSkirmishRewards;

@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -103,7 +102,7 @@ void WorldSession::SendTrainerList(Creature* npc, uint32 trainerId)
     if (!trainer)
     {
         //TC_LOG_DEBUG("network", "WorldSession::SendTrainerList - trainer spells not found for trainer %s id %d", npc->GetGUID().ToString().c_str(), trainerId);
-        SendTrainerListLegacy(npc->GetGUID(), 0);
+        SendTrainerListLegacy(npc->GetGUID(), 0); TC_LOG_DEBUG("network", "WorldSession::SendTrainerList - trainer spells not found for trainer %s id %d", npc->GetGUID().ToString().c_str(), trainerId);
         return;
     }
 
@@ -464,7 +463,7 @@ void WorldSession::SendSpiritResurrect()
     _player->DurabilityLossAll(0.25f, true);
 
     // get corpse nearest graveyard
-    WorldSafeLocsEntry const* corpseGrave = NULL;
+    WorldSafeLocsEntry const* corpseGrave = nullptr;
     WorldLocation corpseLocation = _player->GetCorpseLocation();
     if (_player->HasCorpse())
     {
@@ -673,4 +672,12 @@ void WorldSession::HandleRepairItemOpcode(WorldPackets::Item::RepairItem& packet
         TC_LOG_DEBUG("network", "ITEM: Repair all items at %s", packet.NpcGUID.ToString().c_str());
         _player->DurabilityRepairAll(true, discountMod, packet.UseGuildBank);
     }
+}
+
+void WorldSession::SendOpenAlliedRaceDetails(ObjectGuid const& guid, uint32 RaceID)
+{
+    WorldPackets::NPC::OpenAlliedRaceDetails packet;
+    packet.Guid = guid;
+    packet.RaceId = RaceID;
+    SendPacket(packet.Write());
 }

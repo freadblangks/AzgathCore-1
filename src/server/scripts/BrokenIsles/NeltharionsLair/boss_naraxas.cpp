@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2008-2018 TrinityCore <http://www.trinitycore.org/>
+* Copyright (C) 2020 AzgathCore
 *
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -21,7 +21,7 @@
 #include "ScriptedCreature.h"
 #include "neltharions_lair.h"
 #include "CreatureTextMgr.h"
-#include "EnumClassFlag.h"
+#include "EnumFlag.h"
 #include "ObjectAccessor.h"
 #include "GameObject.h"
 #include "PhasingHandler.h"
@@ -472,37 +472,6 @@ public:
     }
 };
 
-// -199705, -205418
-class spell_naraxas_devourging_aura : public SpellScriptLoader
-{
-    public:
-        spell_naraxas_devourging_aura() : SpellScriptLoader("spell_naraxas_devourging_aura") { }
-
-        class spell_naraxas_devourging_aura_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_naraxas_devourging_aura_AuraScript);
-
-            void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-            {
-                if (Unit* target = GetTarget())
-                {
-                    if (target->ToCreature())
-                        target->ToCreature()->DespawnOrUnsummon();
-                }
-            }
-
-            void Register() override
-            {
-                AfterEffectRemove += AuraEffectRemoveFn(spell_naraxas_devourging_aura_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_naraxas_devourging_aura_AuraScript();
-        }
-};
-
 void AddSC_boss_naraxas()
 {
     new boss_naraxas();
@@ -510,7 +479,6 @@ void AddSC_boss_naraxas()
     new spell_naraxas_rancid_maw();
     new spell_naraxas_toxic_retch();
     new spell_naraxas_spiked_tongue();
-    new spell_naraxas_devourging_aura();
     new at_toxic_retch();
     new at_rancid_maw();
     new mob_angry_crowd();

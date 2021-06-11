@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -160,9 +160,46 @@ WorldPacket const* WorldPackets::Instance::InstanceEncounterGainCombatResurrecti
     return &_worldPacket;
 }
 
-WorldPacket const* WorldPackets::Instance::BossKillCredit::Write()
+WorldPacket const* WorldPackets::Instance::BossKill::Write()
 {
     _worldPacket << uint32(DungeonEncounterID);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Instance::EncounterStart::Write()
+{
+    _worldPacket << uint32(EncounterID);
+    _worldPacket << uint32(DifficultyID);
+    _worldPacket << uint32(GroupSize);
+    _worldPacket << uint32(0);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Instance::EncounterEnd::Write()
+{
+    _worldPacket << EncounterID;
+    _worldPacket << DifficultyID;
+    _worldPacket << GroupSize;
+    _worldPacket.WriteBit(Success);
+    _worldPacket.FlushBits();
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Instance::InstanceEncounterUpdateAllowingRelease::Write()
+{
+    _worldPacket.WriteBit(ReleaseAllowed);
+    _worldPacket.FlushBits();
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Instance::InstanceEncounterUpdateSuppressingRelease::Write()
+{
+    _worldPacket.WriteBit(ReleaseDisabled);
+    _worldPacket.FlushBits();
 
     return &_worldPacket;
 }

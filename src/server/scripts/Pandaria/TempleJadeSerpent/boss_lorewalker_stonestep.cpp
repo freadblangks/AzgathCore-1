@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
- * Copyright (C) 2016 Firestorm Servers <https://firestorm-servers.com>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -260,7 +259,7 @@ class boss_lorewalker_stonestep : public CreatureScript
                                 TempSummon* temp = me->SummonCreature(CREATURE_OSONG, 842.752f, -2468.911f, 174.959f);
                                 if (!temp)
                                     break;
-                                temp->setFaction(14);
+                                temp->SetFaction(14);
                                 temp->Attack(SelectTarget(SELECT_TARGET_RANDOM), true);
                                 temp->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
                                 temp->SetFacingTo(1.239f);
@@ -365,7 +364,7 @@ class mob_zao : public CreatureScript
                 {
                     attacker->ToCreature()->ForcedDespawn();
                     isCorrupted = true;
-                    me->setFaction(14);
+                    me->SetFaction(14);
                     me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
                     me->CastSpell(me, SPELL_SHA_CORRUPTION_2, false);
                 }
@@ -469,7 +468,7 @@ class mob_haunting_sha : public CreatureScript
         {
             mob_haunting_sha_AI(Creature* creature) : BossAI(creature, BOSS_ZAO_SUNSEEKER)
             {
-                me->setFaction(14);
+                me->SetFaction(14);
                 me->CastSpell(me, SPELL_EXTRACT_SHA, false);
             }
 
@@ -548,7 +547,7 @@ class mob_strife : public CreatureScript
         {
             mob_strife_AI(Creature* creature) : BossAI(creature, BOSS_STRIFE)
             {
-                me->setFaction(14);
+                me->SetFaction(14);
                 timer_intensity = TIMER_INTENSITY;
                 timer_dissipation = TIMER_DISSIPATION;
                 countIntensity = 0;
@@ -645,7 +644,7 @@ class mob_peril : public CreatureScript
         {
             mob_peril_AI(Creature* creature) : BossAI(creature, BOSS_PERIL)
             {
-                me->setFaction(14);
+                me->SetFaction(14);
                 timer_intensity = TIMER_INTENSITY;
                 timer_dissipation = TIMER_DISSIPATION;
                 countIntensity = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -194,4 +194,12 @@ void WorldPackets::NPC::SetPetSlot::Read()
     _worldPacket >> PetNumber;
     _worldPacket >> DestSlot;
     _worldPacket >> StableMaster;
+}
+
+WorldPacket const* WorldPackets::NPC::OpenAlliedRaceDetails::Write()
+{
+    _worldPacket << Guid;
+    _worldPacket << RaceId;
+
+    return &_worldPacket;
 }

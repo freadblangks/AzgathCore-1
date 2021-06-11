@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -199,6 +199,7 @@ class TC_GAME_API SmartAI : public CreatureAI
         void OnSpellClick(Unit* clicker, bool& result) override;
 
         void SetWPPauseTimer(uint32 time) { mWPPauseTimer = time; }
+        void SetGossipReturn(bool val) { _gossipReturn = val; }
 
     private:
         bool mIsCharmed;
@@ -243,12 +244,14 @@ class TC_GAME_API SmartAI : public CreatureAI
         void CheckConditions(uint32 diff);
         bool mHasConditions;
         uint32 mConditionsTimer;
+
+        bool _gossipReturn;
 };
 
 class TC_GAME_API SmartGameObjectAI : public GameObjectAI
 {
     public:
-        SmartGameObjectAI(GameObject* g) : GameObjectAI(g) { }
+        SmartGameObjectAI(GameObject* g) : GameObjectAI(g), _gossipReturn(false) { }
         ~SmartGameObjectAI() { }
 
         void UpdateAI(uint32 diff) override;
@@ -270,8 +273,12 @@ class TC_GAME_API SmartGameObjectAI : public GameObjectAI
         void EventInform(uint32 eventId) override;
         void SpellHit(Unit* unit, const SpellInfo* spellInfo) override;
 
+        void SetGossipReturn(bool val) { _gossipReturn = val; }
+
     private:
         SmartScript mScript;
+
+        bool _gossipReturn;
 };
 
 /// Registers scripts required by the SAI scripting system

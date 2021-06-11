@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -56,7 +56,6 @@ struct boss_fenryr : public BossAI
         me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
         me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
         me->SetCanFly(false);
-        instance->SetBossState(DATA_FENRYR, NOT_STARTED);
     }
 
     bool phase2 = false;

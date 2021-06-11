@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -594,7 +594,7 @@ WorldPacket const* WorldPackets::Quest::DailyQuestsReset::Write()
     return &_worldPacket;
 }
 
-WorldPacket const* WorldPackets::Quest::WorldQuestUpdate::Write()
+WorldPacket const* WorldPackets::Quest::WorldQuestUpdateResponse::Write()
 {
     _worldPacket << uint32(WorldQuestUpdates.size());
 
@@ -610,16 +610,16 @@ WorldPacket const* WorldPackets::Quest::WorldQuestUpdate::Write()
     return &_worldPacket;
 }
 
-void WorldPackets::Quest::QueryQuestReward::Read()
+void WorldPackets::Quest::QueryTreasurePicker::Read()
 {
     _worldPacket >> QuestID;
-    _worldPacket >> Unk;
+    _worldPacket >> QuestRewardID;
 }
 
 WorldPacket const* WorldPackets::Quest::QueryQuestRewardResponse::Write()
 {
     _worldPacket << QuestID;
-    _worldPacket << Unk1;
+    _worldPacket << QuestRewardID;
     _worldPacket << uint32(ItemRewards.size());
     _worldPacket << uint32(CurrencyRewards.size());
     _worldPacket << Money;
@@ -627,13 +627,13 @@ WorldPacket const* WorldPackets::Quest::QueryQuestRewardResponse::Write()
     for (auto const& currency : CurrencyRewards)
     {
         _worldPacket << currency.CurrencyID;
-        _worldPacket << currency.Quantity;
+        _worldPacket << currency.Amount;
     }
 
     for (auto const& item : ItemRewards)
     {
         _worldPacket << item.Item;
-        _worldPacket << item.Quantity;
+        _worldPacket << item.ItemCount;
     }
 
     return &_worldPacket;

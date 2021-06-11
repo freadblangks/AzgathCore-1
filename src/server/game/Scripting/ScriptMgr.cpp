@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,9 +16,9 @@
  */
 
 #include "ScriptMgr.h"
-#include "Area.h"
 #include "AreaTrigger.h"
 #include "AreaTriggerAI.h"
+#include "BattlePayMgr.h"
 #include "Chat.h"
 #include "Conversation.h"
 #include "Creature.h"
@@ -256,7 +255,7 @@ public:
     void QueueForDelayedDelete(T&& any)
     {
         _delayed_delete_queue.push_back(
-            Trinity::make_unique<
+            std::make_unique<
                 DeleteableObject<typename std::decay<T>::type>
             >(std::forward<T>(any))
         );
@@ -407,6 +406,7 @@ class CreatureGameObjectAreaTriggerScriptRegistrySwapHooks
         // Remove deletable events only,
         // otherwise it causes crashes with non-deletable spell events.
         creature->m_Events.KillAllEvents(false);
+        creature->GetScheduler().CancelAll();
 
         if (creature->IsCharmed())
             creature->RemoveCharmedBy(nullptr);
@@ -432,6 +432,7 @@ class CreatureGameObjectAreaTriggerScriptRegistrySwapHooks
     // Hook which is called before a gameobject is swapped
     static void UnloadResetScript(GameObject* gameobject)
     {
+        gameobject->GetScheduler().CancelAll();
         gameobject->AI()->Reset();
     }
 
@@ -1677,8 +1678,17 @@ InstanceScript* ScriptMgr::CreateInstanceData(InstanceMap* map)
 {
     ASSERT(map);
 
-    GET_SCRIPT_RET(InstanceMapScript, map->GetScriptId(), tmpscript, NULL);
+    GET_SCRIPT_RET(InstanceMapScript, map->GetScriptId(), tmpscript, nullptr);
     return tmpscript->GetInstanceScript(map);
+}
+
+bool ScriptMgr::OnGossipSelect(Player* player, Item* item, uint32 uiSender, uint32 action)
+{
+    ASSERT(player);
+    ASSERT(item);
+
+    GET_SCRIPT_RET(ItemScript, item->GetScriptId(), tmpscript, false);
+    return tmpscript->OnGossipSelect(player, item, uiSender, action);
 }
 
 bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Item* target)
@@ -2010,14 +2020,14 @@ Battleground* ScriptMgr::CreateBattleground(BattlegroundTypeId /*typeId*/)
 {
     /// @todo Implement script-side battlegrounds.
     ABORT();
-    return NULL;
+    return nullptr;
 }
 
 OutdoorPvP* ScriptMgr::CreateOutdoorPvP(OutdoorPvPData const* data)
 {
     ASSERT(data);
 
-    GET_SCRIPT_RET(OutdoorPvPScript, data->ScriptId, tmpscript, NULL);
+    GET_SCRIPT_RET(OutdoorPvPScript, data->ScriptId, tmpscript, nullptr);
     return tmpscript->GetOutdoorPvP();
 }
 
@@ -2215,7 +2225,7 @@ void ScriptMgr::OnShutdown()
 bool ScriptMgr::OnCriteriaCheck(uint32 scriptId, Player* source, Unit* target)
 {
     ASSERT(source);
-    // target can be NULL.
+    // target can be nullptr.
 
     GET_SCRIPT_RET(AchievementCriteriaScript, scriptId, tmpscript, false);
     return tmpscript->OnCheck(source, target);
@@ -2377,14 +2387,19 @@ void ScriptMgr::OnPlayerBindToInstance(Player* player, Difficulty difficulty, ui
     FOREACH_SCRIPT(PlayerScript)->OnBindToInstance(player, difficulty, mapid, permanent, extendState);
 }
 
-void ScriptMgr::OnPlayerUpdateZone(Player* player, Area* newArea, Area* oldArea)
+void ScriptMgr::OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 oldZone, uint32 newArea)
 {
-    FOREACH_SCRIPT(PlayerScript)->OnUpdateZone(player, newArea, oldArea);
+    FOREACH_SCRIPT(PlayerScript)->OnUpdateZone(player, newZone, oldZone, newArea);
 }
 
-void ScriptMgr::OnPlayerUpdateArea(Player* player, Area* newArea, Area* oldArea)
+void ScriptMgr::OnPlayerUpdateArea(Player* player, uint32 newArea, uint32 oldArea)
 {
     FOREACH_SCRIPT(PlayerScript)->OnUpdateArea(player, newArea, oldArea);
+}
+
+void ScriptMgr::OnPetBattleFinish(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnPetBattleFinish(player);
 }
 
 void ScriptMgr::OnQuestAccept(Player* player, const Quest* quest)
@@ -2471,6 +2486,12 @@ void ScriptMgr::OnChargeRecoveryTimeStart(Player* player, uint32 chargeCategoryI
 {
     FOREACH_SCRIPT(PlayerScript)->OnChargeRecoveryTimeStart(player, chargeCategoryId, chargeRecoveryTime);
 }
+
+void ScriptMgr::OnPlayerStartChallengeMode(Player* player, uint8 level, uint8 affix1, uint8 affix2, uint8 affix3)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnStartChallengeMode(player, level, affix1, affix2, affix3);
+}
+
 
 // Account
 void ScriptMgr::OnAccountLogin(uint32 accountId)
@@ -2735,6 +2756,42 @@ FormulaScript::FormulaScript(const char* name)
     ScriptRegistry<FormulaScript>::Instance()->AddScript(this);
 }
 
+BattlePayProductScript::BattlePayProductScript(const char* name) : ScriptObject(name)
+{
+    ScriptRegistry<BattlePayProductScript>::Instance()->AddScript(this);
+}
+
+void ScriptMgr::RegisterBattlePayProductScript(std::string scriptName, BattlePayProductScript* script)
+{
+    if (_battlePayProductScripts.find(scriptName) == _battlePayProductScripts.end())
+        _battlePayProductScripts[scriptName] = script;
+}
+
+void ScriptMgr::OnBattlePayProductDelivery(WorldSession* session, Battlepay::Product const& product)
+{
+    auto itr = _battlePayProductScripts.find(product.ScriptName);
+    if (itr != _battlePayProductScripts.end())
+        itr->second->OnProductDelivery(session, product);
+}
+
+bool ScriptMgr::BattlePayCanBuy(WorldSession* session, Battlepay::Product const& product, std::string& reason)
+{
+    auto itr = _battlePayProductScripts.find(product.ScriptName);
+    if (itr == _battlePayProductScripts.end())
+        return true;
+
+    return itr->second->CanBuy(session, product, reason);
+}
+
+std::string ScriptMgr::BattlePayGetCustomData(Battlepay::Product const& product)
+{
+    auto itr = _battlePayProductScripts.find(product.ScriptName);
+    if (itr == _battlePayProductScripts.end())
+        return "";
+
+    return itr->second->GetCustomData(product);
+}
+
 UnitScript::UnitScript(const char* name, bool addToScripts)
     : ScriptObject(name)
 {
@@ -2972,3 +3029,4 @@ template class TC_GAME_API ScriptRegistry<ConversationScript>;
 template class TC_GAME_API ScriptRegistry<SceneScript>;
 template class TC_GAME_API ScriptRegistry<QuestScript>;
 template class TC_GAME_API ScriptRegistry<ZoneScript>;
+template class TC_GAME_API ScriptRegistry<BattlePayProductScript>;

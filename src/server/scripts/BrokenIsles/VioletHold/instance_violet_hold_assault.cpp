@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -122,11 +122,11 @@ class instance_violet_hold_assault : public InstanceMapScript
                 while (_secondBoss == _firstBoss)
                     _secondBoss = BossesId[urand(0,5)];
 
-               // if (Difficulty(instance->GetSpawnMode()) == DIFFICULTY_MYTHIC)
+                if (Difficulty(instance->GetDifficultyID()) == DIFFICULTY_MYTHIC)
                     _criteriaToFind = CRITERIA_MYTHIC_STAGE_1;
-               // else if (Difficulty(instance->GetSpawnMode()) == DIFFICULTY_HEROIC)
+                else if (Difficulty(instance->GetDifficultyID()) == DIFFICULTY_HEROIC)
                     _criteriaToFind = CRITERIA_HEROIC_STAGE_1;
-               // else
+                else
                     _criteriaToFind = CRITERIA_NORMAL_STAGE_1;
 
                 _eliteDead = 0;
@@ -152,7 +152,7 @@ class instance_violet_hold_assault : public InstanceMapScript
             {
                 if (!unit)
                     return;
-
+/*
                 switch (unit->GetEntry())
                 {
                     case NPC_PORTAL_JAILER:
@@ -161,7 +161,7 @@ class instance_violet_hold_assault : public InstanceMapScript
                     case NPC_PORTAL_INQUISITOR:
                     {
                         CriteriaTree const* tree = sCriteriaMgr->GetCriteriaTree(_criteriaToFind);
-                        if (!instance->ToInstanceMap()->GetInstanceScenario()->CheckCompletedCriteriaTree(tree, nullptr))
+                        if (!instance->GetInstanceScenario()->CheckCompletedCriteriaTree(tree, nullptr))
                             _events.ScheduleEvent(EVENT_INIT_ROUND, Seconds(20));
                         break;
                     }
@@ -200,7 +200,7 @@ class instance_violet_hold_assault : public InstanceMapScript
                     }
 
                     default : break;
-                }
+                }*/
             }
 
             void TriggerCriteria(uint32 /*entry*/)
@@ -382,13 +382,13 @@ class instance_violet_hold_assault : public InstanceMapScript
                     case BOSS_BLOOD_PRINCESS:
                     case BOSS_FESTERFACE:
                     case BOSS_MINDFLAYER_KAARHJ:
-                        creature->setFaction(35);
+                        creature->SetFaction(35);
                         _guids.push_back(NpcInfo(creature->GetEntry(), creature->GetGUID()));
                         break;
 
                     case BOSS_BELTRUG:
                     case BOSS_SAELORN:
-                        creature->setFaction(35);
+                        creature->SetFaction(35);
                         creature->SetVisible(false);
                         _guids.push_back(NpcInfo(creature->GetEntry(), creature->GetGUID()));
                         break;
@@ -397,7 +397,7 @@ class instance_violet_hold_assault : public InstanceMapScript
                 }
             }
 
-            void Update(uint32 diff) override
+            /*void Update(uint32 diff) override
             {
                 _events.Update(diff);
 
@@ -444,7 +444,7 @@ class instance_violet_hold_assault : public InstanceMapScript
                                 {
                                     UnlockDoor(boss);
                                     boss->RemoveAllAuras();
-                                    boss->setFaction(16);
+                                    boss->SetFaction(16);
                                     boss->GetMotionMaster()->MovePoint(0, boss->GetNearPosition(10, 0));
                                 }
 
@@ -464,7 +464,7 @@ class instance_violet_hold_assault : public InstanceMapScript
                                 {
                                     UnlockDoor(boss);
                                     boss->RemoveAllAuras();
-                                    boss->setFaction(16);
+                                    boss->SetFaction(16);
                                     boss->GetMotionMaster()->MovePoint(0, boss->GetNearPosition(10, 0));
                                 }
 
@@ -486,7 +486,7 @@ class instance_violet_hold_assault : public InstanceMapScript
                                     boss->SetVisible(true);
                                     boss->NearTeleportTo(CenterRoom, true);
                                     boss->RemoveAllAuras();
-                                    boss->setFaction(16);
+                                    boss->SetFaction(16);
                                 }
                             }
 
@@ -497,7 +497,7 @@ class instance_violet_hold_assault : public InstanceMapScript
                     }
                 }
 
-            }
+            }*/
 
             private:
                 uint8 _eliteDead;

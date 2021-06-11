@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -480,17 +480,17 @@ class boss_flame_leviathan : public CreatureScript
             {
                 if (action && action <= 4) // Tower destruction, debuff leviathan loot and reduce active tower count
                 {
-                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HARD_MODE_1 | LOOT_MODE_HARD_MODE_2 | LOOT_MODE_HARD_MODE_3 | LOOT_MODE_HARD_MODE_4) && ActiveTowersCount == 4)
-                        me->RemoveLootMode(LOOT_MODE_HARD_MODE_4);
+                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HEROIC | LOOT_MODE_25_N | LOOT_MODE_MYTHIC_KEYSTONE | LOOT_MODE_MYTHIC_RAID) && ActiveTowersCount == 4)
+                        me->RemoveLootMode(LOOT_MODE_MYTHIC_RAID);
 
-                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HARD_MODE_1 | LOOT_MODE_HARD_MODE_2 | LOOT_MODE_HARD_MODE_3) && ActiveTowersCount == 3)
-                        me->RemoveLootMode(LOOT_MODE_HARD_MODE_3);
+                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HEROIC | LOOT_MODE_25_N | LOOT_MODE_MYTHIC_KEYSTONE) && ActiveTowersCount == 3)
+                        me->RemoveLootMode(LOOT_MODE_MYTHIC_KEYSTONE);
 
-                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HARD_MODE_1 | LOOT_MODE_HARD_MODE_2) && ActiveTowersCount == 2)
-                        me->RemoveLootMode(LOOT_MODE_HARD_MODE_2);
+                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HEROIC | LOOT_MODE_25_N) && ActiveTowersCount == 2)
+                        me->RemoveLootMode(LOOT_MODE_25_N);
 
-                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HARD_MODE_1) && ActiveTowersCount == 1)
-                        me->RemoveLootMode(LOOT_MODE_HARD_MODE_1);
+                    if (me->HasLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HEROIC) && ActiveTowersCount == 1)
+                        me->RemoveLootMode(LOOT_MODE_HEROIC);
                 }
 
                 switch (action)
@@ -529,7 +529,7 @@ class boss_flame_leviathan : public CreatureScript
                         towerOfLife = true;
                         towerOfFlames = true;
                         towerOfFrost = true;
-                        me->SetLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HARD_MODE_1 | LOOT_MODE_HARD_MODE_2 | LOOT_MODE_HARD_MODE_3 | LOOT_MODE_HARD_MODE_4);
+                        me->SetLootMode(LOOT_MODE_DEFAULT | LOOT_MODE_HEROIC | LOOT_MODE_25_N | LOOT_MODE_MYTHIC_KEYSTONE | LOOT_MODE_MYTHIC_RAID);
                         break;
                     case ACTION_MOVE_TO_CENTER_POSITION: // Triggered by 2 Collossus near door
                         if (!me->isDead())
@@ -607,7 +607,7 @@ class boss_flame_leviathan_seat : public CreatureScript
                     if (Unit* turretPassenger = me->GetVehicleKit()->GetPassenger(SEAT_TURRET))
                         if (Creature* turret = turretPassenger->ToCreature())
                         {
-                            turret->setFaction(me->GetVehicleBase()->getFaction());
+                            turret->SetFaction(me->GetVehicleBase()->getFaction());
                             turret->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE); // unselectable
                             turret->AI()->AttackStart(who);
                         }
@@ -1006,7 +1006,7 @@ public:
             npc_escortAI::UpdateAI(diff);
 
             if (!HasEscortState(STATE_ESCORT_ESCORTING))
-                Start(false, true, ObjectGuid::Empty, NULL, false, true);
+                Start(false, true, ObjectGuid::Empty, nullptr, false, true);
             else
             {
                 if (infernoTimer <= diff)
@@ -1030,7 +1030,7 @@ public:
     {
         return GetUlduarAI<npc_mimirons_infernoAI>(creature);
     }
-};
+};;
 
 class npc_hodirs_fury : public CreatureScript
 {
@@ -1737,11 +1737,11 @@ class spell_vehicle_throw_passenger : public SpellScriptLoader
                         {
                             // use 99 because it is 3d search
                             std::list<WorldObject*> targetList;
-                            Trinity::WorldObjectSpellAreaTargetCheck check(99, GetExplTargetDest(), GetCaster(), GetCaster(), GetSpellInfo(), TARGET_CHECK_DEFAULT, NULL);
+                            Trinity::WorldObjectSpellAreaTargetCheck check(99, GetExplTargetDest(), GetCaster(), GetCaster(), GetSpellInfo(), TARGET_CHECK_DEFAULT, nullptr);
                             Trinity::WorldObjectListSearcher<Trinity::WorldObjectSpellAreaTargetCheck> searcher(GetCaster(), targetList, check);
                             Cell::VisitAllObjects(GetCaster(), searcher, 99.0f);
                             float minDist = 99 * 99;
-                            Unit* target = NULL;
+                            Unit* target = nullptr;
                             for (std::list<WorldObject*>::iterator itr = targetList.begin(); itr != targetList.end(); ++itr)
                             {
                                 if (Unit* unit = (*itr)->ToUnit())

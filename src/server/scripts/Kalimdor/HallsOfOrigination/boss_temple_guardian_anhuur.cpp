@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -318,7 +317,7 @@ class boss_anhuur : public CreatureScript
             {
                 if(Creature * stalker = player->FindNearestCreature(NPC_CAVE_IN_STALKER, 100.0f))
                     stalker->CastSpell(stalker, SPELL_BURNING_LIGHT_2, true, NULL, NULL, me->GetGUID());
-                summon->setFaction(14);
+                summon->SetFaction(14);
                 targetGUID = ObjectGuid::Empty;
             }
         }

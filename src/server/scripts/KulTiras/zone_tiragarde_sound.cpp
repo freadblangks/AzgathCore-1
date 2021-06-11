@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+* Copyright (C) 2020 AzgathCore
 *
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -19,6 +19,7 @@
 #include "GameObject.h"
 #include "GameObjectAI.h"
 #include "ObjectAccessor.h"
+#include "ObjectMgr.h"
 #include "Player.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
@@ -27,6 +28,7 @@
 #include "ScriptMgr.h"
 #include "TemporarySummon.h"
 #include "Vehicle.h"
+#include "PhasingHandler.h"
 
 enum eTiragardeQuests
 {
@@ -40,6 +42,7 @@ enum eTiragardeQuests
     QUEST_GET_YOUR_BEARINGS = 47099,
     QUEST_THE_OLD_KNIGHT = 46729,
     QUEST_NATION_DIVIDED = 47189,
+    QUEST_NATION_UNITED = 52151,
 };
 
 enum Intro
@@ -88,7 +91,7 @@ struct npc_jaina_boralus_intro : public ScriptedAI
 
     void sQuestAccept(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() == QUEST_DAUGHTER_OF_THE_SEA)
+        if (quest->ID == QUEST_DAUGHTER_OF_THE_SEA)
             player->CastSpell(player, SPELL_PROUDMOORE_KEEP_ESCORT, true);
     }
 };
@@ -162,6 +165,14 @@ struct npc_flynn_fairwind : public ScriptedAI
 {
     npc_flynn_fairwind(Creature* creature) : ScriptedAI(creature) { }
 
+    void Reset() override
+    {
+        if (me->GetAreaId() != 8978)
+            me->AddNpcFlag(UNIT_NPC_FLAG_GOSSIP);
+        me->SetReactState(REACT_PASSIVE);
+        me->AddUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
+    };
+
     enum FlynnTalks
     {
         TALK_HERES_PLAN = 6,
@@ -183,7 +194,7 @@ struct npc_flynn_fairwind : public ScriptedAI
 
     void sQuestAccept(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() == QUEST_OUT_LIKE_FLYNN)
+        if (quest->ID == QUEST_OUT_LIKE_FLYNN)
         {
             if (Creature* flynn = player->SummonCreature(me->GetEntry(), me->GetPosition(), TEMPSUMMON_CORPSE_DESPAWN, 0, 0, true))
             {
@@ -284,10 +295,11 @@ struct npc_flynn_fairwind : public ScriptedAI
             {
                 me->GetMotionMaster()->MovePoint(3, 165.596573f, -2707.874756f, 28.877989f);
             })
-                .Schedule(14s, [this](TaskContext /*context*/)
+                .Schedule(14s, [this, ashvaneJailer, caster](TaskContext /*context*/)
             {
                 me->SetFacingTo(2.540090f);
                 Talk(TALK_HIT_THAT_LEVER);
+                caster->RemoveAura(SPELL_PRISONER);
             });
         }
     }
@@ -332,6 +344,9 @@ struct npc_flynn_fairwind_follower : public FollowerAI
 
     void Reset() override
     {
+        me->SetReactState(REACT_PASSIVE);
+        me->SetLevel(120);
+        me->AddUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
         me->GetScheduler().Schedule(1s, [this](TaskContext context)
         {
             if (me->FindNearestGameObject(GOB_CELL_BLOCK_GATE, 10.f))
@@ -634,17 +649,39 @@ public:
     }
 };
 
-// 137009
+// 122370
 class npc_cyrus_crestfall : public ScriptedAI
 {
 public:
     npc_cyrus_crestfall(Creature* creature) : ScriptedAI(creature) { }
 
-    void sGossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/) override
+    void sGossipSelect(Player* plr, uint32 /*menuId*/, uint32 /*gossipListId*/) override
     {
-        player->KilledMonsterCredit(137009);
-        player->PlayConversation(7653);
-        CloseGossipMenuFor(player);
+		if (plr->HasQuest(QUEST_THE_OLD_KNIGHT))
+		{
+            plr->KilledMonsterCredit(122370);
+			plr->KilledMonsterCredit(137009);
+			plr->PlayConversation(7653);
+			CloseGossipMenuFor(plr);
+		}
+
+        /* quest - Send the Fleet 56043 */
+        if (plr->HasQuest(56043))
+        {
+            CloseGossipMenuFor(plr);
+            plr->ForceCompleteQuest(56043);
+            Talk(0);
+
+            plr->GetScheduler().Schedule(Seconds(3), [plr](TaskContext context)
+            {
+                // tele to nazjatar
+                WorldLocation location(1718, 166.361f, -476.148f, -29.146f, 6.267f);
+                plr->TeleportTo(location);
+
+                // boat ride movie
+                plr->SendMovieStart(883);
+            });
+        }
     }
 };
 
@@ -681,8 +718,10 @@ public:
 
     void sQuestAccept(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() == QUEST_NATION_DIVIDED)
+        if (quest->ID == QUEST_NATION_DIVIDED)
             player->CastSpell(player, SPELL_SCENE_NATION_DIVIDED, true);
+        else if (quest->ID == 47099)
+            player->CastSpell(player, 247528, true);   
     }
 
     void sGossipSelect(Player* player, uint32 /*menuId*/, uint32 /*gossipListId*/) override
@@ -725,10 +764,10 @@ public:
 
     void sQuestAccept(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() == QUEST_LOVESICK_ID)
+        if (quest->ID == QUEST_LOVESICK_ID)
         {
             me->DestroyForPlayer(player);
-            player->CastSpell(nullptr, SPELL_SUMMON_FLYNN_ESCORT_ID, true);
+            player->CastSpell(player, SPELL_SUMMON_FLYNN_ESCORT_ID, true);
         }
     }
 };
@@ -741,8 +780,8 @@ public:
 
     enum
     {
-        NPC_FLYNN_ENTRY = 126158,
-        SPELL_LOVESTRUCK = 245526,
+        NPC_FLYNN_ENTRY    = 126158,
+        SPELL_LOVESTRUCK   = 245526,
         SPELL_BROKEN_HEART = 250911
     };
 
@@ -867,7 +906,7 @@ public:
 
     void sQuestAccept(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() != QUEST_BACKUP_WILL_I_PACK)
+        if (quest->ID != QUEST_BACKUP_WILL_I_PACK)
             return;
 
         players.push_back(player);
@@ -1016,7 +1055,7 @@ public:
 
     void sQuestAccept(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() == QUEST_HOLD_MY_HAND)
+        if (quest->ID == QUEST_HOLD_MY_HAND)
         {
             player->CastSpell(player, SPELL_CANCEL_ESCORT_PENNY);
             player->CastSpell(player, SPELL_ESCORTING_PENNY_HARDWICK);
@@ -1139,11 +1178,117 @@ public:
 
     void sQuestAccept(Player* player, Quest const* quest) override
     {
-        if (quest->GetQuestId() == QUEST_TO_THE_FRONT)
+        if (quest->ID == QUEST_TO_THE_FRONT)
 		{
             player->KilledMonsterCredit(NPC_YVERA_DAWNWING_KILLCREDIT);
             player->CastSpell(player, SPELL_TELEPORT_TO_STROMGARDE);
         }
+    }
+};
+
+class boralus_harbor : public PlayerScript
+{
+public:
+    boralus_harbor() : PlayerScript("boralus_harbor") { }
+
+    uint32 timer = 100;
+
+    void OnUpdate(Player* plr, uint32 diff) override
+    {
+        if (timer <= diff && plr->GetZoneId() == 8717 || plr->GetZoneId() == 8567 && plr->GetPhaseShift().HasPhase(180))
+        {            
+            PhasingHandler::RemovePhase(plr, 180, true);
+            if (plr->HasAura(78517))
+                plr->RemoveAura(78517);
+        }
+        else
+            timer -= diff;
+    }
+};
+
+class old_knight_check : public PlayerScript
+{
+public:
+    old_knight_check() : PlayerScript("old_knight_check") { }
+
+    void OnLogin(Player* plr, bool /*firstLogin*/)
+    {        
+        if (plr->GetZoneId() == 8717 || plr->GetZoneId() == 8567 && plr->GetQuestStatus(QUEST_THE_OLD_KNIGHT) != QUEST_STATUS_REWARDED && plr->getLevel() >= 110 && plr->GetTeam() == ALLIANCE && plr->GetQuestStatus(QUEST_GET_YOUR_BEARINGS) == QUEST_STATUS_REWARDED)
+        {
+            if (const Quest* qu = sObjectMgr->GetQuestTemplate(QUEST_THE_OLD_KNIGHT))
+                plr->AddQuest(qu, nullptr);
+        }
+    }
+};
+
+//121144
+class npc_katherine_proudmoore_121144 : public ScriptedAI
+{
+public:
+	npc_katherine_proudmoore_121144(Creature* c) : ScriptedAI(c) { }
+
+	void MoveInLineOfSight(Unit* u) override
+	{
+        if (u->IsPlayer())
+            if (Player* plr = u->ToPlayer())
+                if (plr->GetQuestStatus(QUEST_NATION_UNITED) == QUEST_STATUS_INCOMPLETE)
+                    plr->ForceCompleteQuest(QUEST_NATION_UNITED);
+	}
+};
+
+enum WarCampaign80
+{
+    //Alliance
+    QUEST_HEART_OF_DARKNESS = 51088, //Nazmir
+    QUEST_VOYAGE_TO_THE_WEST = 51283, //Voldun
+    QUEST_THE_ABYSSAL_SCEPTER = 54171, //Zuldazar
+    QUEST_OVERSEAS_ASSASINATION = 52026, //Voldun
+};
+
+//135681
+class npc_grand_admiral_jes_tereth_135681 : public CreatureScript
+{
+public:
+    npc_grand_admiral_jes_tereth_135681() : CreatureScript("npc_grand_admiral_jes_tereth_135681") { }
+
+    bool OnGossipHello(Player* player, Creature* creature) override
+    {
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Set sail for Vol'dun.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 0);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Set sail for Nazmir.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Set sail for Zuldazar.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+
+        SendGossipMenuFor(player, 34711, creature->GetGUID());
+
+        player->PrepareQuestMenu(creature->GetGUID());
+
+        return true;
+    }
+
+    bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 /*sender*/, uint32 action) override
+    {
+        if (action == GOSSIP_ACTION_INFO_DEF + 0)//Set sail for Vol'dun.
+        {
+            player->TeleportTo(1642, 2831.0f, 4264.0f, 7.5f, 4.77f);
+
+            if (player->HasQuest(QUEST_OVERSEAS_ASSASINATION))
+                player->ForceCompleteQuest(QUEST_OVERSEAS_ASSASINATION);
+
+            if (player->HasQuest(QUEST_VOYAGE_TO_THE_WEST))
+                player->ForceCompleteQuest(QUEST_VOYAGE_TO_THE_WEST);
+        }
+        if (action == GOSSIP_ACTION_INFO_DEF + 1)//Set sail for Nazmir.
+        {
+            player->TeleportTo(1642, 2130.0f, 193.0f, 0.19f, 2.48f);
+
+            if (player->HasQuest(QUEST_HEART_OF_DARKNESS))
+                player->KilledMonsterCredit(136433);
+        }
+        if (action == GOSSIP_ACTION_INFO_DEF + 2)//Set sail for Zuldazar.
+        {
+            player->TeleportTo(1642, -2618.0f, 2269.0f, 12.9f, 4.98f);
+        }
+
+        return true;
     }
 };
 
@@ -1179,4 +1324,8 @@ void AddSC_zone_tiragarde_sound()
     RegisterCreatureAI(npc_penny_hardwick_escort);
     RegisterCreatureAI(npc_riding_macaw_patrol);
     RegisterCreatureAI(npc_ralston_karn);
+    RegisterPlayerScript(boralus_harbor);
+    RegisterPlayerScript(old_knight_check);
+    RegisterCreatureAI(npc_katherine_proudmoore_121144);
+    new npc_grand_admiral_jes_tereth_135681();
 }

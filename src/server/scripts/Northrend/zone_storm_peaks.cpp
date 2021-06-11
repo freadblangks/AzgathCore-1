@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -93,7 +93,7 @@ public:
             if (menuId == GOSSIP_ID && gossipListId == GOSSIP_OPTION_ID)
             {
                 CloseGossipMenuFor(player);
-                me->setFaction(113);
+                me->SetFaction(113);
                 Start(true, true, player->GetGUID());
             }
         }
@@ -1131,7 +1131,7 @@ class spell_close_rift : public SpellScriptLoader
             void HandlePeriodic(AuraEffect const* /* aurEff */)
             {
                 if (++_counter == 5)
-                    GetTarget()->CastSpell((Unit*)NULL, SPELL_DESPAWN_RIFT, true);
+                    GetTarget()->CastSpell(nullptr, SPELL_DESPAWN_RIFT, true);
             }
 
             void Register() override
@@ -1329,7 +1329,7 @@ public:
 
         void HandleScript(SpellEffIndex /*effIndex*/)
         {
-            GetHitUnit()->CastSpell((Unit*)nullptr, GetEffectValue(), true);
+            GetHitUnit()->CastSpell(nullptr, GetEffectValue(), true);
         }
 
         void Register() override
@@ -1400,7 +1400,7 @@ public: spell_claw_swipe_check() : SpellScriptLoader("spell_claw_swipe_check") {
                     }
                 }
 
-                GetTarget()->CastSpell((Unit*)nullptr, aurEff->GetAmount(), false);
+                GetTarget()->CastSpell(nullptr, aurEff->GetAmount(), false);
             }
 
             void Register() override
@@ -1445,7 +1445,7 @@ public:
                 return;
             }
 
-            GetCaster()->CastSpell((Unit*)nullptr, SPELL_FATAL_STRIKE_DAMAGE, true);
+            GetCaster()->CastSpell(nullptr, SPELL_FATAL_STRIKE_DAMAGE, true);
         }
 
         void Register() override
@@ -1514,7 +1514,7 @@ public:
 
         void HandleDummy(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
-            GetTarget()->CastSpell((Unit*)nullptr, SPELL_FIGHT_WYRM, true);
+            GetTarget()->CastSpell(nullptr, SPELL_FIGHT_WYRM, true);
         }
 
         void Register() override

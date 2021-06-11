@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,12 +20,13 @@
 
 #include "Common.h"
 #include "AsyncCallbackProcessor.h"
-#include "BigNumber.h"
+#include "AuthDefines.h"
 #include "DatabaseEnvFwd.h"
 #include "MessageBuffer.h"
 #include "Socket.h"
 #include "WorldPacketCrypt.h"
 #include "MPSCQueue.h"
+#include <array>
 #include <chrono>
 #include <functional>
 #include <mutex>
@@ -126,15 +126,15 @@ private:
     void LoadSessionPermissionsCallback(PreparedQueryResult result);
     void HandleConnectToFailed(WorldPackets::Auth::ConnectToFailed& connectToFailed);
     bool HandlePing(WorldPackets::Auth::Ping& ping);
-    void HandleEnableEncryptionAck();
+    void HandleEnterEncryptedModeAck();
 
     ConnectionType _type;
     uint64 _key;
 
-    BigNumber _serverChallenge;
+    std::array<uint8, 16> _serverChallenge;
     WorldPacketCrypt _authCrypt;
-    BigNumber _sessionKey;
-    uint8 _encryptKey[16];
+    SessionKey _sessionKey;
+    std::array<uint8, 16> _encryptKey;
 
     std::chrono::steady_clock::time_point _LastPingTime;
     uint32 _OverSpeedPings;

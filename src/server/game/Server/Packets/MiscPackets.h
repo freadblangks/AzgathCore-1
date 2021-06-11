@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -215,18 +215,18 @@ namespace WorldPackets
             uint32 MovieID = 0;
         };
 
-        class UITimeRequest final : public ClientPacket
+        class ServerTimeOffsetRequest final : public ClientPacket
         {
         public:
-            UITimeRequest(WorldPacket&& packet) : ClientPacket(CMSG_UI_TIME_REQUEST, std::move(packet)) { }
+            ServerTimeOffsetRequest(WorldPacket&& packet) : ClientPacket(CMSG_SERVER_TIME_OFFSET_REQUEST, std::move(packet)) { }
 
             void Read() override { }
         };
 
-        class UITime final : public ServerPacket
+        class ServerTimeOffset final : public ServerPacket
         {
         public:
-            UITime() : ServerPacket(SMSG_UI_TIME, 4) { }
+            ServerTimeOffset() : ServerPacket(SMSG_SERVER_TIME_OFFSET, 4) { }
 
             WorldPacket const* Write() override;
 
@@ -832,6 +832,16 @@ namespace WorldPackets
             uint32 count = 0;
         };
 
+        class StopElapsedTimer final : public ServerPacket
+        {
+        public:
+            StopElapsedTimer() : ServerPacket(SMSG_STOP_ELAPSED_TIMER, 5) { }
+
+            WorldPacket const* Write() override;
+
+            int32 TimerID = 0;
+            bool KeepTimer = false;
+        };
         class ResearchHistory final : public ClientPacket
         {
         public:
@@ -971,7 +981,7 @@ namespace WorldPackets
 
             void Read() override;
 
-            uint32 AdventureJournalID;
+            uint32 AdventureJournalID = 0;
         };
 
         class AdventureJournalStartQuest final : public ClientPacket
@@ -981,7 +991,7 @@ namespace WorldPackets
 
             void Read() override;
 
-            uint32 QuestID;
+            uint32 QuestID = 0;
         };
 
         class FactionSelectUI final : public ServerPacket
@@ -1002,22 +1012,32 @@ namespace WorldPackets
             uint32 FactionChoice = 0;
         };
 
+        class QueryCountdownTimer final : public ClientPacket
+        {
+        public:
+            QueryCountdownTimer(WorldPacket&& packet) : ClientPacket(CMSG_QUERY_COUNTDOWN_TIMER, std::move(packet)) { }
+
+            void Read() override;
+
+            TimerType Type = WORLD_TIMER_TYPE_PVP;
+        };
+
         class StartTimer final : public ServerPacket
         {
         public:
             StartTimer() : ServerPacket(SMSG_START_TIMER, 12) { }
 
-            enum TimeType: uint8
+            enum TimeType : uint8
             {
                 TIMER_TYPE_BATTLEGROUND = 0,
-                TIMER_TYPE_CHALLENGE    = 1,
+                TIMER_TYPE_CHALLENGE = 1,
             };
 
             WorldPacket const* Write() override;
 
-            uint32 Type;
-            uint32 TimeLeft;
-            uint32 TotalTime;
+            uint32 Type = 0;
+            uint32 TimeLeft = 0;
+            uint32 TotalTime = 0;
         };
 
         class StartElapsedTimer final : public ServerPacket
@@ -1027,19 +1047,16 @@ namespace WorldPackets
 
             WorldPacket const* Write() override;
 
-            uint32 TimerID;
-            uint32 CurrentDuration;
+            uint32 TimerID = 0;
+            uint32 CurrentDuration = 0;
         };
 
-        class TC_GAME_API OpenAlliedRaceDetailsGiver final : public ServerPacket
+        class ResetChallengeModeCheat final : public ClientPacket
         {
         public:
-            OpenAlliedRaceDetailsGiver() : ServerPacket(SMSG_OPEN_ALLIED_RACE_DETAILS_GIVER, 12) { }
+            ResetChallengeModeCheat(WorldPacket&& packet) : ClientPacket(CMSG_RESET_CHALLENGE_MODE_CHEAT, std::move(packet)) { }
 
-            WorldPacket const* Write() override;
-
-            ObjectGuid Guid;
-            uint32 RaceId;
+            void Read() override { };
         };
 
         class SetWarMode final : public ClientPacket
@@ -1049,8 +1066,9 @@ namespace WorldPackets
 
             void Read() override;
 
-            bool Enabled;
+            bool Enabled = false;
         };
+
     }
 }
 

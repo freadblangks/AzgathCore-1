@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -67,7 +67,8 @@ TC_GAME_API extern DB2Storage<BattlePetBreedQualityEntry>           sBattlePetBr
 TC_GAME_API extern DB2Storage<BattlePetBreedStateEntry>             sBattlePetBreedStateStore;
 TC_GAME_API extern DB2Storage<BattlePetSpeciesEntry>                sBattlePetSpeciesStore;
 TC_GAME_API extern DB2Storage<BattlePetSpeciesStateEntry>           sBattlePetSpeciesStateStore;
-TC_GAME_API extern DB2Storage<BattlePetSpeciesXAbilityEntry>        sBattlePetSpeciesXAbilityEntry;
+TC_GAME_API extern DB2Storage<BattlePetSpeciesXAbilityEntry>        sBattlePetSpeciesXAbilityStore;
+TC_GAME_API extern DB2Storage<BattlePetStateEntry>                  sBattlePetStateStore;
 TC_GAME_API extern DB2Storage<BattlemasterListEntry>                sBattlemasterListStore;
 TC_GAME_API extern DB2Storage<BroadcastTextEntry>                   sBroadcastTextStore;
 TC_GAME_API extern DB2Storage<Cfg_RegionsEntry>                     sCfgRegionsStore;
@@ -77,6 +78,8 @@ TC_GAME_API extern DB2Storage<ChatChannelsEntry>                    sChatChannel
 TC_GAME_API extern DB2Storage<ChrClassesEntry>                      sChrClassesStore;
 TC_GAME_API extern DB2Storage<ChrRacesEntry>                        sChrRacesStore;
 TC_GAME_API extern DB2Storage<ChrSpecializationEntry>               sChrSpecializationStore;
+TC_GAME_API extern DB2Storage<CharShipmentEntry>                    sCharShipmentStore;
+TC_GAME_API extern DB2Storage<CharShipmentContainerEntry>           sCharShipmentContainerStore;
 TC_GAME_API extern DB2Storage<CinematicCameraEntry>                 sCinematicCameraStore;
 TC_GAME_API extern DB2Storage<CinematicSequencesEntry>              sCinematicSequencesStore;
 TC_GAME_API extern DB2Storage<ContentTuningEntry>                   sContentTuningStore;
@@ -121,6 +124,9 @@ TC_GAME_API extern DB2Storage<GarrSiteLevelPlotInstEntry>           sGarrSiteLev
 TC_GAME_API extern DB2Storage<GemPropertiesEntry>                   sGemPropertiesStore;
 TC_GAME_API extern DB2Storage<GlobalStringsEntry>                   sGlobalStringsStore;
 TC_GAME_API extern DB2Storage<GlyphPropertiesEntry>                 sGlyphPropertiesStore;
+TC_GAME_API extern DB2Storage<GroupFinderActivityEntry>             sGroupFinderActivityStore;
+TC_GAME_API extern DB2Storage<GroupFinderActivityGrpEntry>          sGroupFinderActivityGrpStore;
+TC_GAME_API extern DB2Storage<GroupFinderCategoryEntry>             sGroupFinderCategoryStore;
 TC_GAME_API extern DB2Storage<GuildColorBackgroundEntry>            sGuildColorBackgroundStore;
 TC_GAME_API extern DB2Storage<GuildColorBorderEntry>                sGuildColorBorderStore;
 TC_GAME_API extern DB2Storage<GuildColorEmblemEntry>                sGuildColorEmblemStore;
@@ -161,6 +167,7 @@ TC_GAME_API extern DB2Storage<LFGDungeonsEntry>                     sLFGDungeons
 TC_GAME_API extern DB2Storage<LiquidTypeEntry>                      sLiquidTypeStore;
 TC_GAME_API extern DB2Storage<LockEntry>                            sLockStore;
 TC_GAME_API extern DB2Storage<MailTemplateEntry>                    sMailTemplateStore;
+TC_GAME_API extern DB2Storage<MapChallengeModeEntry>                sMapChallengeModeStore;
 TC_GAME_API extern DB2Storage<MapEntry>                             sMapStore;
 TC_GAME_API extern DB2Storage<MapChallengeModeEntry>                sMapChallengeModeStore;
 TC_GAME_API extern DB2Storage<ModifierTreeEntry>                    sModifierTreeStore;
@@ -203,6 +210,7 @@ TC_GAME_API extern DB2Storage<SpellCategoryEntry>                   sSpellCatego
 TC_GAME_API extern DB2Storage<SpellClassOptionsEntry>               sSpellClassOptionsStore;
 TC_GAME_API extern DB2Storage<SpellCooldownsEntry>                  sSpellCooldownsStore;
 TC_GAME_API extern DB2Storage<SpellDurationEntry>                   sSpellDurationStore;
+TC_GAME_API extern DB2Storage<SpellEntry>                           sSpellStore;
 TC_GAME_API extern DB2Storage<SpellEffectEntry>                     sSpellEffectStore;
 TC_GAME_API extern DB2Storage<SpellEquippedItemsEntry>              sSpellEquippedItemsStore;
 TC_GAME_API extern DB2Storage<SpellFocusObjectEntry>                sSpellFocusObjectStore;
@@ -276,12 +284,11 @@ class TC_GAME_API DB2Manager
 public:
     DEFINE_DB2_SET_COMPARATOR(MountTypeXCapabilityEntry)
 
-    struct HotfixRecord
+        struct HotfixRecord
     {
         uint32 TableHash = 0;
         int32 RecordID = 0;
         int32 HotfixID = 0;
-
         friend bool operator<(HotfixRecord const& left, HotfixRecord const& right)
         {
             return std::tie(left.HotfixID, left.TableHash, left.RecordID) < std::tie(right.HotfixID, right.TableHash, right.RecordID);
@@ -297,7 +304,7 @@ public:
 
     static DB2Manager& Instance();
 
-    void LoadStores(std::string const& dataPath, uint32 defaultLocale);
+    void LoadStores(std::string const& dataPath, LocaleConstant defaultLocale);
     DB2StorageBase const* GetStorage(uint32 type) const;
 
     void LoadHotfixData();
@@ -338,6 +345,7 @@ public:
     HeirloomEntry const* GetHeirloomByItemId(uint32 itemId) const;
     std::vector<uint32> const* GetGlyphBindableSpells(uint32 glyphPropertiesId) const;
     std::vector<uint32> const* GetGlyphRequiredSpecs(uint32 glyphPropertiesId) const;
+    static bool HasBattlePetSpeciesFlag(uint16 species, uint16 flag);
     ItemBonusList const* GetItemBonusList(uint32 bonusListId) const;
     uint32 GetItemBonusListForItemLevelDelta(int16 delta) const;
     std::set<uint32> GetDefaultItemBonusTree(uint32 itemId, ItemContext itemContext) const;
@@ -349,6 +357,7 @@ public:
     bool HasItemCurrencyCost(uint32 itemId) const;
     std::vector<ItemLimitCategoryConditionEntry const*> const* GetItemLimitCategoryConditions(uint32 categoryId) const;
     uint32 GetItemDisplayId(uint32 itemId, uint32 appearanceModId) const;
+    uint32 GetItemDIconFileDataId(uint32 itemId, uint32 appearanceModId = 0) const;
     ItemModifiedAppearanceEntry const* GetItemModifiedAppearance(uint32 itemId, uint32 appearanceModId) const;
     ItemModifiedAppearanceEntry const* GetDefaultItemModifiedAppearance(uint32 itemId) const;
     std::vector<ItemSetSpellEntry const*> const* GetItemSetSpells(uint32 itemSetId) const;
@@ -385,6 +394,8 @@ public:
     std::vector<RewardPackXItemEntry const*> const* GetRewardPackItemsByRewardID(uint32 rewardPackID) const;
     std::vector<SkillLineEntry const*> const* GetSkillLinesForParentSkill(uint32 parentSkillId) const;
     std::vector<SkillLineAbilityEntry const*> const* GetSkillLineAbilitiesBySkill(uint32 skillId) const;
+    BattlePetSpeciesEntry const* GetSpeciesBySpell(uint32 SpellID) const;
+    BattlePetSpeciesEntry const* GetSpeciesByCreatureID(uint32 CreatureID) const;
     SkillRaceClassInfoEntry const* GetSkillRaceClassInfo(uint32 skill, uint8 race, uint8 class_);
     std::vector<SpecializationSpellsEntry const*> const* GetSpecializationSpells(uint32 specId) const;
     bool IsSpecSetMember(int32 specSetId, uint32 specId) const;
@@ -400,7 +411,12 @@ public:
         int32* uiMapId = nullptr, DBCPosition2D* newPos = nullptr);
     void Zone2MapCoordinates(uint32 areaId, float& x, float& y) const;
     void Map2ZoneCoordinates(uint32 areaId, float& x, float& y) const;
+    MapChallengeModeEntry const* GetChallengeModeByMapID(uint32 mapID);
     bool IsUiMapPhase(uint32 phaseId) const;
+    double GetChallngeWeight(uint32 mapID);
+    std::vector<uint32> GetChallngeMaps();
+    std::vector<double> GetChallngesWeight();
+
     WMOAreaTableEntry const* GetWMOAreaTable(int32 rootId, int32 adtId, int32 groupId) const;
 
 private:

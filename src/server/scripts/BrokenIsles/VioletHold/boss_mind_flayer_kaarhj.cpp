@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -395,7 +395,7 @@ class spell_eternal_darkness_dmg : public SpellScriptLoader
                     GetCaster()->CastSpell(GetCaster(), SPELL_ETERNAL_DARKNESS_BUFF, true);
                 }
 
-                void Register()
+                void Register() override
                 {
                     OnEffectPeriodic += AuraEffectPeriodicFn(spell_eternal_darkness_dmg_AuraScript::HandleStacks, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
                 }

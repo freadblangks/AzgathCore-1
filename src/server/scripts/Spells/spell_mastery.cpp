@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -419,7 +419,7 @@ class spell_mage_icicle_damage : public SpellScript
             });
     }
 
-    void DoEffectHitTarget(SpellEffIndex /*effIndex*/)
+    void HandleOnHit()
     {
         Unit* explTarget = GetExplTargetUnit();
         Unit* hitUnit = GetHitUnit();
@@ -434,8 +434,13 @@ class spell_mage_icicle_damage : public SpellScript
 
     void Register() override
     {
-        OnEffectHitTarget += SpellEffectFn(spell_mage_icicle_damage::DoEffectHitTarget, EFFECT_0, SPELL_EFFECT_DUMMY);
+        OnHit += SpellHitFn(spell_mage_icicle_damage::HandleOnHit);
     }
+};
+
+enum
+{
+    SPELL_MAGE_SEARING_TOUCH = 269644,
 };
 
 // 12846 - Mastery : Ignite
@@ -448,6 +453,26 @@ public:
     class spell_mastery_ignite_SpellScript : public SpellScript
     {
         PrepareSpellScript(spell_mastery_ignite_SpellScript);
+
+        void HandleOnHit()
+        {
+            Unit* caster = GetCaster();
+            Unit* target = GetHitUnit();
+            if (caster->HasAura(SPELL_MAGE_SEARING_TOUCH))
+            {
+                if (!target->HealthBelowPct(31))
+                {
+                    //Scorch deals 150 % increased damage
+                    SetHitDamage(GetHitDamage() + GetHitDamage() / 2);
+                }
+                else
+                {                    
+                    //and is a guaranteed Critical Strike when the target is below 30 % health.
+                    int32 critChance = caster->ToPlayer()->GetRatingBonusValue(CR_CRIT_SPELL) * 100;
+                    SetHitDamage(GetHitDamage() + GetHitDamage() / 2 + critChance);
+                }
+            }
+        }
 
         void HandleAfterHit()
         {
@@ -479,7 +504,8 @@ public:
                                     }
                                 }
 
-                                caster->CastCustomSpell(target, SPELL_MAGE_IGNITE_AURA, &basePoints, NULL, NULL, true);
+                                if (target->IsHostileTo(caster))
+                                    caster->CastCustomSpell(target, SPELL_MAGE_IGNITE_AURA, &basePoints, NULL, NULL, true);
                             }
                         }
                     }
@@ -489,6 +515,7 @@ public:
 
         void Register() override
         {
+            OnHit += SpellHitFn(spell_mastery_ignite_SpellScript::HandleOnHit);
             AfterHit += SpellHitFn(spell_mastery_ignite_SpellScript::HandleAfterHit);
         }
     };
@@ -583,6 +610,9 @@ class spell_mage_mastery_ignite : public AuraScript
                 }
                 if (target)
                 {
+                    if (target->IsFriendlyTo(caster) || !target->IsVisible() || target->IsFriendlyTo(caster) || target->HasUnitFlag(UNIT_FLAG_IMMUNE_TO_PC) || target->HasUnitFlag(UNIT_FLAG_IMMUNE_TO_NPC) || target->HasUnitFlag(UNIT_FLAG_NON_ATTACKABLE))
+                        return;
+
                     // copy values of base dot
                     caster->AddAura(SPELL_MAGE_IGNITE_AURA, target);
                     if (Aura* ignite = target->GetAura(SPELL_MAGE_IGNITE_AURA, caster->GetGUID()))

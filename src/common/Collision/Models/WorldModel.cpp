@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -359,7 +358,7 @@ namespace VMAP
         triangles.clear();
         vertices.clear();
         delete iLiquid;
-        iLiquid = NULL;
+        iLiquid = nullptr;
 
         if (result && fread(&iBound, sizeof(G3D::AABox), 1, rf) != 1) result = false;
         if (result && fread(&iMogpFlags, sizeof(uint32), 1, rf) != 1) result = false;
@@ -559,6 +558,7 @@ namespace VMAP
         groupTree.intersectPoint(p, callback);
         if (callback.hit != groupModels.end())
         {
+            info.rootId = RootWMOID;
             info.hitModel = &(*callback.hit);
             dist = callback.zDist;
             return true;

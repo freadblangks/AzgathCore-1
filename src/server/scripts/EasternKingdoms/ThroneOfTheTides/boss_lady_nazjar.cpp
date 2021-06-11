@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011-2012 Project SkyFire <http://www.projectskyfire.org/>
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -181,7 +181,7 @@ public:
                     {
                         DoZoneInCombat(creature);
                         float x,y,z;
-                        creature->GetClosePoint(x, y, z, creature->GetCombatReach(), 10);
+                        creature->GetClosePoint(x, y, z, creature->GetObjectSize(), 10);
                         creature->GetMotionMaster()->MoveJump(x, y, 807.638f, 0.0f, 15, 15);
                     }
 

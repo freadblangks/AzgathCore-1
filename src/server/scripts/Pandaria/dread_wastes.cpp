@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
- * Copyright (C) 2016 Firestorm Servers <https://firestorm-servers.com>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1904,7 +1903,7 @@ class mob_klaxxi_traitor : public CreatureScript
             {
                 if (action == ACTION_START_COMBAT)
                 {
-                    me->setFaction(14);
+                    me->SetFaction(14);
 
                     if (Player* player = ObjectAccessor::GetPlayer(*me, playerGUID))
                         AttackStart(player);

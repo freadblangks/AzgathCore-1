@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -38,6 +38,26 @@ struct GtArtifactLevelXPEntry
 struct GtBarberShopCostBaseEntry
 {
     float Cost = 0.0f;
+};
+
+struct GtBattlePetTypeDamageModEntry
+{
+    float Humanoid = 0.0f;
+    float Dragonkin = 0.0f;
+    float Flying = 0.0f;
+    float Undead = 0.0f;
+    float Critter = 0.0f;
+    float Magic = 0.0f;
+    float Elemental = 0.0f;
+    float Beast = 0.0f;
+    float Aquatic = 0.0f;
+    float Mechanical = 0.0f;
+};
+
+struct GtBattlePetXPEntry
+{
+    float Wins = 0.0f;
+    float Xp = 0.0f;
 };
 
 struct GtBaseMPEntry
@@ -120,9 +140,41 @@ struct GtItemSocketCostPerLevelEntry
     float SocketCost = 0.0f;
 };
 
+struct GtNpcDamageByClassEntry
+{
+    float Rogue = 0.0f;
+    float Druid = 0.0f;
+    float Hunter = 0.0f;
+    float Mage = 0.0f;
+    float Paladin = 0.0f;
+    float Priest = 0.0f;
+    float Shaman = 0.0f;
+    float Warlock = 0.0f;
+    float Warrior = 0.0f;
+    float DeathKnight = 0.0f;
+    float Monk = 0.0f;
+    float DemonHunter = 0.0f;
+};
+
 struct GtNpcManaCostScalerEntry
 {
     float Scaler = 0.0f;
+};
+
+struct GtNpcTotalHpEntry
+{
+    float Rogue = 0.0f;
+    float Druid = 0.0f;
+    float Hunter = 0.0f;
+    float Mage = 0.0f;
+    float Paladin = 0.0f;
+    float Priest = 0.0f;
+    float Shaman = 0.0f;
+    float Warlock = 0.0f;
+    float Warrior = 0.0f;
+    float DeathKnight = 0.0f;
+    float Monk = 0.0f;
+    float DemonHunter = 0.0f;
 };
 
 struct GtSpellScalingEntry
@@ -189,6 +241,8 @@ private:
 TC_GAME_API extern GameTable<GtArtifactKnowledgeMultiplierEntry>    sArtifactKnowledgeMultiplierGameTable;
 TC_GAME_API extern GameTable<GtArtifactLevelXPEntry>                sArtifactLevelXPGameTable;
 TC_GAME_API extern GameTable<GtBarberShopCostBaseEntry>             sBarberShopCostBaseGameTable;
+TC_GAME_API extern GameTable<GtBattlePetXPEntry>                    sBattlePetXPTable;
+TC_GAME_API extern GameTable<GtBattlePetTypeDamageModEntry>         sBattlePetTypeDamageModTable;
 TC_GAME_API extern GameTable<GtBaseMPEntry>                         sBaseMPGameTable;
 TC_GAME_API extern GameTable<GtCombatRatingsEntry>                  sCombatRatingsGameTable;
 TC_GAME_API extern GameTable<GtCombatRatingsMultByILvl>             sCombatRatingsMultByILvlGameTable;
@@ -196,7 +250,9 @@ TC_GAME_API extern GameTable<GtChallengeModeDamage>                 sChallengeMo
 TC_GAME_API extern GameTable<GtChallengeModeHealth>                 sChallengeModeHealth;
 TC_GAME_API extern GameTable<GtHpPerStaEntry>                       sHpPerStaGameTable;
 TC_GAME_API extern GameTable<GtItemSocketCostPerLevelEntry>         sItemSocketCostPerLevelGameTable;
+TC_GAME_API extern GameTable<GtNpcDamageByClassEntry>               sNpcDamageByClassGameTable[MAX_EXPANSIONS];
 TC_GAME_API extern GameTable<GtNpcManaCostScalerEntry>              sNpcManaCostScalerGameTable;
+TC_GAME_API extern GameTable<GtNpcTotalHpEntry>                     sNpcTotalHpGameTable[MAX_EXPANSIONS];
 TC_GAME_API extern GameTable<GtSpellScalingEntry>                   sSpellScalingGameTable;
 TC_GAME_API extern GameTable<GtStaminaMultByILvl>                   sStaminaMultByILvlGameTable;
 TC_GAME_API extern GameTable<GtXpEntry>                             sXpGameTable;

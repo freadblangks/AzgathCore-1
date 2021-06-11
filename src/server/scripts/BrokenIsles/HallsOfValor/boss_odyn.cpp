@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -76,7 +76,7 @@ struct boss_odyn_hov : public BossAI
         me->SetReactState(REACT_DEFENSIVE);
         me->AddUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
         me->AddUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
-        me->setFaction(35);
+        me->SetFaction(35);
         me->SetCanFly(false);
     }
 
@@ -234,7 +234,7 @@ struct boss_odyn_hov : public BossAI
                     break;
 
                 case EVENT_SAY_PRE_COMBAT:
-                    me->setFaction(14);
+                    me->SetFaction(14);
                     me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
                     me->RemoveUnitFlag(UNIT_FLAG_NOT_SELECTABLE);
                     me->SetWalk(false);
@@ -380,7 +380,7 @@ struct npc_spear_of_light : public ScriptedAI
     {
         me->SetLevel(110);
         me->CastSpell(me, 198059, true);
-        me->setFaction(14);
+        me->SetFaction(14);
         me->SetReactState(REACT_PASSIVE);
         me->SetDisplayId(11686);
         me->DespawnOrUnsummon(30000);

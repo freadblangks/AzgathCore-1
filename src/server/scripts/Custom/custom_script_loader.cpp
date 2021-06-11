@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,14 +18,9 @@
 // This is where scripts' loading functions should be declared:
 void AddSC_custom_npcs();
 void AddSC_custom_player_script();
+void AddSC_cs_world_chat();
+void AddSC_solocraft();
 void AddSC_XpWeekend();
-void AddSC_save_on_levelup();
-void AddSC_heirloom_mount_tempfix();
-void AddSC_NPC_Teleport();
-void AddSC_GOMove_commandscript();
-
-void AddSC_arwent_legit_quest_bypass();
-void AddSC_arwent_gift_mount();
 
 // ADM declaration begin
 // ADM declaration end
@@ -36,14 +31,10 @@ void AddCustomScripts()
 {
     AddSC_custom_npcs();
     AddSC_custom_player_script();
+    AddSC_cs_world_chat();
+	AddSC_solocraft();
 	AddSC_XpWeekend();
-	AddSC_save_on_levelup();
-	AddSC_heirloom_mount_tempfix();
-	AddSC_NPC_Teleport();
-    AddSC_GOMove_commandscript();
 
-    AddSC_arwent_legit_quest_bypass();
-    AddSC_arwent_gift_mount();
     // ADM call begin
     // ADM call end
 }

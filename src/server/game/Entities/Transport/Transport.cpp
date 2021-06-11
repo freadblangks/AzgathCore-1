@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -34,7 +33,7 @@
 #include <G3D/Vector3.h>
 
 Transport::Transport() : GameObject(),
-    _transportInfo(NULL), _isMoving(true), _pendingStop(false),
+    _transportInfo(nullptr), _isMoving(true), _pendingStop(false),
     _triggeredArrivalEvent(false), _triggeredDepartureEvent(false),
     _passengerTeleportItr(_passengers.begin()), _delayedAddModel(false), _delayedTeleport(false)
 {
@@ -285,7 +284,7 @@ void Transport::RemovePassenger(WorldObject* passenger)
 
     if (erased || _staticPassengers.erase(passenger)) // static passenger can remove itself in case of grid unload
     {
-        passenger->SetTransport(NULL);
+        passenger->SetTransport(nullptr);
         passenger->m_movementInfo.transport.Reset();
         TC_LOG_DEBUG("entities.transport", "Object %s removed from transport %s.", passenger->GetName().c_str(), GetName().c_str());
 
@@ -389,11 +388,11 @@ GameObject* Transport::CreateGOPassenger(ObjectGuid::LowType guid, GameObjectDat
     return go;
 }
 
-TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSummonType summonType, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, uint32 spellId /*= 0*/, uint32 vehId /*= 0*/)
+TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSummonType summonType, SummonPropertiesEntry const* properties /*= nullptr*/, uint32 duration /*= 0*/, Unit* summoner /*= nullptr*/, uint32 spellId /*= 0*/, uint32 vehId /*= 0*/)
 {
     Map* map = FindMap();
     if (!map)
-        return NULL;
+        return nullptr;
 
     uint32 mask = UNIT_MASK_SUMMON;
     if (properties)
@@ -415,20 +414,20 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
             {
                 switch (SummonTitle(properties->Title))
                 {
-                    case SummonTitle::Minion:
-                    case SummonTitle::Guardian:
-                    case SummonTitle::Runeblade:
+                case SummonTitle::Minion:
+                case SummonTitle::Guardian:
+                case SummonTitle::Runeblade:
                         mask = UNIT_MASK_GUARDIAN;
                         break;
-                    case SummonTitle::Totem:
-                    case SummonTitle::Lightwell:
+                case SummonTitle::Totem:
+                case SummonTitle::Lightwell:
                         mask = UNIT_MASK_TOTEM;
                         break;
-                    case SummonTitle::Vehicle:
-                    case SummonTitle::Mount:
+                case SummonTitle::Vehicle:
+                case SummonTitle::Mount:
                         mask = UNIT_MASK_SUMMON;
                         break;
-                    case SummonTitle::Companion:
+                case SummonTitle::Companion:
                         mask = UNIT_MASK_MINION;
                         break;
                     default:
@@ -439,7 +438,7 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
                 break;
             }
             default:
-                return NULL;
+                return nullptr;
         }
     }
 

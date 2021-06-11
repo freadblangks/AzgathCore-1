@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -820,6 +820,8 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
                     return false;
                 break;
             case SMART_EVENT_ACCEPTED_QUEST:
+                if (e.event.questaccepted.quest && !IsQuestValid(e, e.event.questaccepted.quest))
+                    return false;
             case SMART_EVENT_REWARD_QUEST:
                 if (e.event.quest.quest && !IsQuestValid(e, e.event.quest.quest))
                     return false;
@@ -918,6 +920,7 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
 
                 switch (e.GetTargetType())
                 {
+                    case SMART_TARGET_ACTION_INVOKER:
                     case SMART_TARGET_CREATURE_RANGE:
                     case SMART_TARGET_CREATURE_GUID:
                     case SMART_TARGET_CREATURE_DISTANCE:
@@ -1109,6 +1112,7 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
             break;
         case SMART_ACTION_FAIL_QUEST:
         case SMART_ACTION_OFFER_QUEST:
+        case SMART_ACTION_FORCE_COMPLETE_QUEST:
             if (!e.action.quest.quest || !IsQuestValid(e, e.action.quest.quest))
                 return false;
             break;
@@ -1647,6 +1651,10 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_MOVE_OFFSET:
         case SMART_ACTION_SET_CORPSE_DELAY:
         case SMART_ACTION_DISABLE_EVADE:
+        case SMART_ACTION_SAY:
+        case SMART_ACTION_GET_SCENARIO:
+        case SMART_ACTION_COMPLETE_SCENARIO_STEP:
+        case SMART_ACTION_COMPLETE_SCENARIO:
         case SMART_ACTION_PLAY_SPELL_VISUAL:
         case SMART_ACTION_PLAY_ORPHAN_SPELL_VISUAL:
         case SMART_ACTION_CANCEL_VISUAL:
@@ -1666,6 +1674,7 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_TRIGGER_RANDOM_TIMED_EVENT:
         case SMART_ACTION_SET_COUNTER:
         case SMART_ACTION_REMOVE_ALL_GAMEOBJECTS:
+        case SMART_ACTION_ENTER_LFG_QUEUE:
             break;
         default:
             TC_LOG_ERROR("sql.sql", "SmartAIMgr: Not handled action_type(%u), event_type(%u), Entry " SI64FMTD " SourceType %u Event %u, skipped.", e.GetActionType(), e.GetEventType(), e.entryOrGuid, e.GetScriptType(), e.event_id);

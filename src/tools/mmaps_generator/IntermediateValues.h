@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -35,8 +34,8 @@ namespace MMAP
         rcPolyMesh* polyMesh;
         rcPolyMeshDetail* polyMeshDetail;
 
-        IntermediateValues() :  heightfield(NULL), compactHeightfield(NULL),
-                                contours(NULL), polyMesh(NULL), polyMeshDetail(NULL) {}
+        IntermediateValues() :  heightfield(nullptr), compactHeightfield(nullptr),
+                                contours(nullptr), polyMesh(nullptr), polyMeshDetail(nullptr) {}
         ~IntermediateValues();
 
         void writeIV(uint32 mapID, uint32 tileX, uint32 tileY);

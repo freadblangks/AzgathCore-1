@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -86,7 +85,7 @@ class TC_COMMON_API Log
 
         void outCharDump(char const* str, uint32 account_id, uint64 guid, char const* name);
 
-        void SetRealmId(uint32 id, std::string name);
+        void SetRealmId(uint32 id);
 
         template<class AppenderImpl>
         void RegisterAppender()

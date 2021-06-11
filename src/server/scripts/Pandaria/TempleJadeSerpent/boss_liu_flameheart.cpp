@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
- * Copyright (C) 2016 Firestorm Servers <https://firestorm-servers.com>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -143,7 +142,7 @@ class boss_liu_flameheart : public CreatureScript
                 switch (action)
                 {
                 case 0:
-                    me->setFaction(35);
+                    me->SetFaction(35);
                     me->getThreatManager().resetAllAggro();
                     me->SetReactState(REACT_PASSIVE);
                     break;

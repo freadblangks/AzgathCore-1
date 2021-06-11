@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -54,7 +54,7 @@ class MySQLConnection;
 class TC_DATABASE_API SQLOperation
 {
     public:
-        SQLOperation(): m_conn(NULL) { }
+        SQLOperation(): m_conn(nullptr) { }
         virtual ~SQLOperation() { }
 
         virtual int call()

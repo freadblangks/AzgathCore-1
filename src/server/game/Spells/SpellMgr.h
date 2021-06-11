@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -74,9 +73,10 @@ enum SpellFamilyFlag
     // SPELLFAMILYFLAG2 = SpellFamilyFlags[2]
 
     // Rogue
+
     SPELLFAMILYFLAG0_ROGUE_VANISH               = 0x00000800,
-    SPELLFAMILYFLAG0_ROGUE_VAN_SPRINT           = 0x00000840, // Vanish, Sprint
-    SPELLFAMILYFLAG1_ROGUE_SHADOWSTEP           = 0x00000200, // Shadowstep
+    SPELLFAMILYFLAG0_ROGUE_VAN_SPRINT           = 0x00000860, // Vanish, Sprint
+    SPELLFAMILYFLAG1_ROGUE_SHADOWSTEP           = 0x00000240, // Shadowstep
     SPELLFAMILYFLAG0_ROGUE_KICK                 = 0x00000010, // Kick
     SPELLFAMILYFLAG1_ROGUE_DISMANTLE_SMOKE_BOMB = 0x80100000, // Dismantle, Smoke Bomb
 
@@ -624,7 +624,7 @@ class TC_GAME_API SpellMgr
         static SpellMgr* instance();
 
         // Spell correctness for client using
-        static bool IsSpellValid(SpellInfo const* spellInfo, Player* player = NULL, bool msg = true);
+        static bool IsSpellValid(SpellInfo const* spellInfo, Player* player = nullptr, bool msg = true);
 
         // Spell Ranks table
         SpellChainNode const* GetSpellChainNode(uint32 spell_id) const;
@@ -697,7 +697,7 @@ class TC_GAME_API SpellMgr
         {
             ASSERT(spellId < GetSpellInfoStoreSize());
             SpellInfo const* spellInfo = mSpellInfoMap[spellId];
-            ASSERT(spellInfo);
+            //ASSERT(spellInfo);
             return spellInfo;
         }
         uint32 GetSpellInfoStoreSize() const { return uint32(mSpellInfoMap.size()); }

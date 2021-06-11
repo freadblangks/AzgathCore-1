@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -290,7 +290,6 @@ public:
     SpellImplicitTargetInfo(uint32 target);
 
     bool IsArea() const;
-    bool IsProximityBasedAoe() const;
     SpellTargetSelectionCategories GetSelectionCategory() const;
     SpellTargetReferenceTypes GetReferenceType() const;
     SpellTargetObjectTypes GetObjectType() const;
@@ -332,7 +331,7 @@ struct TC_GAME_API ImmunityInfo
 class TC_GAME_API SpellEffectInfo
 {
 public:
-    Ashamane::AnyData Variables;
+    AzgathCore::AnyData Variables;
 
     SpellInfo const* _spellInfo;
     uint32    EffectIndex;
@@ -367,10 +366,10 @@ public:
         float ResourceCoefficient;
     } Scaling;
 
-    SpellEffectInfo() : _spellInfo(NULL), EffectIndex(0), Effect(0), ApplyAuraName(0), ApplyAuraPeriod(0),
+    SpellEffectInfo() : _spellInfo(nullptr), EffectIndex(0), Effect(0), ApplyAuraName(0), ApplyAuraPeriod(0),
                         RealPointsPerLevel(0), BasePoints(0), PointsPerResource(0), Amplitude(0), ChainAmplitude(0),
                         BonusCoefficient(0), MiscValue(0), MiscValueB(0), Mechanic(MECHANIC_NONE), PositionFacing(0),
-                        RadiusEntry(NULL), ChainTargets(0), ItemType(0), TriggerSpell(0), BonusCoefficientFromAP(0.0f), ImplicitTargetConditions(NULL) { }
+                        RadiusEntry(nullptr), ChainTargets(0), ItemType(0), TriggerSpell(0), BonusCoefficientFromAP(0.0f), ImplicitTargetConditions(nullptr) { }
     SpellEffectInfo(SpellInfo const* spellInfo, uint8 effIndex, SpellEffectEntry const* effect);
 
     bool IsEffect() const;
@@ -385,12 +384,12 @@ public:
 
     int32 CalcValue(Unit const* caster = nullptr, int32 const* basePoints = nullptr, Unit const* target = nullptr, float* variance = nullptr, uint32 castItemId = 0, int32 itemLevel = -1) const;
     int32 CalcBaseValue(Unit const* caster, Unit const* target, uint32 itemId, int32 itemLevel) const;
-    float CalcValueMultiplier(Unit* caster, Spell* spell = NULL) const;
-    float CalcDamageMultiplier(Unit* caster, Spell* spell = NULL) const;
+    float CalcValueMultiplier(Unit* caster, Spell* spell = nullptr) const;
+    float CalcDamageMultiplier(Unit* caster, Spell* spell = nullptr) const;
 
     bool HasRadius() const;
     bool HasMaxRadius() const;
-    float CalcRadius(Unit* caster = NULL, Spell* = NULL) const;
+    float CalcRadius(Unit* caster = nullptr, Spell* = nullptr) const;
 
     uint32 GetProvidedTargetMask() const;
     uint32 GetMissingTargetMask(bool srcSet = false, bool destSet = false, uint32 mask = 0) const;
@@ -583,6 +582,8 @@ class TC_GAME_API SpellInfo
 
         bool HasChannelInterruptFlag(SpellChannelInterruptFlags flag) const { return (ChannelInterruptFlags[AuraInterruptFlagIndex<SpellAuraInterruptFlags>::value] & flag) != 0; }
 
+        bool IsActiveMitigationDamage() const;
+
         bool IsExplicitDiscovery() const;
         bool IsLootCrafting() const;
         bool IsQuestTame() const;
@@ -637,9 +638,9 @@ class TC_GAME_API SpellInfo
         bool IsAuraExclusiveBySpecificPerCasterWith(SpellInfo const* spellInfo) const;
 
         SpellCastResult CheckShapeshift(uint32 form) const;
-        SpellCastResult CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player const* player = NULL) const;
+        SpellCastResult CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player const* player = nullptr) const;
         SpellCastResult CheckTarget(Unit const* caster, WorldObject const* target, bool implicit = true) const;
-        SpellCastResult CheckExplicitTarget(Unit const* caster, WorldObject const* target, Item const* itemTarget = NULL) const;
+        SpellCastResult CheckExplicitTarget(Unit const* caster, WorldObject const* target, Item const* itemTarget = nullptr) const;
         SpellCastResult CheckVehicle(Unit const* caster) const;
         bool CheckTargetCreatureType(Unit const* target) const;
 

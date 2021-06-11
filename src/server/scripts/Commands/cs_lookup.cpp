@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -68,9 +68,9 @@ public:
             { "itemset",  rbac::RBAC_PERM_COMMAND_LOOKUP_ITEMSET,  true, &HandleLookupItemSetCommand,  "" },
             { "object",   rbac::RBAC_PERM_COMMAND_LOOKUP_OBJECT,   true, &HandleLookupObjectCommand,   "" },
             { "quest",    rbac::RBAC_PERM_COMMAND_LOOKUP_QUEST,    true, &HandleLookupQuestCommand,    "" },
-            { "player",   rbac::RBAC_PERM_COMMAND_LOOKUP_PLAYER,   true, NULL,                         "", lookupPlayerCommandTable },
+            { "player",   rbac::RBAC_PERM_COMMAND_LOOKUP_PLAYER,   true, nullptr,                         "", lookupPlayerCommandTable },
             { "skill",    rbac::RBAC_PERM_COMMAND_LOOKUP_SKILL,    true, &HandleLookupSkillCommand,    "" },
-            { "spell",    rbac::RBAC_PERM_COMMAND_LOOKUP_SPELL,    true, NULL,                         "", lookupSpellCommandTable },
+            { "spell",    rbac::RBAC_PERM_COMMAND_LOOKUP_SPELL,    true, nullptr,                         "", lookupSpellCommandTable },
             { "taxinode", rbac::RBAC_PERM_COMMAND_LOOKUP_TAXINODE, true, &HandleLookupTaxiNodeCommand, "" },
             { "tele",     rbac::RBAC_PERM_COMMAND_LOOKUP_TELE,     true, &HandleLookupTeleCommand,     "" },
             { "title",    rbac::RBAC_PERM_COMMAND_LOOKUP_TITLE,    true, &HandleLookupTitleCommand,    "" },
@@ -79,7 +79,7 @@ public:
 
         static std::vector<ChatCommand> commandTable =
         {
-            { "lookup", rbac::RBAC_PERM_COMMAND_LOOKUP,  true, NULL, "", lookupCommandTable },
+            { "lookup", rbac::RBAC_PERM_COMMAND_LOOKUP,  true, nullptr, "", lookupCommandTable },
         };
         return commandTable;
     }
@@ -297,7 +297,7 @@ public:
         if (!*args)
             return false;
 
-        // Can be NULL at console call
+        // Can be nullptr at console call
         Player* target = handler->getSelectedPlayer();
 
         std::string namePart = args;
@@ -318,7 +318,7 @@ public:
             FactionEntry const* factionEntry = sFactionStore.LookupEntry(id);
             if (factionEntry)
             {
-                FactionState const* factionState = target ? target->GetReputationMgr().GetState(factionEntry) : NULL;
+                FactionState const* factionState = target ? target->GetReputationMgr().GetState(factionEntry) : nullptr;
 
                 int locale = handler->GetSessionDbcLocale();
                 std::string name = factionEntry->Name->Str[locale];
@@ -358,7 +358,7 @@ public:
                     else
                         ss << id << " - " << name << ' ' << localeNames[locale];
 
-                    if (factionState) // and then target != NULL also
+                    if (factionState) // and then target != nullptr also
                     {
                         uint32 index = target->GetReputationMgr().GetReputationRankStrIndex(factionEntry);
                         std::string rankName = handler->GetTrinityString(index);
@@ -597,7 +597,7 @@ public:
         if (!*args)
             return false;
 
-        // can be NULL at console call
+        // can be nullptr at console call
         Player* target = handler->getSelectedPlayerOrSelf();
 
         std::string namePart = args;
@@ -735,7 +735,7 @@ public:
         if (!*args)
             return false;
 
-        // can be NULL in console call
+        // can be nullptr in console call
         Player* target = handler->getSelectedPlayer();
 
         std::string namePart = args;
@@ -823,7 +823,7 @@ public:
         if (!*args)
             return false;
 
-        // can be NULL at console call
+        // can be nullptr at console call
         Player* target = handler->getSelectedPlayer();
 
         std::string namePart = args;
@@ -880,7 +880,7 @@ public:
                     SpellEffectInfo const* effect = spellInfo->GetEffect(EFFECT_0);
                     bool learn = effect ? (effect->Effect == SPELL_EFFECT_LEARN_SPELL) : false;
 
-                    SpellInfo const* learnSpellInfo = effect ? sSpellMgr->GetSpellInfo(effect->TriggerSpell) : NULL;
+                    SpellInfo const* learnSpellInfo = effect ? sSpellMgr->GetSpellInfo(effect->TriggerSpell) : nullptr;
 
                     bool talent = spellInfo->HasAttribute(SPELL_ATTR0_CU_IS_TALENT);
                     bool passive = spellInfo->IsPassive();
@@ -933,7 +933,7 @@ public:
         if (!*args)
             return false;
 
-        // can be NULL at console call
+        // can be nullptr at console call
         Player* target = handler->getSelectedPlayer();
 
         uint32 id = atoi((char*)args);
@@ -953,7 +953,7 @@ public:
             SpellEffectInfo const* effect = spellInfo->GetEffect(EFFECT_0);
             bool learn = effect? (effect->Effect == SPELL_EFFECT_LEARN_SPELL) : false;
 
-            SpellInfo const* learnSpellInfo = effect ? sSpellMgr->GetSpellInfo(effect->TriggerSpell) : NULL;
+            SpellInfo const* learnSpellInfo = effect ? sSpellMgr->GetSpellInfo(effect->TriggerSpell) : nullptr;
 
             bool talent = spellInfo->HasAttribute(SPELL_ATTR0_CU_IS_TALENT);
             bool passive = spellInfo->IsPassive();
@@ -1114,7 +1114,7 @@ public:
         if (!*args)
             return false;
 
-        // can be NULL in console call
+        // can be nullptr in console call
         Player* target = handler->getSelectedPlayer();
 
         // title name have single string arg for player name
@@ -1293,7 +1293,7 @@ public:
         Player* target = handler->getSelectedPlayer();
         if (!*args)
         {
-            // NULL only if used from console
+            // nullptr only if used from console
             if (!target || target == handler->GetSession()->GetPlayer())
                 return false;
 
@@ -1303,7 +1303,7 @@ public:
         else
         {
             ip = strtok((char*)args, " ");
-            limitStr = strtok(NULL, " ");
+            limitStr = strtok(nullptr, " ");
             limit = limitStr ? atoi(limitStr) : -1;
         }
 
@@ -1320,7 +1320,7 @@ public:
             return false;
 
         std::string account = strtok((char*)args, " ");
-        char* limitStr = strtok(NULL, " ");
+        char* limitStr = strtok(nullptr, " ");
         int32 limit = limitStr ? atoi(limitStr) : -1;
 
         if (!Utf8ToUpperOnlyLatin(account))
@@ -1339,7 +1339,7 @@ public:
             return false;
 
         std::string email = strtok((char*)args, " ");
-        char* limitStr = strtok(NULL, " ");
+        char* limitStr = strtok(nullptr, " ");
         int32 limit = limitStr ? atoi(limitStr) : -1;
 
         LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_ACCOUNT_LIST_BY_EMAIL);

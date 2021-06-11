@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,8 +22,8 @@
 #include "HotfixPackets.h"
 #include "Log.h"
 #include "ObjectDefines.h"
-#include "Realm.h"
 #include "World.h"
+#include "Realm.h"
 
 void WorldSession::HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& dbQuery)
 {
@@ -49,7 +49,7 @@ void WorldSession::HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& dbQuery)
         else
         {
             TC_LOG_TRACE("network", "CMSG_DB_QUERY_BULK: %s requested non-existing entry %u in datastore: %u", GetPlayerInfo().c_str(), record.RecordID, dbQuery.TableHash);
-            dbReply.Timestamp = time(NULL);
+            dbReply.Timestamp = time(nullptr);
         }
 
         SendPacket(dbReply.Write());
@@ -64,7 +64,7 @@ void WorldSession::SendAvailableHotfixes()
 void WorldSession::HandleHotfixRequest(WorldPackets::Hotfix::HotfixRequest& hotfixQuery)
 {
     DB2Manager::HotfixContainer const& hotfixes = sDB2Manager.GetHotfixData();
-    WorldPackets::Hotfix::HotfixResponse hotfixQueryResponse;
+    WorldPackets::Hotfix::HotfixConnect hotfixQueryResponse;
     hotfixQueryResponse.Hotfixes.reserve(hotfixQuery.Hotfixes.size());
     for (DB2Manager::HotfixRecord const& hotfixRecord : hotfixQuery.Hotfixes)
     {
@@ -72,7 +72,7 @@ void WorldSession::HandleHotfixRequest(WorldPackets::Hotfix::HotfixRequest& hotf
         {
             DB2StorageBase const* storage = sDB2Manager.GetStorage(hotfixRecord.TableHash);
 
-            WorldPackets::Hotfix::HotfixResponse::HotfixData hotfixData;
+            WorldPackets::Hotfix::HotfixConnect::HotfixData hotfixData;
             hotfixData.Record = hotfixRecord;
             if (storage && storage->HasRecord(uint32(hotfixRecord.RecordID)))
             {

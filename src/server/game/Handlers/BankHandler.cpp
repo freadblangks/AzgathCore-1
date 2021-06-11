@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -46,7 +46,7 @@ void WorldSession::HandleAutoBankItemOpcode(WorldPackets::Bank::AutoBankItem& pa
         InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false, true);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -61,7 +61,7 @@ void WorldSession::HandleAutoBankItemOpcode(WorldPackets::Bank::AutoBankItem& pa
         InventoryResult msg = _player->CanBankItem(NULL_BAG, NULL_SLOT, dest, item, false);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -96,7 +96,7 @@ void WorldSession::HandleAutoBankReagentOpcode(WorldPackets::Bank::AutoBankReage
         InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false, true);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -111,7 +111,7 @@ void WorldSession::HandleAutoBankReagentOpcode(WorldPackets::Bank::AutoBankReage
         InventoryResult msg = _player->CanBankItem(NULL_BAG, NULL_SLOT, dest, item, false, true, true);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -158,7 +158,7 @@ void WorldSession::HandleAutoStoreBankItemOpcode(WorldPackets::Bank::AutoStoreBa
         InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -173,7 +173,7 @@ void WorldSession::HandleAutoStoreBankItemOpcode(WorldPackets::Bank::AutoStoreBa
         InventoryResult msg = _player->CanBankItem(NULL_BAG, NULL_SLOT, dest, item, false);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -208,7 +208,7 @@ void WorldSession::HandleAutoStoreBankReagentOpcode(WorldPackets::Bank::AutoStor
         InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, dest, item, false);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -223,7 +223,7 @@ void WorldSession::HandleAutoStoreBankReagentOpcode(WorldPackets::Bank::AutoStor
         InventoryResult msg = _player->CanBankItem(NULL_BAG, NULL_SLOT, dest, item, false, true, true);
         if (msg != EQUIP_ERR_OK)
         {
-            _player->SendEquipError(msg, item, NULL);
+            _player->SendEquipError(msg, item, nullptr);
             return;
         }
 
@@ -339,7 +339,7 @@ void WorldSession::HandleDepositReagentBankOpcode(WorldPackets::Bank::DepositRea
                     InventoryResult msg = _player->CanBankItem(NULL_BAG, NULL_SLOT, dest, item, false, true, true);
                     if (msg != EQUIP_ERR_OK)
                     {
-                        _player->SendEquipError(msg, item, NULL);
+                        _player->SendEquipError(msg, item, nullptr);
                         return;
                     }
 
@@ -364,7 +364,7 @@ void WorldSession::HandleDepositReagentBankOpcode(WorldPackets::Bank::DepositRea
             InventoryResult msg = _player->CanBankItem(NULL_BAG, NULL_SLOT, dest, item, false, true, true);
             if (msg != EQUIP_ERR_OK)
             {
-                _player->SendEquipError(msg, item, NULL);
+                _player->SendEquipError(msg, item, nullptr);
                 return;
             }
 

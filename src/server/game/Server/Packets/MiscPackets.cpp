@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -138,7 +138,7 @@ void WorldPackets::Misc::TimeSyncResponse::Read()
     _worldPacket >> ClientTime;
 }
 
-WorldPacket const* WorldPackets::Misc::UITime::Write()
+WorldPacket const* WorldPackets::Misc::ServerTimeOffset::Write()
 {
     _worldPacket << Time;
 
@@ -509,7 +509,7 @@ void WorldPackets::Misc::SaveCUFProfiles::Read()
     CUFProfiles.resize(_worldPacket.read<uint32>());
     for (std::unique_ptr<CUFProfile>& cufProfile : CUFProfiles)
     {
-        cufProfile = Trinity::make_unique<CUFProfile>();
+        cufProfile = std::make_unique<CUFProfile>();
 
         uint8 strLen = _worldPacket.ReadBits(7);
 
@@ -644,6 +644,16 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Misc::ReqResearchHistory 
     return data;
 }
 
+WorldPacket const* WorldPackets::Misc::StopElapsedTimer::Write()
+{
+    _worldPacket << TimerID;
+    _worldPacket.WriteBit(KeepTimer);
+    _worldPacket.FlushBits();
+
+    return &_worldPacket;
+}
+
+
 void WorldPackets::Misc::ResearchHistory::Read()
 {
     _worldPacket << resHistory;
@@ -752,6 +762,11 @@ void WorldPackets::Misc::AdventureJournalStartQuest::Read()
     _worldPacket >> QuestID;
 }
 
+void WorldPackets::Misc::QueryCountdownTimer::Read()
+{
+    uint32(Type) = _worldPacket.read<uint32>();
+}
+
 WorldPacket const* WorldPackets::Misc::StartTimer::Write()
 {
     _worldPacket << TimeLeft;
@@ -765,14 +780,6 @@ WorldPacket const* WorldPackets::Misc::StartElapsedTimer::Write()
 {
     _worldPacket << TimerID;
     _worldPacket << CurrentDuration;
-
-    return &_worldPacket;
-}
-
-WorldPacket const* WorldPackets::Misc::OpenAlliedRaceDetailsGiver::Write()
-{
-    _worldPacket << Guid;
-    _worldPacket << RaceId;
 
     return &_worldPacket;
 }

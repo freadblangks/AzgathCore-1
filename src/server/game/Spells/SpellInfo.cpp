@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -35,6 +35,54 @@
 #include "SpellMgr.h"
 #include "Vehicle.h"
 #include <G3D/g3dmath.h>
+
+bool SpellInfo::IsActiveMitigationDamage() const
+{
+    switch (Id)
+    {
+        // Demon Hunter
+    case 187827:    // Metamorphosis
+    case 203720:    // Demon Spikes
+    case 204021:    // Fiery Brand
+    case 218256:    // Empower Wards
+    case 227225:    // Soul Barrier
+    // Death Knight
+    case 48707:     // Anti-Magic Shell
+    case 48792:     // Icebound Fortitude
+    case 49028:     // Dancing Rune Weapon
+    case 49998:     // Death Strike
+    case 55233:     // Vampiric Blood
+    case 194679:    // Rune Tap
+    case 195181:    // Bone Shield
+    case 232049:    // Bone Shield
+    // Druid:
+    case 22812:     // Barkskin
+    case 61336:     // Survival Instincts
+    case 192081:    // Ironfur
+    // Monk: 
+    case 115203:    // Fortifying Brew
+    case 115308:    // Ironskin Brew
+    case 122278:    // Dampen Harm
+    // Paladin:
+    case 498:       // Divine Protection
+    case 31850:     // Ardent Defender
+    case 53600:     // Shield of the Righteous
+    case 86659:     // Guardian of the Ancient Kings
+    case 204139:    // Knight Templar (Talent)
+    case 209202:    // Eye of Tyr (Artifact Ability)
+    // Warrior:
+    case 871:       // Shield Wall
+    case 1160:      // Demoralizing Shout
+    case 2565:      // Shield Block
+    case 23920:     // Spell Reflect
+    case 190456:    // Ignore Pain
+    case 203524:    // Neltharion's Fury (Artifact Ability)
+        return true;
+    }
+    return false;
+}
+
+
 
 uint32 GetTargetFlagMask(SpellTargetObjectTypes objType)
 {
@@ -73,35 +121,6 @@ SpellImplicitTargetInfo::SpellImplicitTargetInfo(uint32 target)
 bool SpellImplicitTargetInfo::IsArea() const
 {
     return GetSelectionCategory() == TARGET_SELECT_CATEGORY_AREA || GetSelectionCategory() == TARGET_SELECT_CATEGORY_CONE || GetSelectionCategory() == TARGET_SELECT_CATEGORY_LINE;
-}
-
-bool SpellImplicitTargetInfo::IsProximityBasedAoe() const
-{
-    switch (_target)
-    {
-    case TARGET_UNIT_SRC_AREA_ENTRY:
-    case TARGET_UNIT_SRC_AREA_ENEMY:
-    case TARGET_UNIT_CASTER_AREA_PARTY:
-    case TARGET_UNIT_SRC_AREA_ALLY:
-    case TARGET_UNIT_SRC_AREA_PARTY:
-    case TARGET_UNIT_LASTTARGET_AREA_PARTY:
-    case TARGET_GAMEOBJECT_SRC_AREA:
-    case TARGET_UNIT_CASTER_AREA_RAID:
-    case TARGET_CORPSE_SRC_AREA_ENEMY:
-        return true;
-
-    case TARGET_UNIT_DEST_AREA_ENTRY:
-    case TARGET_UNIT_DEST_AREA_ENEMY:
-    case TARGET_UNIT_DEST_AREA_ALLY:
-    case TARGET_UNIT_DEST_AREA_PARTY:
-    case TARGET_GAMEOBJECT_DEST_AREA:
-    case TARGET_UNIT_TARGET_AREA_RAID_CLASS:
-        return false;
-
-    default:
-        TC_LOG_WARN("spells", "SpellImplicitTargetInfo::IsProximityBasedAoe called a non-aoe spell");
-        return false;
-    }
 }
 
 SpellTargetSelectionCategories SpellImplicitTargetInfo::GetSelectionCategory() const
@@ -382,7 +401,7 @@ SpellImplicitTargetInfo::StaticData  SpellImplicitTargetInfo::_data[TOTAL_SPELL_
     {TARGET_OBJECT_TYPE_NONE, TARGET_REFERENCE_TYPE_NONE,   TARGET_SELECT_CATEGORY_NYI,     TARGET_CHECK_DEFAULT,  TARGET_DIR_NONE},        // 126
     {TARGET_OBJECT_TYPE_DEST, TARGET_REFERENCE_TYPE_CASTER, TARGET_SELECT_CATEGORY_NYI,     TARGET_CHECK_DEFAULT,  TARGET_DIR_NONE},        // 127 TARGET_DEST_CASTER_ENEMY_CENTROID
     {TARGET_OBJECT_TYPE_NONE, TARGET_REFERENCE_TYPE_NONE,   TARGET_SELECT_CATEGORY_NYI,     TARGET_CHECK_DEFAULT,  TARGET_DIR_NONE},        // 128
-    {TARGET_OBJECT_TYPE_UNIT, TARGET_REFERENCE_TYPE_CASTER, TARGET_SELECT_CATEGORY_CONE,    TARGET_CHECK_ENTRY,    TARGET_DIR_FRONT },      // 129 TARGET_UNIT_CONE_ENTRY_129
+    {TARGET_OBJECT_TYPE_UNIT, TARGET_REFERENCE_TYPE_CASTER, TARGET_SELECT_CATEGORY_CONE,    TARGET_CHECK_ENTRY,    TARGET_DIR_FRONT},      // 129 TARGET_UNIT_CONE_ENTRY_129
     {TARGET_OBJECT_TYPE_UNIT, TARGET_REFERENCE_TYPE_CASTER, TARGET_SELECT_CATEGORY_TRAJ,    TARGET_CHECK_ENEMY,    TARGET_DIR_FRONT},       // 130 TARGET_ENNEMY_IN_LINE
     {TARGET_OBJECT_TYPE_NONE, TARGET_REFERENCE_TYPE_NONE,   TARGET_SELECT_CATEGORY_NYI,     TARGET_CHECK_DEFAULT,  TARGET_DIR_NONE},        // 131
     {TARGET_OBJECT_TYPE_DEST, TARGET_REFERENCE_TYPE_TARGET, TARGET_SELECT_CATEGORY_DEFAULT, TARGET_CHECK_DEFAULT,  TARGET_DIR_NONE},        // 132
@@ -510,20 +529,26 @@ int32 SpellEffectInfo::CalcValue(Unit const* caster /*= nullptr*/, int32 const* 
             *variance = valueVariance;
     }
 
+    bool canScale = true;
+    if (_spellInfo->HasAttribute(SPELL_ATTR6_NO_DONE_PCT_DAMAGE_MODS) && !castItemId)
+        canScale = false;
+
     // base amount modification based on spell lvl vs caster lvl
     if (Scaling.Coefficient != 0.0f)
     {
         if (Scaling.ResourceCoefficient)
             comboDamage = Scaling.ResourceCoefficient * value;
     }
-    else
+    else if (GetScalingExpectedStat() == ExpectedStatType::None)
     {
-        if (GetScalingExpectedStat() == ExpectedStatType::None)
+        if (caster && basePointsPerLevel != 0.0f)
         {
-            int32 level = caster ? int32(caster->getLevel()) : 0;
+            int32 level = int32(caster->getLevel());
             if (level > int32(_spellInfo->MaxLevel) && _spellInfo->MaxLevel > 0)
                 level = int32(_spellInfo->MaxLevel);
-            level -= int32(_spellInfo->BaseLevel);
+
+            // if base level is greater than spell level, reduce by base level (eg. pilgrims foods)
+            level -= int32(std::max(_spellInfo->BaseLevel, _spellInfo->SpellLevel));
             if (level < 0)
                 level = 0;
             value += level * basePointsPerLevel;
@@ -535,7 +560,7 @@ int32 SpellEffectInfo::CalcValue(Unit const* caster /*= nullptr*/, int32 const* 
     {
         // bonus amount from combo points
         if (caster->m_playerMovingMe && comboDamage)
-            if (uint32 comboPoints = caster->m_playerMovingMe->GetComboPoints())
+            if (uint32 comboPoints = caster->m_playerMovingMe->GetPower(POWER_COMBO_POINTS))
                 value += comboDamage * comboPoints;
 
         value = caster->ApplyEffectModifiers(_spellInfo, EffectIndex, value);
@@ -641,7 +666,7 @@ int32 SpellEffectInfo::CalcBaseValue(Unit const* caster, Unit const* target, uin
 float SpellEffectInfo::CalcValueMultiplier(Unit* caster, Spell* spell) const
 {
     float multiplier = Amplitude;
-    if (Player* modOwner = (caster ? caster->GetSpellModOwner() : NULL))
+    if (Player* modOwner = (caster ? caster->GetSpellModOwner() : nullptr))
         modOwner->ApplySpellMod(_spellInfo->Id, SPELLMOD_VALUE_MULTIPLIER, multiplier, spell);
     return multiplier;
 }
@@ -649,19 +674,19 @@ float SpellEffectInfo::CalcValueMultiplier(Unit* caster, Spell* spell) const
 float SpellEffectInfo::CalcDamageMultiplier(Unit* caster, Spell* spell) const
 {
     float multiplierPercent = ChainAmplitude * 100.0f;
-    if (Player* modOwner = (caster ? caster->GetSpellModOwner() : NULL))
+    if (Player* modOwner = (caster ? caster->GetSpellModOwner() : nullptr))
         modOwner->ApplySpellMod(_spellInfo->Id, SPELLMOD_DAMAGE_MULTIPLIER, multiplierPercent, spell);
     return multiplierPercent / 100.0f;
 }
 
 bool SpellEffectInfo::HasRadius() const
 {
-    return RadiusEntry != NULL;
+    return RadiusEntry != nullptr;
 }
 
 bool SpellEffectInfo::HasMaxRadius() const
 {
-    return MaxRadiusEntry != NULL;
+    return MaxRadiusEntry != nullptr;
 }
 
 float SpellEffectInfo::CalcRadius(Unit* caster, Spell* spell) const
@@ -735,6 +760,9 @@ SpellTargetObjectTypes SpellEffectInfo::GetUsedTargetObjectType() const
 {
     return _data[Effect].UsedTargetObjectType;
 }
+
+
+
 
 ExpectedStatType SpellEffectInfo::GetScalingExpectedStat() const
 {
@@ -1116,7 +1144,7 @@ SpellEffectInfo::StaticData SpellEffectInfo::_data[TOTAL_SPELL_EFFECTS] =
     {EFFECT_IMPLICIT_TARGET_EXPLICIT, TARGET_OBJECT_TYPE_ITEM}, // 264 SPELL_EFFECT_REMOVE_GEM
     {EFFECT_IMPLICIT_TARGET_NONE,     TARGET_OBJECT_TYPE_UNIT}, // 265 SPELL_EFFECT_LEARN_AZERITE_ESSENCE_POWER
     {EFFECT_IMPLICIT_TARGET_NONE,     TARGET_OBJECT_TYPE_NONE}, // 266 SPELL_EFFECT_266
-    {EFFECT_IMPLICIT_TARGET_NONE,     TARGET_OBJECT_TYPE_NONE}, // 267 SPELL_EFFECT_267
+    {EFFECT_IMPLICIT_TARGET_NONE,     TARGET_OBJECT_TYPE_NONE}, // 267 SPELL_EFFECT_CREATE_CONVERSATION_GLOBAL
     {EFFECT_IMPLICIT_TARGET_NONE,     TARGET_OBJECT_TYPE_UNIT}, // 268 SPELL_EFFECT_APPLY_MOUNT_EQUIPMENT
     {EFFECT_IMPLICIT_TARGET_EXPLICIT, TARGET_OBJECT_TYPE_ITEM}, // 269 SPELL_EFFECT_UPGRADE_ITEM
     {EFFECT_IMPLICIT_TARGET_NONE,     TARGET_OBJECT_TYPE_NONE}, // 270 SPELL_EFFECT_270
@@ -1156,10 +1184,10 @@ SpellInfo::SpellInfo(SpellInfoLoadHelper const& data, SpellEffectEntryMap const&
     AttributesEx11 = _misc ? _misc->Attributes[11] : 0;
     AttributesEx12 = _misc ? _misc->Attributes[12] : 0;
     AttributesEx13 = _misc ? _misc->Attributes[13] : 0;
-    CastTimeEntry = _misc ? (_misc->CastingTimeIndex ? sSpellCastTimesStore.LookupEntry(_misc->CastingTimeIndex) : NULL) : NULL;
-    DurationEntry = _misc ? (_misc->DurationIndex ? sSpellDurationStore.LookupEntry(_misc->DurationIndex) : NULL) : NULL;
+    CastTimeEntry = _misc ? (_misc->CastingTimeIndex ? sSpellCastTimesStore.LookupEntry(_misc->CastingTimeIndex) : nullptr) : nullptr;
+    DurationEntry = _misc ? (_misc->DurationIndex ? sSpellDurationStore.LookupEntry(_misc->DurationIndex) : nullptr) : nullptr;
     RangeIndex = _misc ? _misc->RangeIndex : 0;
-    RangeEntry = _misc ? (_misc->RangeIndex ? sSpellRangeStore.LookupEntry(_misc->RangeIndex) : NULL) : NULL;
+    RangeEntry = _misc ? (_misc->RangeIndex ? sSpellRangeStore.LookupEntry(_misc->RangeIndex) : nullptr) : nullptr;
     Speed = _misc ? _misc->Speed : 0;
     LaunchDelay = _misc ? _misc->LaunchDelay : 0;
     SchoolMask = _misc ? _misc->SchoolMask : 0;
@@ -1287,7 +1315,7 @@ SpellInfo::SpellInfo(SpellInfoLoadHelper const& data, SpellEffectEntryMap const&
     for (uint8 i = 0; i < 2; ++i)
         Totem[i] = _totem ? _totem->Totem[i] : 0;
 
-    ChainEntry = NULL;
+    ChainEntry = nullptr;
     ExplicitTargetMask = 0;
 
     _spellSpecific = SPELL_SPECIFIC_NORMAL;
@@ -1680,7 +1708,20 @@ bool SpellInfo::IsRequiringDeadTarget() const
 
 bool SpellInfo::IsAllowingDeadTarget() const
 {
-    return HasAttribute(SPELL_ATTR2_CAN_TARGET_DEAD) || Targets & (TARGET_FLAG_CORPSE_ALLY | TARGET_FLAG_CORPSE_ENEMY | TARGET_FLAG_UNIT_DEAD);
+    if (HasAttribute(SPELL_ATTR2_CAN_TARGET_DEAD) || Targets & (TARGET_FLAG_CORPSE_ALLY | TARGET_FLAG_CORPSE_ENEMY | TARGET_FLAG_UNIT_DEAD))
+        return true;
+
+    SpellEffectInfoVector effects = GetEffectsForDifficulty(DIFFICULTY_NONE);
+    for (SpellEffectInfo const* effect : effects)
+    {
+        if (!effect)
+            continue;
+
+        if (effect->TargetA.GetObjectType() == TARGET_OBJECT_TYPE_CORPSE || effect->TargetB.GetObjectType() == TARGET_OBJECT_TYPE_CORPSE)
+            return true;
+    }
+
+    return false;
 }
 
 bool SpellInfo::IsGroupBuff() const
@@ -1981,7 +2022,7 @@ SpellCastResult SpellInfo::CheckShapeshift(uint32 form) const
         return SPELL_CAST_OK;
 
     bool actAsShifted = false;
-    SpellShapeshiftFormEntry const* shapeInfo = NULL;
+    SpellShapeshiftFormEntry const* shapeInfo = nullptr;
     if (form > 0)
     {
         shapeInfo = sSpellShapeshiftFormStore.LookupEntry(form);
@@ -2051,11 +2092,11 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
             if (MapEntry const* mapEntry = sMapStore.LookupEntry(map_id))
                 mapToCheck = mapEntry->CosmeticParentMapID;
 
-            if ((mapToCheck == 1116 || mapToCheck == 1464) && !player->HasSpell(191645)) // Draenor Pathfinder
+            if ((mapToCheck == MAP_DRAENOR || mapToCheck == MAP_TANAAN_JUNGLE) && !player->HasSpell(SPELL_DRAENOR_PATHFINDER))
                 return SPELL_FAILED_INCORRECT_AREA;
-            else if (mapToCheck == 1220 && !player->HasSpell(233368)) // Broken Isles Pathfinder
+            else if (mapToCheck == MAP_BROKEN_ISLANDS && !player->HasSpell(SPELL_BROKEN_ISLES_PATHFINDER))
                 return SPELL_FAILED_INCORRECT_AREA;
-            else if ((mapToCheck == 1642 || mapToCheck == 1643) && !player->HasSpell(278833)) // Battle for Azeroth Pathfinder
+            else if ((mapToCheck == MAP_ZULDAZAR || mapToCheck == MAP_KUL_TIRAS) && !player->HasSpell(SPELL_BATTLE_FOR_AZEROTH_PATHFINDER))
                 return SPELL_FAILED_INCORRECT_AREA;
         }
     }
@@ -2779,7 +2820,6 @@ void SpellInfo::_LoadSpellSpecific()
                         /// @workaround For non-stacking tracking spells (We need generic solution)
                         if (Id == 30645) // Gas Cloud Tracking
                             return SPELL_SPECIFIC_NORMAL;
-                        /* fallthrough */
                     case SPELL_AURA_TRACK_RESOURCES:
                     case SPELL_AURA_TRACK_STEALTHED:
                         return SPELL_SPECIFIC_TRACKER;
@@ -3313,7 +3353,7 @@ void SpellInfo::_LoadImmunityInfo()
                                 immuneInfo.AuraTypeImmune.insert(SPELL_AURA_MOD_FEAR);
                                 immuneInfo.AuraTypeImmune.insert(SPELL_AURA_MOD_FEAR_2);
                                 immuneInfo.AuraTypeImmune.insert(SPELL_AURA_MOD_ROOT_2);
-                                /* fallthrough */
+                                // no break intended
                             case 61869: // Overload
                             case 63481:
                             case 61887: // Lightning Tendrils
@@ -3820,7 +3860,7 @@ int32 SpellInfo::GetMaxDuration() const
     return (DurationEntry->MaxDuration == -1) ? -1 : abs(DurationEntry->MaxDuration);
 }
 
-uint32 SpellInfo::CalcCastTime(uint8 level, Spell* spell /*= NULL*/) const
+uint32 SpellInfo::CalcCastTime(uint8 level, Spell* spell /*= nullptr*/) const
 {
     int32 castTime = 0;
     if (CastTimeEntry)
@@ -4215,7 +4255,7 @@ float SpellInfo::CalcProcPPM(Unit* caster, int32 itemLevel) const
 
 bool SpellInfo::IsRanked() const
 {
-    return ChainEntry != NULL;
+    return ChainEntry != nullptr;
 }
 
 uint8 SpellInfo::GetRank() const
@@ -4235,21 +4275,21 @@ SpellInfo const* SpellInfo::GetFirstRankSpell() const
 SpellInfo const* SpellInfo::GetLastRankSpell() const
 {
     if (!ChainEntry)
-        return NULL;
+        return nullptr;
     return ChainEntry->last;
 }
 
 SpellInfo const* SpellInfo::GetNextRankSpell() const
 {
     if (!ChainEntry)
-        return NULL;
+        return nullptr;
     return ChainEntry->next;
 }
 
 SpellInfo const* SpellInfo::GetPrevRankSpell() const
 {
     if (!ChainEntry)
-        return NULL;
+        return nullptr;
     return ChainEntry->prev;
 }
 
@@ -4281,7 +4321,7 @@ SpellInfo const* SpellInfo::GetAuraRankForLevel(uint8 level) const
     if (!needRankSelection)
         return this;
 
-    for (SpellInfo const* nextSpellInfo = this; nextSpellInfo != NULL; nextSpellInfo = nextSpellInfo->GetPrevRankSpell())
+    for (SpellInfo const* nextSpellInfo = this; nextSpellInfo != nullptr; nextSpellInfo = nextSpellInfo->GetPrevRankSpell())
     {
         // if found appropriate level
         if (uint32(level + 10) >= nextSpellInfo->SpellLevel)
@@ -4291,7 +4331,7 @@ SpellInfo const* SpellInfo::GetAuraRankForLevel(uint8 level) const
     }
 
     // not found
-    return NULL;
+    return nullptr;
 }
 
 bool SpellInfo::IsRankOf(SpellInfo const* spellInfo) const
@@ -4404,6 +4444,10 @@ bool SpellInfo::_IsPositiveEffect(uint32 effIndex, bool deep) const
 {
     // not found a single positive spell with this attribute
     if (HasAttribute(SPELL_ATTR0_NEGATIVE_1))
+        return false;
+
+    // these spells must not be downscaled, thus marking them negative (see GetAuraRankForLevel)
+    if (HasAttribute(SPELL_ATTR2_UNK3))
         return false;
 
     switch (SpellFamilyName)

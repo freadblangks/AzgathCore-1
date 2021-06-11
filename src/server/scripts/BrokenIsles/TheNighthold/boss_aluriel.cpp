@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -247,68 +247,6 @@ public:
     }
 };
 
-// 212494 - annihilate
-// 7.3.5
-class spell_gen_aluriel_annihilate : public SpellScriptLoader
-{
-public:
-    spell_gen_aluriel_annihilate() : SpellScriptLoader("spell_gen_aluriel_annihilate") { }
-
-    class spell_gen_aluriel_annihilate_SpellScript : public SpellScript
-    {
-        PrepareSpellScript(spell_gen_aluriel_annihilate_SpellScript);
-
-        void FilterTargets(std::list<WorldObject*>& targets)
-        {
-            Unit* caster = GetCaster();
-            if (!caster)
-                return;
-
-            targetcount = targets.size();
-        }
-
-        void Damage(SpellEffIndex /*effIndex*/)
-        {
-            Unit* caster = GetCaster();
-            if (!caster || !targetcount)
-                return;
-
-            SetHitDamage(GetHitDamage() / targetcount);
-        }
-
-        void Debuff(SpellEffIndex /*effIndex*/)
-        {
-            Unit* caster = GetCaster();
-            ObjectGuid target = caster->GetTarget();
-            if (!caster || !target)
-                return;
-
-            if (Unit* t = ObjectAccessor::GetUnit(*caster, target))
-            {
-                if (Aura* aura = t->GetAura(SPELL_ANNIHILATE_DEB))
-                    if (aura->GetDuration() + 5000 > aura->GetMaxDuration())
-                        return;
-                    caster->CastSpell(t, SPELL_ANNIHILATE_DEB, true);
-            }
-        }
-
-        void Register() override
-        {
-            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_gen_aluriel_annihilate_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_CONE_ENEMY_104);
-            OnEffectHitTarget += SpellEffectFn(spell_gen_aluriel_annihilate_SpellScript::Damage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
-            OnEffectHitTarget += SpellEffectFn(spell_gen_aluriel_annihilate_SpellScript::Debuff, EFFECT_0, SPELL_EFFECT_DUMMY);
-        }
-
-    private:
-        uint32 targetcount;
-    };
-
-    SpellScript* GetSpellScript() const override
-    {
-        return new spell_gen_aluriel_annihilate_SpellScript();
-    }
-};
-
 // Mark of Frost - 212587
 // 7.3.5
 class spell_gen_mark_of_frost : public SpellScriptLoader
@@ -550,7 +488,6 @@ public:
 void AddSC_boss_aluriel()
 {
     new boss_aluriel();
-    new spell_gen_aluriel_annihilate();
     new spell_gen_mark_of_frost();
     new spell_gen_target_mark_of_forst();
     new spell_gen_aluriel_detonate();

@@ -1,259 +1,383 @@
 /*
-* Copyright (C) 2008-2020 TrinityCore <https://www.trinitycore.org/>
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU General Public License as published by the
-* Free Software Foundation; either version 2 of the License, or (at your
-* option) any later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2020 AzgathCore
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#include "AccountMgr.h"
-#include "BattlePay.h"
 #include "BattlePayPackets.h"
-#include "Chat.h"
+#include "BattlePayMgr.h"
+#include "BattlePayData.h"
+#include "ObjectMgr.h"
+#include "ScriptMgr.h"
+#include "DatabaseEnv.h"
+#include "Bag.h"
 
-void WorldSession::HandleGetProductList(WorldPackets::BattlePayPackets::GetProductList& /*getProductList*/)
+auto GetBagsFreeSlots = [](Player* player) -> uint32
 {
-    // always re-send feature system status in case shop was enabled/disabled since last products list check
-    if (GetPlayer())
-        SendFeatureSystemStatus();
-    else
-        SendFeatureSystemStatusGlueScreen();
+    uint32 freeBagSlots = 0;
+    for (uint8 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; i++)
+        if (auto bag = player->GetBagByPos(i))
+            freeBagSlots += bag->GetFreeSlots();
 
-    SendGetProductListResponse();
+    uint8 inventoryEnd = INVENTORY_SLOT_ITEM_START + player->GetInventorySlotCount();
+    for (uint8 i = INVENTORY_SLOT_ITEM_START; i < inventoryEnd; i++)
+        if (!player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+            ++freeBagSlots;
+
+    return freeBagSlots;
+};
+
+auto SendStartPurchaseResponse = [](WorldSession* session, Battlepay::Purchase const& purchase, Battlepay::Error const& result) -> void
+{
+    WorldPackets::BattlePay::StartPurchaseResponse response;
+    response.PurchaseID = purchase.PurchaseID;
+    response.ClientToken = purchase.ClientToken;
+    response.PurchaseResult = result;
+    session->SendPacket(response.Write());
+};
+
+auto SendPurchaseUpdate = [](WorldSession* session, Battlepay::Purchase const& purchase, uint32 result) -> void
+{
+    WorldPackets::BattlePay::PurchaseUpdate packet;
+    WorldPackets::BattlePay::BattlePayPurchase data;
+    data.PurchaseID = purchase.PurchaseID;
+    data.UnkLong = 0;
+    data.UnkLong2 = 0;
+    data.Status = purchase.Status;
+    data.ResultCode = result;
+    data.ProductID = purchase.ProductID;
+    data.UnkInt = purchase.ServerToken;
+    data.WalletName = session->GetBattlePayMgr()->GetDefaultWalletName();
+    packet.Purchase.emplace_back(data);
+    session->SendPacket(packet.Write());
+};
+
+void WorldSession::HandleGetPurchaseListQuery(WorldPackets::BattlePay::GetPurchaseListQuery& /*packet*/)
+{
+    WorldPackets::BattlePay::PurchaseListResponse packet;
+    uint32 Result = 0;
+    std::vector<WorldPackets::BattlePay::BattlePayPurchase> Purchase;
+    SendPacket(packet.Write());
 }
 
-void WorldSession::HandleGetPurchaseList(WorldPackets::BattlePayPackets::GetPurchaseList& /*getPurchaseList*/)
+void WorldSession::HandleUpdateVasPurchaseStates(WorldPackets::BattlePay::UpdateVasPurchaseStates& /*packet*/)
 {
-    SendGetPurchaseListResponse();
 }
 
-void WorldSession::HandleStartPurchase(WorldPackets::BattlePayPackets::StartPurchase& packet)
+void WorldSession::HandleBattlePayDistributionAssign(WorldPackets::BattlePay::DistributionAssignToTarget& packet)
 {
-    // check if valid product
-    BattlePay::Product* product = sBattlePayMgr->GetProductByProductID(packet.ProductID);
-    if (!product)
-    {
-        SendAckFailed(nullptr, BattlePay::Error::SHOP_ERROR_TRY_AGAIN);
+    if (!GetBattlePayMgr()->IsAvailable())
         return;
-    }
 
-    BattlePay::Purchase* purchase = new BattlePay::Purchase(sBattlePayMgr->GeneratePurchaseID(), BattlePay::PurchaseStatus::WAITING_CONFIRMATION, packet.ProductID);
-    sBattlePayMgr->AddPendingPurchase(purchase);
-
-    SendStartPurchaseResponse(packet.ClientToken, purchase->PurchaseID, 0);
-    SendPurchaseUpdate(purchase);
-    SendConfirmPurchase(purchase->PurchaseID, purchase->PurchaseID, 0);
-
-    if (!purchase)
-    {
-        SendAckFailed(NULL, BattlePay::Error::SHOP_ERROR_TRY_AGAIN);
-        return;
-    }
-
-    // check various restrictions / funds / etc
-    TrinityStrings customError = LANG_NONE;
-    BattlePay::Error error = sBattlePayMgr->IsValidPurchase(this, purchase, customError);
-    if (customError != LANG_NONE)
-        if (Player* player = GetPlayer())
-            ChatHandler(this).PSendSysMessage(customError);
-
-    if (error != BattlePay::Error::OK)
-    {
-        SendAckFailed(purchase, error);
-        return;
-    }
-
-    // update purchase status
-    purchase->Status = BattlePay::PurchaseStatus::FINISHED;
-
-    // send product and delivery notification (delivery only for items)
-    if (uint32 itemId = sBattlePayMgr->FinalizePurchase(this, purchase))
-        SendDeliveryEnded(itemId);
-
-    // update product list because balance was modified, "HasItem" was modified, etc
-    SendGetProductListResponse();
-
-    // send purchase update
-    SendPurchaseUpdate(purchase);
-
-    // cleanup (if an error was triggered, purchase will be deleted in HandleAckFailedResponse)
-    sBattlePayMgr->DeletePurchase(purchase);
+    GetBattlePayMgr()->AssignDistributionToCharacter(packet.TargetCharacter, packet.DistributionID, packet.ProductID, packet.SpecializationID, packet.ChoiceID);
 }
 
-void WorldSession::HandleConfirmPurchaseResponse(WorldPackets::BattlePayPackets::ConfirmPurchaseResponse& packet)
+void WorldSession::HandleGetProductList(WorldPackets::BattlePay::GetProductList& /*packet*/)
 {
-    uint64 PurchaseId = packet.ServerToken; // PurchaseID used as ServerToken
+    if (!GetBattlePayMgr()->IsAvailable())
+        return;
 
-    // check if valid active purchase
-    BattlePay::Purchase* purchase = sBattlePayMgr->GetPurchaseByPurchaseID(PurchaseId);
-    if (!purchase)
+    GetBattlePayMgr()->SendProductList();
+    //GetBattlePayMgr()->SendPointsBalance();
+}
+
+auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken, uint32 productID, WorldSession* session) -> void
+{
+    if (!session || !session->GetBattlePayMgr()->IsAvailable())
+        return;
+
+    auto mgr = session->GetBattlePayMgr();
+
+    auto player = session->GetPlayer();
+    if (!player)
+        return;
+
+    auto accountID = session->GetAccountId();
+
+    Battlepay::Purchase purchase;
+    purchase.ProductID = productID;
+    purchase.ClientToken = clientToken;
+    purchase.TargetCharacter = targetCharacter;
+    purchase.Status = Battlepay::UpdateStatus::Loading;
+    purchase.DistributionId = mgr->GenerateNewDistributionId();
+
+    auto characterInfo = sWorld->GetCharacterInfo(targetCharacter);
+    if (!characterInfo)
     {
-        SendAckFailed(NULL, BattlePay::Error::SHOP_ERROR_TRY_AGAIN);
+        SendStartPurchaseResponse(session, purchase, Battlepay::Error::PurchaseDenied);
         return;
     }
 
-    if (packet.ConfirmPurchase)
+    if (characterInfo->AccountId != accountID)
     {
-        // check various restrictions / funds / etc
-        TrinityStrings customError = LANG_NONE;
-        BattlePay::Error error = sBattlePayMgr->IsValidPurchase(this, purchase, customError);
-        if (customError != LANG_NONE)
-            if (Player* player = GetPlayer())
-                ChatHandler(this).PSendSysMessage(customError);
+        SendStartPurchaseResponse(session, purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
 
-        if (error != BattlePay::Error::OK)
+    if (!sBattlePayDataStore->ProductExist(productID))
+    {
+        SendStartPurchaseResponse(session, purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
+
+    auto const& product = sBattlePayDataStore->GetProduct(purchase.ProductID);
+    purchase.CurrentPrice = product.CurrentPriceFixedPoint;
+
+    mgr->RegisterStartPurchase(purchase);
+
+    auto accountBalance = player->GetDonateTokens();
+    auto purchaseData = mgr->GetPurchase();
+    if (!accountBalance)
+    {
+        SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::InsufficientBalance);
+        return;
+    }
+
+    if (accountBalance < static_cast<int64>(purchaseData->CurrentPrice))
+    {
+        SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::InsufficientBalance);
+        return;
+    }
+
+    if (!product.Items.empty())
+    {
+        if (product.Items.size() > GetBagsFreeSlots(player))
         {
-            SendAckFailed(purchase, error);
+            std::ostringstream data;
+            data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, session->GetSessionDbLocaleIndex());
+            player->SendCustomMessage(GetCustomMessage(Battlepay::CustomMessage::StoreBuyFailed), data);
+            SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::PurchaseDenied);
             return;
         }
-
-        // update purchase status
-        purchase->Status = BattlePay::PurchaseStatus::FINISHED;
-
-        // send product and delivery notification (delivery only for items)
-        if (uint32 itemId = sBattlePayMgr->FinalizePurchase(this, purchase))
-            SendDeliveryEnded(itemId);
-
-        // update product list because balance was modified, "HasItem" was modified, etc
-        SendGetProductListResponse();
     }
-    else
-        purchase->ResultCode = 1; // unknown, seems to cancel the purchase clientside
 
-    // send purchase update
-    SendPurchaseUpdate(purchase);
+    if (!product.ScriptName.empty())
+    {
+        std::string reason;
+        if (!sScriptMgr->BattlePayCanBuy(session, product, reason))
+        {
+            std::ostringstream data;
+            data << reason;
+            player->SendCustomMessage(GetCustomMessage(Battlepay::CustomMessage::StoreBuyFailed), data);
+            SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::PurchaseDenied);
+            return;
+        }
+    }
 
-    // cleanup (if an error was triggered, purchase will be deleted in HandleAckFailedResponse)
-    sBattlePayMgr->DeletePurchase(purchase);
+    for (auto itr : product.Items)
+    {
+        if (mgr->AlreadyOwnProduct(itr.ItemID))
+        {
+            std::ostringstream data;
+            data << sObjectMgr->GetTrinityString(Battlepay::String::YouAlreadyOwnThat, session->GetSessionDbLocaleIndex());;
+            player->SendCustomMessage(GetCustomMessage(Battlepay::CustomMessage::StoreBuyFailed), data);
+            SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::PurchaseDenied);
+            return;
+        }
+    }
+
+    purchaseData->PurchaseID = mgr->GenerateNewPurchaseID();
+    purchaseData->ServerToken = urand(0, 0xFFFFFFF);
+    //purchaseData->Status = Battlepay::UpdateStatus::Ready; ?
+
+    SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::Ok);
+    SendPurchaseUpdate(session, *purchaseData, Battlepay::Error::Ok);
+
+    WorldPackets::BattlePay::ConfirmPurchase confirmPurchase;
+    confirmPurchase.PurchaseID = purchaseData->PurchaseID;
+    confirmPurchase.ServerToken = purchaseData->ServerToken;
+    session->SendPacket(confirmPurchase.Write());
+};
+
+void WorldSession::HandleBattlePayStartPurchase(WorldPackets::BattlePay::StartPurchase& packet)
+{
+    MakePurchase(packet.TargetCharacter, packet.ClientToken, packet.ProductID, this);
 }
 
-void WorldSession::HandleAckFailedResponse(WorldPackets::BattlePayPackets::AckFailedResponse& packet)
+void WorldSession::HandleBattlePayPurchaseProduct(WorldPackets::BattlePay::PurchaseProduct& packet)
 {
-    uint64 PurchaseID = packet.ServerToken; // ServerToken used as PurchaseID
+    MakePurchase(packet.TargetCharacter, packet.ClientToken, packet.ProductID, this);
+}
 
-    BattlePay::Purchase* purchase = sBattlePayMgr->GetPurchaseByPurchaseID(PurchaseID);
+void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::ConfirmPurchaseResponse& packet)
+{
+    if (!GetBattlePayMgr()->IsAvailable())
+        return;
+
+    packet.ClientCurrentPriceFixedPoint /= Battlepay::g_CurrencyPrecision;
+
+    auto purchase = GetBattlePayMgr()->GetPurchase();
     if (!purchase)
         return;
 
-    // cleanup
-    sBattlePayMgr->DeletePurchase(purchase);
-}
-
-void WorldSession::SendGetProductListResponse()
-{
-    // get copies of products / groups / shop entries to be modified for each player separately
-    BattlePay::ProductList products = sBattlePayMgr->GetStoreProducts();
-    BattlePay::GroupList groups = sBattlePayMgr->GetStoreGroups();
-    BattlePay::ShopEntryList shopEntries = sBattlePayMgr->GetStoreEntries();
-
-    // update products status/data for current player
-    sBattlePayMgr->UpdateProductListForPlayer(this, products, groups, shopEntries);
-
-    WorldPackets::BattlePayPackets::GetProductListResponse packet;
-
-    for (auto currentProduct : products)
-        packet.Products.push_back(currentProduct);
-
-    for (auto shopEntry : shopEntries)
-        packet.ShopEntries.push_back(shopEntry);
-
-    for (auto group : groups)
-        packet.Groups.push_back(group);
-
-    packet.CurrencyID = BattlePay::Currency::BATTLE_COIN;
-    packet.Result = 0;
-
-    SendPacket(packet.Write());
-}
-
-void WorldSession::SendGetPurchaseListResponse()
-{
-    WorldPackets::BattlePayPackets::GetPurchaseListResponse packet;
-
-    packet.Result = 0;
-
-    SendPacket(packet.Write());
-}
-
-void WorldSession::SendGetDistributionListResponse()
-{
-    WorldPackets::BattlePayPackets::GetDistributionListResponse packet;
-
-    packet.Result = 0;
-
-    SendPacket(packet.Write());
-}
-
-void WorldSession::SendStartPurchaseResponse( uint32 ClientToken, uint64 PurchaseID, uint32 PurchaseResult)
-{
-    WorldPackets::BattlePayPackets::StartPurchaseResponse packet;
-
-    packet.PurchaseID = PurchaseID;
-    packet.PurchaseResult = PurchaseResult;
-    packet.ClientToken = ClientToken;
-
-    SendPacket(packet.Write());
-}
-
-void WorldSession::SendConfirmPurchase(uint32 ServerToken, uint64 PurchaseID, uint64 CurrentFixedPrice)
-{
-    WorldPackets::BattlePayPackets::ConfirmPurchase packet;
-
-    packet.PurchaseID = PurchaseID;
-    packet.CurrentPriceFixedPoint = CurrentFixedPrice;
-    packet.ServerToken = ServerToken;
-
-    SendPacket(packet.Write());
-}
-
-void WorldSession::SendPurchaseUpdate(BattlePay::Purchase* purchase)
-{
-    WorldPackets::BattlePayPackets::PurchaseUpdate packet;
-
-    BattlePay::Purchase purchasePacket = *purchase;
-    AccountMgr::GetName(GetAccountId(), purchasePacket.WalletName);
-    packet.Purchases.push_back(purchasePacket);
-
-    SendPacket(packet.Write());
-}
-
-void WorldSession::SendDeliveryEnded(uint32 itemId)
-{
-    WorldPackets::BattlePayPackets::DeliveryEnded packet;
-
-    packet.DistributionID = 0;
-
-    WorldPackets::Item::ItemInstance item;
-    item.ItemID = itemId;
-    packet.Items.push_back(item);
-
-    SendPacket(packet.Write());
-}
-
-void WorldSession::SendAckFailed(BattlePay::Purchase* purchase, BattlePay::Error error)
-{
-    // cancel pending purchase clientside
-    if (purchase)
+    if (purchase->Lock)
     {
-        purchase->ResultCode = 1; // unknown, seems to cancel the purchase clientside
-        SendPurchaseUpdate(purchase);
+        SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
+        return;
     }
 
-    WorldPackets::BattlePayPackets::AckFailed packet;
+    if (purchase->ServerToken != packet.ServerToken || !packet.ConfirmPurchase || purchase->CurrentPrice != packet.ClientCurrentPriceFixedPoint)
+    {
+        SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
 
-    packet.Status = 0;
-    packet.Result = error;
-    packet.ServerToken = purchase ? purchase->PurchaseID : 1; // must be > 0 to trigger error frame
-    packet.PurchaseID = purchase ? purchase->PurchaseID : 1;
+    auto player = GetPlayer();
+    auto accountBalance = player->GetDonateTokens();
+    if (accountBalance < static_cast<int64>(purchase->CurrentPrice))
+    {
+        SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
+
+    purchase->Lock = true;
+    purchase->Status = Battlepay::UpdateStatus::Finish;
+
+    auto const& product = sBattlePayDataStore->GetProduct(purchase->ProductID);
+    if (!product.ScriptName.empty())
+    {
+        std::string reason;
+        if (!sScriptMgr->BattlePayCanBuy(this, product, reason))
+        {
+            std::ostringstream data;
+            data << reason;
+            player->SendCustomMessage(GetCustomMessage(Battlepay::CustomMessage::StoreBuyFailed), data);
+            SendPurchaseUpdate(this, *purchase, Battlepay::Error::PaymentFailed);
+            return;
+        }
+    }
+
+    if (!product.Items.empty())
+    {
+        if (product.Items.size() > GetBagsFreeSlots(player))
+        {
+            std::ostringstream data;
+            data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, GetSessionDbLocaleIndex());
+            player->SendCustomMessage(GetCustomMessage(Battlepay::CustomMessage::StoreBuyFailed), data);
+            SendStartPurchaseResponse(this, *purchase, Battlepay::Error::PurchaseDenied);
+            return;
+        }
+    }
+
+    for (auto itr : product.Items)
+    {
+        if (GetBattlePayMgr()->AlreadyOwnProduct(itr.ItemID))
+        {
+            std::ostringstream data;
+            data << sObjectMgr->GetTrinityString(Battlepay::String::YouAlreadyOwnThat, GetSessionDbLocaleIndex());
+            player->SendCustomMessage(GetCustomMessage(Battlepay::CustomMessage::StoreBuyFailed), data);
+            SendStartPurchaseResponse(this, *purchase, Battlepay::Error::PurchaseDenied);
+            return;
+        }
+    }
+
+    SendPurchaseUpdate(this, *purchase, Battlepay::Error::Other);
+
+    GetBattlePayMgr()->SavePurchase(purchase);
+    GetBattlePayMgr()->ProcessDelivery(purchase);
+    player->DestroyDonateTokenCount((purchase->CurrentPrice) / 2);
+
+}
+
+void WorldSession::HandleBattlePayAckFailedResponse(WorldPackets::BattlePay::BattlePayAckFailedResponse& /*packet*/)
+{
+}
+
+void WorldSession::HandleBattlePayQueryClassTrialResult(WorldPackets::BattlePay::BattlePayQueryClassTrialResult& /*packet*/)
+{
+}
+
+void WorldSession::HandleBattlePayTrialBoostCharacter(WorldPackets::BattlePay::BattlePayTrialBoostCharacter& /*packet*/)
+{
+}
+
+void WorldSession::HandleBattlePayPurchaseUnkResponse(WorldPackets::BattlePay::BattlePayPurchaseUnkResponse& /*packet*/)
+{
+    auto purchaseData = GetBattlePayMgr()->GetPurchase();
+    SendPurchaseUpdate(this, *purchaseData, Battlepay::Error::Ok);
+}
+
+void WorldSession::SendDisplayPromo(int32 promotionID /*= 0*/)
+{
+    SendPacket(WorldPackets::BattlePay::DisplayPromotion(promotionID).Write());
+
+    if (!GetBattlePayMgr()->IsAvailable())
+        return;
+
+    /*
+    auto player = GetPlayer();
+    auto const& product = sBattlePayDataStore->GetProduct(109);
+    WorldPackets::BattlePay::DistributionListResponse packet;
+    packet.Result = Battlepay::Error::Ok;
+
+    WorldPackets::BattlePay::BattlePayDistributionObject data;
+    data.TargetPlayer;
+    data.DistributionID = GetBattlePayMgr()->GenerateNewDistributionId();
+    data.PurchaseID = GetBattlePayMgr()->GenerateNewPurchaseID();
+    data.Status = Battlepay::DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
+    data.ProductID = 109;
+    data.TargetVirtualRealm = 0;
+    data.TargetNativeRealm = 0;
+    data.Revoked = false;
+
+    WorldPackets::BattlePay::BattlePayProduct pProduct;
+    pProduct.ProductID = product.ProductID;
+    pProduct.Flags = product.Flags;
+    pProduct.Type = product.Type;
+    //pProduct.UnkBits Optional<uint16> ;
+    //pProduct.UnkInt1 = 0;
+    //pProduct.DisplayId = 0;
+    //pProduct.ItemId = 0;
+    //pProduct.UnkInt4 = 0;
+    //pProduct.UnkInt5 = 0;
+    //pProduct.UnkString = "";
+    //pProduct.UnkBit = false;
+
+    for (auto& itr : product.Items)
+    {
+        WorldPackets::BattlePay::ProductItem pItem;
+        pItem.ID = itr.ID;
+        pItem.ItemID = product.Items.size() > 1 ? 0 : itr.ItemID; ///< Disable tooltip for packs (client handle only one tooltip).
+        pItem.Quantity = itr.Quantity;
+        //pItem.UnkInt1 = 0;
+        //pItem.UnkInt2 = 0;
+        //pItem.UnkByte = 0;
+        pItem.HasPet = GetBattlePayMgr()->AlreadyOwnProduct(itr.ItemID);
+        pItem.PetResult = itr.PetResult;
+
+        auto dataP = GetBattlePayMgr()->WriteDisplayInfo(itr.DisplayInfoID, GetSessionDbLocaleIndex());
+        if (std::get<0>(dataP))
+        {
+            pItem.DisplayInfo = boost::in_place();
+            pItem.DisplayInfo = std::get<1>(dataP);
+        }
+
+        pProduct.Items.emplace_back(pItem);
+    }
+
+    auto dataP = GetBattlePayMgr()->WriteDisplayInfo(product.DisplayInfoID, GetSessionDbLocaleIndex());
+    if (std::get<0>(dataP))
+    {
+        pProduct.DisplayInfo = boost::in_place();
+        pProduct.DisplayInfo = std::get<1>(dataP);
+    }
+
+    data.Product = boost::in_place();
+    data.Product = pProduct;
+
+    packet.DistributionObject.emplace_back(data);
 
     SendPacket(packet.Write());
+    */
 }

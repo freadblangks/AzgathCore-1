@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -494,9 +494,37 @@ void WorldPackets::Guild::GuildChangeNameRequest::Read()
     NewName = _worldPacket.ReadString(nameLen);
 }
 
+WorldPacket const* WorldPackets::Guild::GuildChangeNameResult::Write()
+{
+    _worldPacket.WriteBit(Success);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Guild::GuildNameChanged::Write()
+{
+    _worldPacket << GuildGUID;
+    _worldPacket.WriteBits(GuildName.length(), 7);
+    _worldPacket.FlushBits();
+    _worldPacket.WriteString(GuildName);
+
+    return &_worldPacket;
+}
+
 WorldPacket const* WorldPackets::Guild::GuildFlaggedForRename::Write()
 {
     _worldPacket.WriteBit(FlagSet);
+
+    return &_worldPacket;
+}
+
+WorldPacket const* WorldPackets::Guild::GuildInviteDeclined::Write()
+{
+    _worldPacket.WriteBits(Name.length(), 6);
+    _worldPacket << AutoDecline;
+    _worldPacket.FlushBits();
+    _worldPacket << VirtualRealmAddress;
+    _worldPacket << Name;
 
     return &_worldPacket;
 }
@@ -517,6 +545,17 @@ WorldPacket const* WorldPackets::Guild::GuildPartyState::Write()
 
     return &_worldPacket;
 }
+
+WorldPacket const* WorldPackets::Guild::GuildChallengeCompleted::Write()
+{
+    _worldPacket << ChallengeType;
+    _worldPacket << CurrentCount;
+    _worldPacket << MaxCount;
+    _worldPacket << GoldAwarded;
+
+    return &_worldPacket;
+}
+
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::Guild::GuildRewardItem const& rewardItem)
 {
@@ -857,14 +896,4 @@ void WorldPackets::Guild::GuildSetAchievementTracking::Read()
 
     for (uint32& achievementID : AchievementIDs)
         _worldPacket >> achievementID;
-}
-
-WorldPacket const* WorldPackets::Guild::GuildNameChanged::Write()
-{
-    _worldPacket << GuildGUID;
-    _worldPacket.WriteBits(GuildName.length(), 7);
-    _worldPacket.FlushBits();
-    _worldPacket.WriteString(GuildName);
-
-    return &_worldPacket;
 }

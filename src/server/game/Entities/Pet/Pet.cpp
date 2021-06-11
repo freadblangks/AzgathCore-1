@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -43,9 +42,9 @@
 #define PET_XP_FACTOR 0.05f
 
 Pet::Pet(Player* owner, PetType type) :
-    Guardian(NULL, owner, true), m_removed(false),
+    Guardian(nullptr, owner, true), m_removed(false), m_owner(owner),
     m_petType(type), m_duration(0), m_loading(false), m_groupUpdateMask(0),
-    m_declinedname(NULL), m_petSpecialization(0)
+    m_declinedname(nullptr), m_petSpecialization(0)
 {
     ASSERT(GetOwner());
 
@@ -88,6 +87,13 @@ void Pet::AddToWorld()
         GetCharmInfo()->SetIsAtStay(false);
         GetCharmInfo()->SetIsFollowing(false);
         GetCharmInfo()->SetIsReturning(false);
+    }
+
+    // Hack fix for Soul link, we need to buff pet and player if player has a talent
+    if (m_owner->ToPlayer() && m_owner->ToPlayer()->HasSpell(108415))
+    {
+        m_owner->CastSpell(m_owner, 108446, true);
+        m_owner->CastSpell(this, 108446, true);
     }
 }
 
@@ -170,13 +176,13 @@ bool Pet::LoadPetData(Player* owner, uint32 petEntry, uint32 petnumber, bool cur
     PhasingHandler::InheritPhaseShift(this, owner);
 
     setPetType(petType);
-    setFaction(owner->getFaction());
+    SetFaction(owner->getFaction());
     SetCreatedBySpell(summonSpellId);
 
     if (IsCritter())
     {
         float px, py, pz;
-        owner->GetClosePoint(px, py, pz, GetCombatReach(), PET_FOLLOW_DIST, GetFollowAngle());
+        owner->GetClosePoint(px, py, pz, GetObjectSize(), PET_FOLLOW_DIST, GetFollowAngle());
         Relocate(px, py, pz, owner->GetOrientation());
 
         if (!IsPositionValid())
@@ -219,7 +225,7 @@ bool Pet::LoadPetData(Player* owner, uint32 petEntry, uint32 petnumber, bool cur
             break;
     }
 
-    SetPetNameTimestamp(uint32(time(NULL)));
+    SetPetNameTimestamp(uint32(time(nullptr)));
     SetCreatorGUID(owner->GetGUID());
 
     InitStatsForLevel(petlevel);
@@ -229,7 +235,7 @@ bool Pet::LoadPetData(Player* owner, uint32 petEntry, uint32 petnumber, bool cur
 
     // Set pet's position after setting level, its size depends on it
     float px, py, pz;
-    owner->GetClosePoint(px, py, pz, GetCombatReach(), PET_FOLLOW_DIST, GetFollowAngle());
+    owner->GetClosePoint(px, py, pz, GetObjectSize(), PET_FOLLOW_DIST, GetFollowAngle());
     Relocate(px, py, pz, owner->GetOrientation());
     if (!IsPositionValid())
     {
@@ -337,8 +343,6 @@ bool Pet::LoadPetData(Player* owner, uint32 petEntry, uint32 petnumber, bool cur
     if (owner->IsPlayer() && isControlled() && !isTemporarySummoned() && (getPetType() == SUMMON_PET || getPetType() == HUNTER_PET))
         owner->ToPlayer()->SetLastPetNumber(petId);
 
-    // must be after SetMinion (owner guid check)
-    LoadMechanicTemplateImmunity();
     m_loading = false;
 
     SetActive(true);
@@ -423,7 +427,7 @@ void Pet::SavePetToDB(PetSaveMode mode)
 
         stmt->setString(13, GenerateActionBarData());
 
-        stmt->setUInt32(14, time(NULL));
+        stmt->setUInt32(14, time(nullptr));
         stmt->setUInt32(15, m_unitData->CreatedBySpell);
         stmt->setUInt8(16, getPetType());
         stmt->setUInt16(17, m_petSpecialization);
@@ -526,7 +530,7 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
             SetDynamicFlags(UNIT_DYNFLAG_NONE);
             RemoveUnitFlag(UNIT_FLAG_SKINNABLE);
 
-            //SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+            //SetUnitFlags(UnitFlags(UNIT_FLAG_STUNNED);
         }
     }
     else if (getDeathState() == ALIVE)
@@ -787,7 +791,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
 
     SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
 
-    SetStatFlatModifier(UNIT_MOD_ARMOR, BASE_VALUE, float(petlevel * 50));
+    SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, stats->BaseArmor);
 
     //scale
     CreatureFamilyEntry const* cFamily = sCreatureFamilyStore.LookupEntry(cinfo->family);
@@ -808,18 +812,22 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     // Hunters pet should not inherit resistances from creature_template, they have separate auras for that
     if (!IsHunterPet())
         for (uint8 i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
-            SetStatFlatModifier(UnitMods(UNIT_MOD_RESISTANCE_START + i), BASE_VALUE, float(cinfo->resistance[i]));
+            SetModifierValue(UnitMods(UNIT_MOD_RESISTANCE_START + i), BASE_VALUE, float(cinfo->resistance[i]));
 
     if (petType == HUNTER_PET)
     {
         SetMaxHealth(CalculatePct(m_owner->GetMaxHealth(), 70.f));
-        SetStatFlatModifier(UNIT_MOD_ARMOR, BASE_VALUE, CalculatePct(m_owner->GetArmor(), 170.f));
+        SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, CalculatePct(m_owner->GetArmor(), 170.f));
         SetBaseAttackTime(BASE_ATTACK, BASE_ATTACK_TIME);
         SetBaseAttackTime(OFF_ATTACK, BASE_ATTACK_TIME);
         SetBaseAttackTime(RANGED_ATTACK, BASE_ATTACK_TIME);
     }
     else
     {
+        SetBaseAttackTime(BASE_ATTACK, BASE_ATTACK_TIME);
+        SetBaseAttackTime(OFF_ATTACK, BASE_ATTACK_TIME);
+        SetBaseAttackTime(RANGED_ATTACK, BASE_ATTACK_TIME);
+
         // remove elite bonuses included in DB values
         CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(petlevel, cinfo->unit_class);
         CreatureLevelScaling const* scaling = cinfo->GetLevelScaling(GetMap()->GetDifficultyID());
@@ -922,14 +930,12 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                 }
                 case 29264: // Feral Spirit
                 {
-                    // wolf attack speed is 1.5s
-                    SetBaseAttackTime(BASE_ATTACK, cinfo->BaseAttackTime);
-
+                    SetBaseAttackTime(BASE_ATTACK, 1500);
                     SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float((petlevel * 4 - petlevel)));
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float((petlevel * 4 + petlevel)));
 
-                    SetStatFlatModifier(UNIT_MOD_ARMOR, BASE_VALUE, float(GetOwner()->GetArmor()) * 0.35f);  // Bonus Armor (35% of player armor)
-                    SetStatFlatModifier(UNIT_MOD_STAT_STAMINA, BASE_VALUE, float(GetOwner()->GetStat(STAT_STAMINA)) * 0.3f);  // Bonus Stamina (30% of player stamina)
+                    SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, float(GetOwner()->GetArmor()) * 0.35f);  // Bonus Armor (35% of player armor)
+                    SetModifierValue(UNIT_MOD_STAT_STAMINA, BASE_VALUE, float(GetOwner()->GetStat(STAT_STAMINA)) * 0.3f);  // Bonus Stamina (30% of player stamina)
                     if (!HasAura(58877))//prevent apply twice for the 2 wolves
                         AddAura(58877, this);//Spirit Hunt, passive, Spirit Wolves' attacks heal them and their master for 150% of damage done.
                     break;
@@ -940,9 +946,17 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                     SetDisplayId(GetOwner()->GetDisplayId());
                     break;
                 }
+                case 24207: // Army of the Dead
+                {
+                    //TODO: Improve it, later... Perhaps would be better to use pet_levelstats
+                    SetBonusDamage(int32(GetOwner()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.1f));
+                    SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 8)));
+                    SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 8)));
+                    break;
+                }
                 case 27829: // Ebon Gargoyle
                 {
-                    SetBonusDamage(int32(GetOwner()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.5f));
+                    SetBonusDamage(int32(GetOwner()->GetTotalAttackPowerValue(BASE_ATTACK) * 0.1f));
                     SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)));
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)));
                     break;
@@ -957,10 +971,15 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                 }
                 case 98035: // Dreadstalkers
                 {
-                    SetBaseAttackTime(BASE_ATTACK, cinfo->BaseAttackTime);
-
+                    SetBaseAttackTime(BASE_ATTACK, BASE_ATTACK_TIME);
                     SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float((petlevel * 4 - petlevel)));
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float((petlevel * 4 + petlevel)));
+                    break;
+                }
+                case 100868: // Chi-Ji
+                {
+                    SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)));
+                    SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)));
                     break;
                 }
             }
@@ -1135,7 +1154,7 @@ void Pet::_LoadAuras(uint32 timediff)
         do
         {
             Field* fields = auraResult->Fetch();
-            // NULL guid stored - pet is the caster of the spell - see Pet::_SaveAuras
+            // nullptr guid stored - pet is the caster of the spell - see Pet::_SaveAuras
             casterGuid.SetRawValue(fields[0].GetBinary());
             if (casterGuid.IsEmpty())
                 casterGuid = GetGUID();
@@ -1176,7 +1195,7 @@ void Pet::_LoadAuras(uint32 timediff)
 
             AuraLoadEffectInfo& info = effectInfo[key];
             ObjectGuid castId = ObjectGuid::Create<HighGuid::Cast>(SPELL_CAST_SOURCE_NORMAL, GetMapId(), spellInfo->Id, GetMap()->GenerateLowGuid<HighGuid::Cast>());
-            if (Aura* aura = Aura::TryCreate(spellInfo, castId, key.EffectMask, this, NULL, info.BaseAmounts.data(), NULL, casterGuid))
+            if (Aura* aura = Aura::TryCreate(spellInfo, castId, key.EffectMask, this, nullptr, info.BaseAmounts.data(), nullptr, casterGuid))
             {
                 if (!aura->CanBeSaved())
                 {
@@ -1396,7 +1415,7 @@ void Pet::InitLevelupSpellsForLevel()
 {
     uint8 level = getLevel();
 
-    if (PetLevelupSpellStore const* levelupSpells = GetCreatureTemplate()->family ? sSpellMgr->GetPetLevelupSpellList(GetCreatureTemplate()->family) : NULL)
+    if (PetLevelupSpellStore const* levelupSpells = GetCreatureTemplate()->family ? sSpellMgr->GetPetLevelupSpellList(GetCreatureTemplate()->family) : nullptr)
     {
         for (PetLevelupSpellStore::const_iterator itr = levelupSpells->begin(); itr != levelupSpells->end(); ++itr)
         {
@@ -1665,7 +1684,7 @@ void Pet::CastPetAura(PetAura const* aura)
     if (auraId == 35696)                                      // Demonic Knowledge
     {
         int32 basePoints = CalculatePct(aura->GetDamage(), GetStat(STAT_STAMINA) + GetStat(STAT_INTELLECT));
-        CastCustomSpell(this, auraId, &basePoints, NULL, NULL, true);
+        CastCustomSpell(this, auraId, &basePoints, nullptr, nullptr, true);
     }
     else
         CastSpell(this, auraId, true);

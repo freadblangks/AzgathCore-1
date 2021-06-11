@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -131,7 +130,7 @@ enum AreaFlags
     AREA_FLAG_TOWN                  = 0x00200000,                // small towns with Inn
     AREA_FLAG_REST_ZONE_HORDE       = 0x00400000,                // Warsong Hold, Acherus: The Ebon Hold, New Agamand Inn, Vengeance Landing Inn, Sunreaver Pavilion (Something to do with team?)
     AREA_FLAG_REST_ZONE_ALLIANCE    = 0x00800000,                // Valgarde, Acherus: The Ebon Hold, Westguard Inn, Silver Covenant Pavilion (Something to do with team?)
-    AREA_FLAG_WINTERGRASP           = 0x01000000,                // Wintergrasp and it's subzones
+    AREA_FLAG_COMBAT                = 0x01000000,                // "combat" area (Script_GetZonePVPInfo), used
     AREA_FLAG_INSIDE                = 0x02000000,                // used for determinating spell related inside/outside questions in Map::IsOutdoors
     AREA_FLAG_OUTSIDE               = 0x04000000,                // used for determinating spell related inside/outside questions in Map::IsOutdoors
     AREA_FLAG_CAN_HEARTH_AND_RESURRECT = 0x08000000,             // Can Hearth And Resurrect From Area
@@ -141,7 +140,8 @@ enum AreaFlags
 
 enum AreaFlags2
 {
-    AREA_FLAG_GARRISON  = 0x20,
+    AREA_FLAG_GARRISON              = 0x20,
+    AREA_FLAG_2_DONT_SHOW_SANCTUARY = 0x00000200,                // Hides sanctuary status from zone text color (Script_GetZonePVPInfo)
 };
 
 enum AreaMountFlags
@@ -191,11 +191,6 @@ enum AzeriteTierUnlockSetFlags
 
 #define BATTLE_PET_SPECIES_MAX_ID 2873
 
-enum BattlePetSpeciesFlags
-{
-    BATTLE_PET_SPECIES_FLAG_NOT_CAPTURABLE  = 0x400
-};
-
 enum BattlePetSpeciesSourceType
 {
     BATTLE_PET_SPECIES_SOURCE_LOOT          = 0,
@@ -205,6 +200,19 @@ enum BattlePetSpeciesSourceType
     BATTLE_PET_SPECIES_SOURCE_WILD_PET      = 4,
     BATTLE_PET_SPECIES_SOURCE_ACHIEVEMENT   = 5,
     BATTLE_PET_SPECIES_SOURCE_WORLD_EVENT   = 6,
+};
+
+enum BattlePetSpeciesFlags
+{
+    BATTLE_PET_SPECIES_FLAG_LIMITED_ABILITIES    = 0x0001, // battle pets with less than 6 abilites have this flag
+    BATTLE_PET_SPECIES_FLAG_CONDITIONAL          = 0x0002,
+    BATTLE_PET_SPECIES_FLAG_NOT_ACCOUNT_BOUND    = 0x0004,
+    BATTLE_PET_SPECIES_FLAG_RELEASABLE           = 0x0008,
+    BATTLE_PET_SPECIES_FLAG_CAGEABLE             = 0x0010,
+    BATTLE_PET_SPECIES_FLAG_UNTAMEABLE           = 0x0020,
+    BATTLE_PET_SPECIES_FLAG_UNIQUE               = 0x0040,
+    BATTLE_PET_SPECIES_FLAG_COMPANION            = 0x0080,
+    BATTLE_PET_SPECIES_FLAG_ELITE                = 0x0400,
 };
 
 enum BattlemasterListFlags
@@ -231,8 +239,8 @@ enum ChrSpecializationFlag
 
 enum class CorruptionEffectsFlag
 {
-    None        = 0,
-    Disabled    = 0x1
+    None = 0,
+    Disabled = 0x1
 };
 
 DEFINE_ENUM_FLAG(CorruptionEffectsFlag);
@@ -330,10 +338,10 @@ enum CriteriaAdditionalCondition
     CRITERIA_ADDITIONAL_CONDITION_THE_TILLERS_REPUTATION        = 75,
     CRITERIA_ADDITIONAL_CONDITION_PET_BATTLE_ACHIEVEMENT_POINTS = 76, // NYI
     //CRITERIA_ADDITIONAL_CONDITION_UNK_77                      = 77, // NYI
-    CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_FAMILY             = 78, // NYI
-    CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_HEALTH_PCT         = 79, // NYI
+    CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_FAMILY             = 78,
+    CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_HEALTH_PCT         = 79,
     CRITERIA_ADDITIONAL_CONDITION_GUILD_GROUP_MEMBERS           = 80, // NYI
-    CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_ENTRY              = 81, // NYI
+    CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_ENTRY              = 81,
     CRITERIA_ADDITIONAL_CONDITION_SCENARIO_STEP_INDEX           = 82,
     CRITERIA_ADDITIONAL_CONDITION_CHALLENGE_MODE_MEDAL          = 83, // NYI
     CRITERIA_ADDITIONAL_CONDITION_IS_ON_QUEST                   = 84,
@@ -561,6 +569,7 @@ enum CriteriaTimedTypes : uint8
     CRITERIA_TIMED_TYPE_UNK             = 10,   // Unknown
     CRITERIA_TIMED_TYPE_UNK_2           = 13,   // Unknown
     CRITERIA_TIMED_TYPE_SCENARIO_STAGE  = 14,   // Timer is started by changing stages in a scenario
+	CRITERIA_TIMED_TYPE_EVENT2          = 15,   // Timer is started by internal event with id in timerStartEvent
 
     CRITERIA_TIMED_TYPE_MAX
 };
@@ -663,7 +672,7 @@ enum CriteriaTypes : uint8
     CRITERIA_TYPE_ROLL_NEED                             = 93,
     CRITERIA_TYPE_ROLL_GREED                            = 94,
     CRITERIA_TYPE_RELEASE_SPIRIT                        = 95,
-    CRITERIA_TYPE_OWN_PET                               = 96,
+    CRITERIA_TYPE_ADD_BATTLE_PET_JOURNAL                = 96,
     CRITERIA_TYPE_GARRISON_COMPLETE_DUNGEON_ENCOUNTER   = 97,
     // 98 - unused (Legion - 23420)
     // 99 - unused (Legion - 23420)
@@ -722,13 +731,13 @@ enum CriteriaTypes : uint8
     CRITERIA_TYPE_COMPLETE_SCENARIO                     = 152,
     CRITERIA_TYPE_REACH_AREATRIGGER_WITH_ACTIONSET      = 153,
     // 154 - unused (Legion - 23420)
-    CRITERIA_TYPE_OWN_BATTLE_PET                        = 155,
-    CRITERIA_TYPE_OWN_BATTLE_PET_COUNT                  = 156,
-    CRITERIA_TYPE_CAPTURE_BATTLE_PET                    = 157,
-    CRITERIA_TYPE_WIN_PET_BATTLE                        = 158,
-    // 159 - 2 criterias (22312,22314), unused (Legion - 23420)
-    CRITERIA_TYPE_LEVEL_BATTLE_PET                      = 160,
-    CRITERIA_TYPE_CAPTURE_BATTLE_PET_CREDIT             = 161, // triggers a quest credit
+    CRITERIA_TYPE_CAPTURE_SPECIFIC_BATTLEPET            = 155,
+    CRITERIA_TYPE_COLLECT_BATTLEPET                     = 156,
+    CRITERIA_TYPE_CAPTURE_PET_IN_BATTLE                 = 157,
+    CRITERIA_TYPE_BATTLE_PET_WIN                        = 158,
+    CRITERIA_TYPE_UNK159                                = 159,
+    CRITERIA_TYPE_BATTLE_PET_LEVEL_UP                   = 160,
+    CRITERIA_TYPE_CAPTURE_BATTLE_PET_CREDIT             = 161,
     CRITERIA_TYPE_LEVEL_BATTLE_PET_CREDIT               = 162, // triggers a quest credit
     CRITERIA_TYPE_ENTER_AREA                            = 163, // triggers a quest credit
     CRITERIA_TYPE_LEAVE_AREA                            = 164, // triggers a quest credit
@@ -1099,7 +1108,6 @@ enum ItemBonusType
     ITEM_BONUS_RELIC_TYPE                       = 17,
     ITEM_BONUS_OVERRIDE_REQUIRED_LEVEL          = 18,
     ITEM_BONUS_AZERITE_TIER_UNLOCK_SET          = 19,
-    ITEM_BONUS_SCRAPPING_LOOT_ID                = 20,
     ITEM_BONUS_OVERRIDE_CAN_DISENCHANT          = 21,
     ITEM_BONUS_OVERRIDE_CAN_SCRAP               = 22,
     ITEM_BONUS_ITEM_EFFECT_ID                   = 23,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -23,7 +23,7 @@ void AddSC_zone_tiragarde_sound();
 void AddSC_boss_aqusirr();
 void AddSC_boss_lord_stormsong();
 void AddSC_boss_tidesage_council();
-void AddSC_volzith_the_whisperer();
+void AddSC_boss_volzith_the_whisperer();
 void AddSC_shrine_of_the_storm();
 void AddSC_instance_shrine_of_the_storm();
 
@@ -49,6 +49,23 @@ void AddSC_boss_soulbound_goliath();
 void AddSC_waycrest_manor();
 void AddSC_instance_waycrest_manor();
 
+void AddSC_instance_operation_mechagon();
+void AddSC_boss_king_gobbamak();
+void AddSC_boss_gunker();
+void AddSC_boss_trixie_naeno();
+void AddSC_boss_hk8();
+void AddSC_boss_tussie_tonks();
+void AddSC_boss_kujo();
+void AddSC_boss_machinists_garden();
+void AddSC_boss_king_mechagon();
+
+void AddSC_boss_chopper_redhook();
+void AddSC_boss_dread_captain_lockwood();
+void AddSC_boss_hadal_darkfathom();
+void AddSC_boss_viqgoth();
+void AddSC_siege_of_boralus();
+void AddSC_instance_siege_of_boralus();
+
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
 void AddKulTirasScripts()
@@ -60,7 +77,7 @@ void AddKulTirasScripts()
     AddSC_boss_aqusirr();
     AddSC_boss_lord_stormsong();
     AddSC_boss_tidesage_council();
-    AddSC_volzith_the_whisperer();
+    AddSC_boss_volzith_the_whisperer();
     AddSC_shrine_of_the_storm();
     AddSC_instance_shrine_of_the_storm();
 
@@ -85,4 +102,21 @@ void AddKulTirasScripts()
     AddSC_boss_soulbound_goliath();
     AddSC_waycrest_manor();
     AddSC_instance_waycrest_manor();
+	
+    AddSC_instance_operation_mechagon();
+    AddSC_boss_king_gobbamak();
+    AddSC_boss_gunker();
+    AddSC_boss_trixie_naeno();
+    AddSC_boss_hk8();
+    AddSC_boss_tussie_tonks();
+    AddSC_boss_kujo();
+    AddSC_boss_machinists_garden();
+    AddSC_boss_king_mechagon();
+
+    AddSC_boss_chopper_redhook();
+    AddSC_boss_dread_captain_lockwood();
+    AddSC_boss_hadal_darkfathom();
+    AddSC_boss_viqgoth();
+    AddSC_siege_of_boralus();
+    AddSC_instance_siege_of_boralus();
 }

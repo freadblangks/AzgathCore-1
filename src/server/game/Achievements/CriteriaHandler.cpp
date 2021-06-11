@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,15 +20,15 @@
 #include "AzeriteItem.h"
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
-#include "BattlePetMgr.h"
 #include "CollectionMgr.h"
 #include "Containers.h"
 #include "Creature.h"
+#include "ClassHall.h"
 #include "DatabaseEnv.h"
 #include "DB2Stores.h"
 #include "DisableMgr.h"
 #include "GameEventMgr.h"
-#include "ClassHall.h"
+#include "Garrison.h"
 #include "Group.h"
 #include "InstanceScript.h"
 #include "Item.h"
@@ -120,7 +120,7 @@ bool CriteriaData::IsValid(Criteria const* criteria)
                     criteria->ID, criteria->Entry->Type, DataType, ClassRace.Class);
                 return false;
             }
-            if (ClassRace.Race && ((UI64LIT(1) << (ClassRace.Race-1)) & RACEMASK_ALL_PLAYABLE) == 0)
+            if (!Trinity::RaceMask<uint64>{ RACEMASK_ALL_PLAYABLE }.HasRace(ClassRace.Race))
             {
                 TC_LOG_ERROR("sql.sql", "Table `criteria_data` (Entry: %u Type: %u) for data type CRITERIA_DATA_TYPE_T_PLAYER_CLASS_RACE (%u) contains a non-existing race in value2 (%u), ignored.",
                     criteria->ID, criteria->Entry->Type, DataType, ClassRace.Race);
@@ -294,7 +294,7 @@ bool CriteriaData::IsValid(Criteria const* criteria)
     }
 }
 
-bool CriteriaData::Meets(uint32 criteriaId, Player const* source, Unit const* target, uint32 miscValue1 /*= 0*/, uint32 miscValue2 /*= 0*/) const
+bool CriteriaData::Meets(uint32 criteriaId, Player const* source, Unit const* target, uint32 miscValue1 /*= 0*/) const
 {
     switch (DataType)
     {
@@ -383,13 +383,10 @@ bool CriteriaData::Meets(uint32 criteriaId, Player const* source, Unit const* ta
         }
         case CRITERIA_DATA_TYPE_S_EQUIPPED_ITEM:
         {
-            Criteria const* entry = ASSERT_NOTNULL(sCriteriaMgr->GetCriteria(criteriaId));
-
-            uint32 itemId = (entry->Entry->Type == CRITERIA_TYPE_EQUIP_EPIC_ITEM ? miscValue2 : miscValue1);
-            ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
-            if (!itemTemplate)
+            ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(miscValue1);
+            if (!pProto)
                 return false;
-            return itemTemplate->GetBaseItemLevel() >= EquippedItem.ItemLevel && itemTemplate->GetQuality() >= EquippedItem.Quality;
+            return pProto->GetBaseItemLevel() >= EquippedItem.ItemLevel && pProto->GetQuality() >= EquippedItem.Quality;
         }
         case CRITERIA_DATA_TYPE_MAP_ID:
             return source->GetMapId() == Map.Id;
@@ -413,10 +410,10 @@ bool CriteriaData::Meets(uint32 criteriaId, Player const* source, Unit const* ta
     return false;
 }
 
-bool CriteriaDataSet::Meets(Player const* source, Unit const* target, uint32 miscValue1 /*= 0*/, uint32 miscValue2 /*= 0*/) const
+bool CriteriaDataSet::Meets(Player const* source, Unit const* target, uint32 miscValue /*= 0*/) const
 {
     for (CriteriaData const& data : _storage)
-        if (!data.Meets(_criteriaId, source, target, miscValue1, miscValue2))
+        if (!data.Meets(_criteriaId, source, target, miscValue))
             return false;
 
     return true;
@@ -462,7 +459,7 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
     TC_LOG_DEBUG("criteria", "CriteriaHandler::UpdateCriteria(%s, %u, " UI64FMTD ", " UI64FMTD ", " UI64FMTD ") %s",
         CriteriaMgr::GetCriteriaTypeString(type), type, miscValue1, miscValue2, miscValue3, GetOwnerInfo().c_str());
 
-    CriteriaList const& criteriaList = GetCriteriaByType(type, uint32(miscValue1));
+    CriteriaList const& criteriaList = GetCriteriaByType(type);
     for (Criteria const* criteria : criteriaList)
     {
         CriteriaTreeList const* trees = sCriteriaMgr->GetCriteriaTreesByCriteria(criteria->ID);
@@ -471,13 +468,12 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
 
         // requirements not found in the dbc
         if (CriteriaDataSet const* data = sCriteriaMgr->GetCriteriaDataSet(criteria))
-            if (!data->Meets(referencePlayer, unit, uint32(miscValue1), uint32(miscValue2)))
+            if (!data->Meets(referencePlayer, unit, uint32(miscValue1)))
                 continue;
 
         switch (type)
         {
             // std. case: increment at 1
-            case CRITERIA_TYPE_WIN_BG:
             case CRITERIA_TYPE_NUMBER_OF_TALENT_RESETS:
             case CRITERIA_TYPE_LOSE_DUEL:
             case CRITERIA_TYPE_CREATE_AUCTION:
@@ -491,7 +487,6 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
             case CRITERIA_TYPE_RECEIVE_EPIC_ITEM:
             case CRITERIA_TYPE_DEATH:
             case CRITERIA_TYPE_COMPLETE_DAILY_QUEST:
-            case CRITERIA_TYPE_COMPLETE_BATTLEGROUND:
             case CRITERIA_TYPE_DEATH_AT_MAP:
             case CRITERIA_TYPE_DEATH_IN_DUNGEON:
             case CRITERIA_TYPE_KILLED_BY_CREATURE:
@@ -519,7 +514,7 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
             case CRITERIA_TYPE_WIN_ARENA: // This also behaves like CRITERIA_TYPE_WIN_RATED_ARENA
             case CRITERIA_TYPE_ON_LOGIN:
             case CRITERIA_TYPE_PLACE_GARRISON_BUILDING:
-            case CRITERIA_TYPE_OWN_BATTLE_PET_COUNT:
+            case CRITERIA_TYPE_COLLECT_BATTLEPET:
             case CRITERIA_TYPE_HONOR_LEVEL_REACHED:
             case CRITERIA_TYPE_PRESTIGE_REACHED:
                 SetCriteriaProgress(criteria, 1, referencePlayer, PROGRESS_ACCUMULATE);
@@ -536,6 +531,8 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
             case CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED:
             case CRITERIA_TYPE_TOTAL_HEALING_RECEIVED:
             case CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS:
+            case CRITERIA_TYPE_WIN_BG:
+            case CRITERIA_TYPE_COMPLETE_BATTLEGROUND:
             case CRITERIA_TYPE_DAMAGE_DONE:
             case CRITERIA_TYPE_HEALING_DONE:
             case CRITERIA_TYPE_HEART_OF_AZEROTH_ARTIFACT_POWER_EARNED:
@@ -636,7 +633,7 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
             case CRITERIA_TYPE_EQUIP_ITEM:
             case CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
             case CRITERIA_TYPE_RECRUIT_GARRISON_FOLLOWER:
-            case CRITERIA_TYPE_OWN_BATTLE_PET:
+            case CRITERIA_TYPE_CAPTURE_SPECIFIC_BATTLEPET:
                 SetCriteriaProgress(criteria, 1, referencePlayer);
                 break;
             case CRITERIA_TYPE_BUY_BANK_SLOT:
@@ -693,7 +690,7 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
                 if (!miscValue1)
                     continue;
                 SetCriteriaProgress(criteria, miscValue1, referencePlayer, PROGRESS_ACCUMULATE);
-                break;
+                break; 
             case CRITERIA_TYPE_HIGHEST_PERSONAL_RATING:
             {
                 uint32 reqTeamType = criteria->Entry->Asset.TeamType;
@@ -733,7 +730,12 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
             case CRITERIA_TYPE_SEND_EVENT_SCENARIO:
                 if (miscValue1 != uint64(criteria->Entry->Asset.ScenarioEventID))
                     continue;
-                SetCriteriaProgress(criteria, 1, referencePlayer);
+                SetCriteriaProgress(criteria, 1, referencePlayer, PROGRESS_ACCUMULATE);
+                break;
+            case CRITERIA_TYPE_SEND_EVENT:
+                if (miscValue1 != criteria->Entry->Asset.EventID)
+                    continue;
+                SetCriteriaProgress(criteria, 1, referencePlayer, PROGRESS_ACCUMULATE);
                 break;
             // FIXME: not triggered in code as result, need to implement
             case CRITERIA_TYPE_COMPLETE_RAID:
@@ -762,9 +764,9 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
             case CRITERIA_TYPE_COUNT_OF_LFR_QUEUE_BOOSTS_BY_TANK:
             case CRITERIA_TYPE_COMPLETE_SCENARIO_COUNT:
             case CRITERIA_TYPE_COMPLETE_SCENARIO:
-            case CRITERIA_TYPE_CAPTURE_BATTLE_PET:
-            case CRITERIA_TYPE_WIN_PET_BATTLE:
-            case CRITERIA_TYPE_LEVEL_BATTLE_PET:
+            case CRITERIA_TYPE_CAPTURE_PET_IN_BATTLE:
+            case CRITERIA_TYPE_BATTLE_PET_WIN:
+            case CRITERIA_TYPE_BATTLE_PET_LEVEL_UP:
             case CRITERIA_TYPE_CAPTURE_BATTLE_PET_CREDIT:
             case CRITERIA_TYPE_LEVEL_BATTLE_PET_CREDIT:
             case CRITERIA_TYPE_ENTER_AREA:
@@ -789,11 +791,10 @@ void CriteriaHandler::UpdateCriteria(CriteriaTypes type, uint64 miscValue1 /*= 0
             case CRITERIA_TYPE_COMPLETE_CHALLENGE_MODE_GUILD:
             case CRITERIA_TYPE_DEFEAT_CREATURE_GROUP:
             case CRITERIA_TYPE_COMPLETE_CHALLENGE_MODE:
-            case CRITERIA_TYPE_SEND_EVENT:
             case CRITERIA_TYPE_COOK_RECIPES_GUILD:
             case CRITERIA_TYPE_EARN_PET_BATTLE_ACHIEVEMENT_POINTS:
             case CRITERIA_TYPE_RELEASE_SPIRIT:
-            case CRITERIA_TYPE_OWN_PET:
+            case CRITERIA_TYPE_ADD_BATTLE_PET_JOURNAL:
             case CRITERIA_TYPE_GARRISON_COMPLETE_DUNGEON_ENCOUNTER:
             case CRITERIA_TYPE_COMPLETE_LFG_DUNGEON:
             case CRITERIA_TYPE_LFG_VOTE_KICKS_INITIATED_BY_PLAYER:
@@ -972,7 +973,7 @@ void CriteriaHandler::SetCriteriaProgress(Criteria const* criteria, uint64 chang
     }
 
     progress->Changed = true;
-    progress->Date = time(NULL); // set the date to the latest update.
+    progress->Date = time(nullptr); // set the date to the latest update.
     progress->PlayerGUID = referencePlayer ? referencePlayer->GetGUID() : ObjectGuid::Empty;
 
     uint32 timeElapsed = 0;
@@ -1015,9 +1016,6 @@ void CriteriaHandler::RemoveCriteriaProgress(Criteria const* criteria)
 
 bool CriteriaHandler::CheckCompletedCriteriaTree(CriteriaTree const* tree, Player* referencePlayer)
 {
-    if (_completedCriteriaTree.find(tree->ID) != _completedCriteriaTree.end())
-        return true;
-
     if (!CanCompleteCriteriaTree(tree))
         return false;
 
@@ -1206,7 +1204,7 @@ bool CriteriaHandler::IsCompletedCriteria(Criteria const* criteria, uint64 requi
         case CRITERIA_TYPE_GET_KILLING_BLOWS:
         case CRITERIA_TYPE_CURRENCY:
         case CRITERIA_TYPE_PLACE_GARRISON_BUILDING:
-        case CRITERIA_TYPE_OWN_BATTLE_PET_COUNT:
+        case CRITERIA_TYPE_COLLECT_BATTLEPET:
         case CRITERIA_TYPE_APPEARANCE_UNLOCKED_BY_SLOT:
         case CRITERIA_TYPE_GAIN_PARAGON_REPUTATION:
         case CRITERIA_TYPE_EARN_HONOR_XP:
@@ -1222,7 +1220,7 @@ bool CriteriaHandler::IsCompletedCriteria(Criteria const* criteria, uint64 requi
         case CRITERIA_TYPE_LEARN_SPELL:
         case CRITERIA_TYPE_EXPLORE_AREA:
         case CRITERIA_TYPE_RECRUIT_GARRISON_FOLLOWER:
-        case CRITERIA_TYPE_OWN_BATTLE_PET:
+        case CRITERIA_TYPE_CAPTURE_SPECIFIC_BATTLEPET:
         case CRITERIA_TYPE_HONOR_LEVEL_REACHED:
         case CRITERIA_TYPE_PRESTIGE_REACHED:
         case CRITERIA_TYPE_TRANSMOG_SET_UNLOCKED:
@@ -1537,8 +1535,8 @@ bool CriteriaHandler::RequirementsSatisfied(Criteria const* criteria, uint64 mis
                 return false;
             break;
         case CRITERIA_TYPE_EQUIP_EPIC_ITEM:
-            // miscValue1 = itemSlot miscValue2 = itemid
-            if (!miscValue2 || miscValue1 != uint32(criteria->Entry->Asset.ItemSlot))
+            // miscValue1 = itemid miscValue2 = itemSlot
+            if (!miscValue1 || miscValue2 != uint32(criteria->Entry->Asset.ItemSlot))
                 return false;
             break;
         case CRITERIA_TYPE_ROLL_NEED_ON_LOOT:
@@ -1842,8 +1840,7 @@ bool CriteriaHandler::ModifierSatisfied(ModifierTreeEntry const* modifier, uint6
                 return false;
             break;
         case CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_TEAM_LEVEL: // 34
-            for (WorldPackets::BattlePet::BattlePetSlot const& slot : referencePlayer->GetSession()->GetBattlePetMgr()->GetSlots())
-                if (slot.Pet.Level != reqValue)
+                if (!referencePlayer)
                     return false;
             break;
         case CRITERIA_ADDITIONAL_CONDITION_NOT_IN_GROUP: // 35
@@ -2015,6 +2012,17 @@ bool CriteriaHandler::ModifierSatisfied(ModifierTreeEntry const* modifier, uint6
             if (referencePlayer->GetReputationMgr().GetReputation(1272) < int32(reqValue))
                 return false;
             break;
+        case CRITERIA_ADDITIONAL_CONDITION_PET_BATTLE_ACHIEVEMENT_POINTS: // 76
+            if (referencePlayer->GetAchievementPoints() < reqValue)
+                return false;
+            break;
+        case CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_HEALTH_PCT: // 79
+            return false;
+            break;
+        case CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_ENTRY: // 81
+            if (miscValue2 != reqValue)
+                return false;
+            break;
         case CRITERIA_ADDITIONAL_CONDITION_SCENARIO_STEP_INDEX: // 82
         {
             Scenario const* scenario = referencePlayer->GetScenario();
@@ -2033,12 +2041,19 @@ bool CriteriaHandler::ModifierSatisfied(ModifierTreeEntry const* modifier, uint6
                 return false;
             break;
         case CRITERIA_ADDITIONAL_CONDITION_HAS_ACHIEVEMENT: // 86
-        case CRITERIA_ADDITIONAL_CONDITION_HAS_ACHIEVEMENT_ON_CHARACTER: // 87
             if (!referencePlayer->HasAchieved(reqValue))
                 return false;
             break;
         case CRITERIA_ADDITIONAL_CONDITION_CLOUD_SERPENT_REPUTATION: // 88
             if (referencePlayer->GetReputationMgr().GetReputation(1271) < int32(reqValue))
+                return false;
+            break;
+        case CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_BREED_QUALITY_ID: // 89
+            if (!miscValue2 || (miscValue2 < (reqValue - 7)))
+                return false;
+            break;
+        case CRITERIA_ADDITIONAL_CONDITION_PET_BATTLE_IS_PVP: // 90
+            if (!miscValue1 || miscValue1 != reqValue)
                 return false;
             break;
         case CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_SPECIES: // 91
@@ -2431,12 +2446,12 @@ bool CriteriaHandler::ModifierSatisfied(ModifierTreeEntry const* modifier, uint6
                     return false;
             }
             break;
-        }*/
+        }
         case CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_SPECIES_IN_TEAM: // 151
         {
             uint32 count = 0;
             for (WorldPackets::BattlePet::BattlePetSlot const& slot : referencePlayer->GetSession()->GetBattlePetMgr()->GetSlots())
-                if (slot.Pet.Species == secondaryAsset)
+                if (slot.Pet.SpeciesID == secondaryAsset)
                     ++count;
             if (count < reqValue)
                 return false;
@@ -2446,14 +2461,14 @@ bool CriteriaHandler::ModifierSatisfied(ModifierTreeEntry const* modifier, uint6
         {
             uint32 count = 0;
             for (WorldPackets::BattlePet::BattlePetSlot const& slot : referencePlayer->GetSession()->GetBattlePetMgr()->GetSlots())
-                if (BattlePetSpeciesEntry const* species = sBattlePetSpeciesStore.LookupEntry(slot.Pet.Species))
+                if (BattlePetSpeciesEntry const* species = sBattlePetSpeciesStore.LookupEntry(slot.Pet.SpeciesID))
                     if (species->PetTypeEnum == secondaryAsset)
                         ++count;
             if (count < reqValue)
                 return false;
             break;
         }
-        /*case CRITERIA_ADDITIONAL_CONDITION_GARRISON_FOLLOWER_ID: // 157
+        case CRITERIA_ADDITIONAL_CONDITION_GARRISON_FOLLOWER_ID: // 157
         {
             Garrison const* garrison = referencePlayer->GetGarrison();
             if (!garrison)
@@ -2969,8 +2984,8 @@ char const* CriteriaMgr::GetCriteriaTypeString(CriteriaTypes type)
             return "ROLL_GREED";
         case CRITERIA_TYPE_RELEASE_SPIRIT:
             return "RELEASE_SPIRIT";
-        case CRITERIA_TYPE_OWN_PET:
-            return "OWN_PET";
+        case CRITERIA_TYPE_ADD_BATTLE_PET_JOURNAL:
+            return "ADD_BATTLE_PET_JOURNAL";
         case CRITERIA_TYPE_GARRISON_COMPLETE_DUNGEON_ENCOUNTER:
             return "GARRISON_COMPLETE_DUNGEON_ENCOUNTER";
         case CRITERIA_TYPE_HIGHEST_HIT_DEALT:
@@ -3061,16 +3076,16 @@ char const* CriteriaMgr::GetCriteriaTypeString(CriteriaTypes type)
             return "COMPLETE_SCENARIO";
         case CRITERIA_TYPE_REACH_AREATRIGGER_WITH_ACTIONSET:
             return "REACH_AREATRIGGER_WITH_ACTIONSET";
-        case CRITERIA_TYPE_OWN_BATTLE_PET:
-            return "OWN_BATTLE_PET";
-        case CRITERIA_TYPE_OWN_BATTLE_PET_COUNT:
-            return "OWN_BATTLE_PET_COUNT";
-        case CRITERIA_TYPE_CAPTURE_BATTLE_PET:
-            return "CAPTURE_BATTLE_PET";
-        case CRITERIA_TYPE_WIN_PET_BATTLE:
-            return "WIN_PET_BATTLE";
-        case CRITERIA_TYPE_LEVEL_BATTLE_PET:
-            return "LEVEL_BATTLE_PET";
+        case CRITERIA_TYPE_CAPTURE_SPECIFIC_BATTLEPET:
+            return "CAPTURE_SPECIFIC_BATTLEPET";
+        case CRITERIA_TYPE_COLLECT_BATTLEPET:
+            return "COLLECT_BATTLEPET";
+        case CRITERIA_TYPE_CAPTURE_PET_IN_BATTLE:
+            return "CAPTURE_PET_IN_BATTLE";
+        case CRITERIA_TYPE_BATTLE_PET_WIN:
+            return "BATTLE_PET_WIN";
+        case CRITERIA_TYPE_BATTLE_PET_LEVEL_UP:
+            return "BATTLE_PET_LEVEL_UP";
         case CRITERIA_TYPE_CAPTURE_BATTLE_PET_CREDIT:
             return "CAPTURE_BATTLE_PET_CREDIT";
         case CRITERIA_TYPE_LEVEL_BATTLE_PET_CREDIT:
@@ -3157,63 +3172,6 @@ CriteriaMgr* CriteriaMgr::Instance()
     return &instance;
 }
 
-namespace
-{
-inline bool IsCriteriaTypeStoredByAsset(CriteriaTypes type)
-{
-    switch (type)
-    {
-        case CRITERIA_TYPE_KILL_CREATURE:
-        case CRITERIA_TYPE_WIN_BG:
-        case CRITERIA_TYPE_REACH_SKILL_LEVEL:
-        case CRITERIA_TYPE_COMPLETE_ACHIEVEMENT:
-        case CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
-        case CRITERIA_TYPE_COMPLETE_BATTLEGROUND:
-        case CRITERIA_TYPE_KILLED_BY_CREATURE:
-        case CRITERIA_TYPE_COMPLETE_QUEST:
-        case CRITERIA_TYPE_BE_SPELL_TARGET:
-        case CRITERIA_TYPE_CAST_SPELL:
-        case CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE:
-        case CRITERIA_TYPE_HONORABLE_KILL_AT_AREA:
-        case CRITERIA_TYPE_LEARN_SPELL:
-        case CRITERIA_TYPE_OWN_ITEM:
-        case CRITERIA_TYPE_LEARN_SKILL_LEVEL:
-        case CRITERIA_TYPE_USE_ITEM:
-        case CRITERIA_TYPE_LOOT_ITEM:
-        case CRITERIA_TYPE_EXPLORE_AREA:
-        case CRITERIA_TYPE_GAIN_REPUTATION:
-        case CRITERIA_TYPE_EQUIP_EPIC_ITEM:
-        case CRITERIA_TYPE_HK_CLASS:
-        case CRITERIA_TYPE_HK_RACE:
-        case CRITERIA_TYPE_DO_EMOTE:
-        case CRITERIA_TYPE_EQUIP_ITEM:
-        case CRITERIA_TYPE_USE_GAMEOBJECT:
-        case CRITERIA_TYPE_BE_SPELL_TARGET2:
-        case CRITERIA_TYPE_FISH_IN_GAMEOBJECT:
-        case CRITERIA_TYPE_LEARN_SKILLLINE_SPELLS:
-        case CRITERIA_TYPE_LOOT_TYPE:
-        case CRITERIA_TYPE_CAST_SPELL2:
-        case CRITERIA_TYPE_LEARN_SKILL_LINE:
-            return true;
-        default:
-            break;
-    }
-    return false;
-}
-}
-
-CriteriaList const& CriteriaMgr::GetPlayerCriteriaByType(CriteriaTypes type, uint32 asset) const
-{
-    if (asset && IsCriteriaTypeStoredByAsset(type))
-    {
-        auto itr = _criteriasByAsset[type].find(asset);
-        if (itr != _criteriasByAsset[type].end())
-            return itr->second;
-    }
-
-    return _criteriasByType[type];
-}
-
 //==========================================================
 CriteriaMgr::~CriteriaMgr()
 {
@@ -3251,8 +3209,14 @@ void CriteriaMgr::LoadCriteriaModifiersTree()
 
     // Build tree
     for (auto itr = _criteriaModifiers.begin(); itr != _criteriaModifiers.end(); ++itr)
-        if (ModifierTreeNode* parentNode = Trinity::Containers::MapGetValuePtr(_criteriaModifiers, itr->second->Entry->Parent))
-            parentNode->Children.push_back(itr->second);
+    {
+        if (!itr->second->Entry->Parent)
+            continue;
+
+        auto parent = _criteriaModifiers.find(itr->second->Entry->Parent);
+        if (parent != _criteriaModifiers.end())
+            parent->second->Children.push_back(itr->second);
+    }
 
     TC_LOG_INFO("server.loading", ">> Loaded %u criteria modifiers in %u ms", uint32(_criteriaModifiers.size()), GetMSTimeDiffToNow(oldMSTime));
 }
@@ -3283,6 +3247,12 @@ T GetEntry(std::unordered_map<uint32, T> const& map, CriteriaTreeEntry const* tr
 void CriteriaMgr::LoadCriteriaList()
 {
     uint32 oldMSTime = getMSTime();
+
+    if (sCriteriaTreeStore.GetNumRows() == 0)
+    {
+        TC_LOG_ERROR("server.loading", ">> Loaded 0 criteria.");
+        return;
+    }
 
     std::unordered_map<uint32 /*criteriaTreeID*/, AchievementEntry const*> achievementCriteriaTreeIds;
     for (AchievementEntry const* achievement : sAchievementStore)
@@ -3330,10 +3300,25 @@ void CriteriaMgr::LoadCriteriaList()
     // Build tree
     for (auto itr = _criteriaTrees.begin(); itr != _criteriaTrees.end(); ++itr)
     {
-        if (CriteriaTree* parent = Trinity::Containers::MapGetValuePtr(_criteriaTrees, itr->second->Entry->Parent))
-            parent->Children.push_back(itr->second);
+        if (!itr->second->Entry->Parent)
+            continue;
 
-        if (sCriteriaStore.HasRecord(itr->second->Entry->CriteriaID))
+        auto parent = _criteriaTrees.find(itr->second->Entry->Parent);
+        if (parent != _criteriaTrees.end())
+        {
+            parent->second->Children.push_back(itr->second);
+            while (parent != _criteriaTrees.end())
+            {
+                auto cur = parent;
+                parent = _criteriaTrees.find(parent->second->Entry->Parent);
+                if (parent == _criteriaTrees.end())
+                {
+                    if (sCriteriaStore.LookupEntry(itr->second->Entry->CriteriaID))
+                        _criteriaTreeByCriteria[itr->second->Entry->CriteriaID].push_back(cur->second);
+                }
+            }
+        }
+        else if (sCriteriaStore.LookupEntry(itr->second->Entry->CriteriaID))
             _criteriaTreeByCriteria[itr->second->Entry->CriteriaID].push_back(itr->second);
     }
 
@@ -3354,14 +3339,14 @@ void CriteriaMgr::LoadCriteriaList()
         Criteria* criteria = new Criteria();
         criteria->ID = criteriaEntry->ID;
         criteria->Entry = criteriaEntry;
-        criteria->Modifier = Trinity::Containers::MapGetValuePtr(_criteriaModifiers, criteriaEntry->ModifierTreeId);
+        auto mod = _criteriaModifiers.find(criteriaEntry->ModifierTreeId);
+        if (mod != _criteriaModifiers.end())
+            criteria->Modifier = mod->second;
 
         _criteria[criteria->ID] = criteria;
 
         for (CriteriaTree const* tree : treeItr->second)
         {
-            const_cast<CriteriaTree*>(tree)->Criteria = criteria;
-
             if (AchievementEntry const* achievement = tree->Achievement)
             {
                 if (achievement->Flags & ACHIEVEMENT_FLAG_GUILD)
@@ -3381,30 +3366,6 @@ void CriteriaMgr::LoadCriteriaList()
         {
             ++criterias;
             _criteriasByType[criteriaEntry->Type].push_back(criteria);
-            if (IsCriteriaTypeStoredByAsset(CriteriaTypes(criteriaEntry->Type)))
-            {
-                if (criteriaEntry->Type != CRITERIA_TYPE_EXPLORE_AREA)
-                    _criteriasByAsset[criteriaEntry->Type][criteriaEntry->Asset.ID].push_back(criteria);
-                else
-                {
-                    WorldMapOverlayEntry const* worldOverlayEntry = sWorldMapOverlayStore.LookupEntry(criteriaEntry->Asset.WorldMapOverlayID);
-                    if (!worldOverlayEntry)
-                        break;
-
-                    for (uint8 j = 0; j < MAX_WORLD_MAP_OVERLAY_AREA_IDX; ++j)
-                    {
-                        if (worldOverlayEntry->AreaID[j])
-                        {
-                            bool valid = true;
-                            for (uint8 i = 0; i < j; ++i)
-                                if (worldOverlayEntry->AreaID[j] == worldOverlayEntry->AreaID[i])
-                                    valid = false;
-                            if (valid)
-                                _criteriasByAsset[criteriaEntry->Type][worldOverlayEntry->AreaID[j]].push_back(criteria);
-                        }
-                    }
-                }
-            }
         }
 
         if (criteria->FlagsCu & CRITERIA_FLAG_CU_GUILD)
@@ -3428,6 +3389,9 @@ void CriteriaMgr::LoadCriteriaList()
         if (criteriaEntry->StartTimer)
             _criteriasByTimedType[criteriaEntry->StartEvent].push_back(criteria);
     }
+
+    for (auto& p : _criteriaTrees)
+        const_cast<CriteriaTree*>(p.second)->Criteria = GetCriteria(p.second->Entry->CriteriaID);
 
     TC_LOG_INFO("server.loading", ">> Loaded %u criteria, %u guild criteria, %u scenario criteria and %u quest objective criteria in %u ms.", criterias, guildCriterias, scenarioCriterias, questObjectiveCriterias, GetMSTimeDiffToNow(oldMSTime));
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+ * Copyright (C) 2020 AzgathCore
  * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
  *
  * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
@@ -1178,33 +1178,6 @@ public:
     }
 };
 
-class spell_rising_fire_totem : public SpellScriptLoader
-{
-public:
-    spell_rising_fire_totem() : SpellScriptLoader("spell_rising_fire_totem") { }
-
-    class spell_rising_fire_totem_SpellScript : public SpellScript
-    {
-        PrepareSpellScript(spell_rising_fire_totem_SpellScript);
-
-        void FilterTargets(std::list<WorldObject*>& targets)
-        {
-            targets.remove_if(TargetFilter());
-            Trinity::Containers::RandomResize(targets, 1);
-        }
-
-        void Register() override
-        {
-            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_rising_fire_totem_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
-        }
-    };
-
-    SpellScript* GetSpellScript() const override
-    {
-        return new spell_rising_fire_totem_SpellScript();
-    }
-};
-
 class npc_thrall_final_hot : public CreatureScript
 {
 public:
@@ -1694,7 +1667,6 @@ void AddSC_hourl_of_twilight()
     new npc_twilight_ranger();
     new npc_twilight_thug();
     new npc_twilight_shadow_walker();
-    new spell_rising_fire_totem();
     new npc_thrall_final_hot();
     new npc_faceless_brute();
     new npc_faceless_shadow_weaver();

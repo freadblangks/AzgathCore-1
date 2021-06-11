@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2017-2019 AshamaneProject <https://github.com/AshamaneProject>
+* Copyright (C) 2020 AzgathCore
 *
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
@@ -48,7 +48,7 @@ enum Spells
 
 enum Misc
 {
-    NPC_INFERNAL_SPIKE                  = 116976,
+//    NPC_INFERNAL_SPIKE                  = 116976,
 
     SPELLVISUAL_INFERNAL_SPIKE_DESTROY  = 66119,
 
@@ -324,7 +324,7 @@ void AddSC_boss_goroth()
 
     RegisterAuraScript(spell_burning_armor);
     RegisterAuraScript(aura_crashing_comet);
-    RegisterSpellScript(spell_crashing_comet_damage);
+    //RegisterSpellScript(spell_crashing_comet_damage);
     RegisterSpellScript(spell_infernal_burning);
     RegisterSpellScript(spell_infernal_burning_remove_spikes);
     RegisterSpellScript(spell_shattering_star_dummy);

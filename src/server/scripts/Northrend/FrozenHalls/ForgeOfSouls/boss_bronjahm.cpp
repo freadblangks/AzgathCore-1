@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * Copyright (C) 2020 AzgathCore
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -131,7 +131,7 @@ class boss_bronjahm : public CreatureScript
                 {
                     summons.Summon(summon);
                     summon->SetReactState(REACT_PASSIVE);
-                    summon->GetMotionMaster()->MoveFollow(me, me->GetCombatReach(), 0.0f);
+                    summon->GetMotionMaster()->MoveFollow(me, me->GetObjectSize(), 0.0f);
                     summon->CastSpell(summon, SPELL_PURPLE_BANISH_VISUAL, true);
                 }
             }
