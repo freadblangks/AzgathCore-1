@@ -21,6 +21,12 @@ void AddSC_custom_player_script();
 void AddSC_cs_world_chat();
 void AddSC_solocraft();
 void AddSC_XpWeekend();
+void AddSC_heirloom_mount_tempfix();
+void AddSC_azgath_legit_quest_bypass();
+void AddSC_azgath_gift_mount();
+void AddSC_azgath_achievement_first_mount();
+void AddSC_azgath_achievement_second_mount();
+void AddSC_azgath_achievement_third_mount();
 
 // ADM declaration begin
 // ADM declaration end
@@ -34,6 +40,12 @@ void AddCustomScripts()
     AddSC_cs_world_chat();
 	AddSC_solocraft();
 	AddSC_XpWeekend();
+	AddSC_heirloom_mount_tempfix();
+	AddSC_azgath_legit_quest_bypass();
+	AddSC_azgath_gift_mount();
+	AddSC_azgath_achievement_first_mount();
+	AddSC_azgath_achievement_second_mount();
+	AddSC_azgath_achievement_third_mount();
 
     // ADM call begin
     // ADM call end

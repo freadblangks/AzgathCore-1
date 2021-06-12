@@ -1024,20 +1024,28 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         {
             if (pCurrChar->getClass() == CLASS_DEMON_HUNTER)
                 pCurrChar->SendMovieStart(469);
-            else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
+            else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297) // allied dk zone - map id - 2297
                 pCurrChar->SendCinematicStart(cEntry->CinematicSequenceID);
-            else if (pCurrChar->getRace() == RACE_NIGHTBORNE && pCurrChar->getClass() != 6)
+            else if (pCurrChar->getRace() == RACE_NIGHTBORNE && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
                 pCurrChar->GetSceneMgr().PlaySceneByPackageId(2007);
-            else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN && pCurrChar->getClass() != 6)
+            else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
                 pCurrChar->GetSceneMgr().PlaySceneByPackageId(1984);
-            else if (pCurrChar->getRace() == RACE_VOID_ELF && pCurrChar->getClass() != 6)
+            else if (pCurrChar->getRace() == RACE_VOID_ELF && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
                 pCurrChar->GetSceneMgr().PlaySceneByPackageId(2006);
-            else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI && pCurrChar->getClass() != 6)
+            else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
                 pCurrChar->GetSceneMgr().PlaySceneByPackageId(2005);
-            else if (pCurrChar->getRace() == RACE_DARK_IRON_DWARF && pCurrChar->getClass() != 6)
+            else if (pCurrChar->getRace() == RACE_DARK_IRON_DWARF && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
                 pCurrChar->GetSceneMgr().PlaySceneByPackageId(2086);
-            else if (pCurrChar->getRace() == RACE_MAGHAR_ORC && pCurrChar->getClass() != 6)
+            else if (pCurrChar->getRace() == RACE_MAGHAR_ORC && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
                 pCurrChar->GetSceneMgr().PlaySceneByPackageId(2085, 2);
+			else if (pCurrChar->getRace() == RACE_KUL_TIRAN && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2494);
+            else if (pCurrChar->getRace() == RACE_ZANDALARI_TROLL && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2087);
+            else if (pCurrChar->getRace() == RACE_MECHAGNOME && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2763);
+            else if (pCurrChar->getRace() == RACE_VULPERA && pCurrChar->getClass() != CLASS_DEATH_KNIGHT)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2790);
             else if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
             {
                 if (pCurrChar->getRace() != RACE_PANDAREN_NEUTRAL && pCurrChar->GetMapId() != 2297)
