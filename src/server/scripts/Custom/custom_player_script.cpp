@@ -420,7 +420,7 @@ public:
     void OnLogin(Player* player, bool) override
     {
         ChatHandler(player->GetSession()).SendSysMessage("|cffFF0000 This is AzgathCore Free Repack. Donate to remove ads and limitations.|r");
-        ChatHandler(player->GetSession()).SendSysMessage("|cffFF0000 AzgathCore official discord: https://discord.gg/57D59ed ShadowCoreTeam@yahoo.com|r");
+        ChatHandler(player->GetSession()).SendSysMessage("|cffFF0000 AzgathCore official discord: https://discord.com/invite/AmV9kvKQHd https://project.azgath.eu|r");
     }
 };*/
 
