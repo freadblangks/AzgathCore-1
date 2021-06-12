@@ -108,10 +108,10 @@ LogsDir = "../logs"
 #    Don't open port on firewall to external connections (it belongs to mysql, not to wow server).
 #    The username you choose must have permisions to create/alter/rename tables.
 
-LoginDatabaseInfo     = "127.0.0.1;3306;root;admin;bfa_auth"
-WorldDatabaseInfo     = "127.0.0.1;3306;root;admin;bfa_world"
-CharacterDatabaseInfo = "127.0.0.1;3306;root;admin;bfa_characters"
-HotfixDatabaseInfo    = "127.0.0.1;3306;root;admin;bfa_hotfixes"
+LoginDatabaseInfo     = "127.0.0.1;3306;root;root;az_auth"
+WorldDatabaseInfo     = "127.0.0.1;3306;root;root;az_world"
+CharacterDatabaseInfo = "127.0.0.1;3306;root;root;az_chars"
+HotfixDatabaseInfo    = "127.0.0.1;3306;root;root;az_hotfixes"
 
 #
 #    LoginDatabase.WorkerThreads
@@ -214,7 +214,7 @@ BuildDirectory  = ""
 #        Example:     "../TrinityCore"
 #        Default:     ""
 
-SourceDirectory  = ".\Updater\"
+SourceDirectory  = ""
 
 #
 #    MySQLExecutable
@@ -225,7 +225,7 @@ SourceDirectory  = ".\Updater\"
 #                     "/usr/bin/mysql"
 #        Default:     ""
 
-MySQLExecutable = ".\Data\MySQL\bin\mysql.exe"
+MySQLExecutable = ""
 
 #
 #    IPLocationFile
@@ -607,7 +607,7 @@ GameType = 0
 #                     28 - (QA Server     - any language)
 #                     29 - (CN9           - basic-Latin at create, any at login)
 
-RealmZone = 1
+RealmZone = 10
 
 #
 #    StrictPlayerNames
@@ -667,7 +667,7 @@ StrictPetNames = 0
 #                     10  - ptBR - Portuguese (Brazil)
 #                     11  - itIT - Italy      (Italy)
 
-DBC.Locale = 0
+DBC.Locale = 2
 
 #
 #    DeclinedNames
@@ -1194,7 +1194,7 @@ BeepAtStart = 1
 #        Example:     "Welcome to John's Server!@This server is proud to be powered by Trinity Core."
 #        Default:     "Welcome to a Trinity Core server."
 
-Motd = "Welcome to AzgathCore 8.3.7 server."
+Motd = ""
 
 #
 #    Server.LoginInfo
@@ -1307,7 +1307,7 @@ FeatureSystem.WarMode.Enabled = 1
 #                     4  - (Enable world only)
 #                     0  - (All Disabled)
 
-Updates.EnableDatabases = 15
+Updates.EnableDatabases = 0
 
 #
 #    Updates.AutoSetup
@@ -2265,7 +2265,7 @@ Rate.Reputation.RecruitAFriendBonus = 0.1
 #        Description: Movement speed rate.
 #        Default:     1
 
-Rate.MoveSpeed = 1
+Rate.MoveSpeed = 1.2
 
 #
 #    Rate.InstanceResetTime
