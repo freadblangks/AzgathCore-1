@@ -4163,14 +4163,14 @@ Metric.OverallStatusInterval = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-FeatureSystem.BpayStore.Enabled = 1
+FeatureSystem.BpayStore.Enabled = 0
 
 #   Purchase.Shop.Enabled
 #        Description: Not yet implemented
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Purchase.Shop.Enabled = 1
+Purchase.Shop.Enabled = 0
 
 #
 ###################################################################################################
