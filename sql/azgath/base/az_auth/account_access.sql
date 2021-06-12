@@ -11,7 +11,7 @@
  Target Server Version : 100508
  File Encoding         : 65001
 
- Date: 12/06/2021 06:36:27
+ Date: 12/06/2021 23:03:26
 */
 
 SET NAMES utf8mb4;
@@ -25,6 +25,7 @@ CREATE TABLE `account_access`  (
   `id` int(10) UNSIGNED NOT NULL,
   `gmlevel` tinyint(3) UNSIGNED NOT NULL,
   `RealmID` int(11) NOT NULL DEFAULT -1,
+  `comment` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
   PRIMARY KEY (`id`, `RealmID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
