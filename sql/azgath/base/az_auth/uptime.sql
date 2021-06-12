@@ -11,7 +11,7 @@
  Target Server Version : 100508
  File Encoding         : 65001
 
- Date: 12/06/2021 06:39:04
+ Date: 12/06/2021 22:53:27
 */
 
 SET NAMES utf8mb4;
@@ -33,6 +33,6 @@ CREATE TABLE `uptime`  (
 -- ----------------------------
 -- Records of uptime
 -- ----------------------------
-INSERT INTO `uptime` VALUES (1, 1623460937, 655, 1, 'AzgathCore rev. unknown 1970-01-01 00:00:00 +0000 (Archived branch) (Win64, Release, Static)');
+INSERT INTO `uptime` VALUES (1, 1623529881, 0, 0, 'AzgathCore rev. bd4e718435cf 2021-06-12 21:08:13 +0200 (AzgathCoreBFA branch) (Win64, Release, Static)');
 
 SET FOREIGN_KEY_CHECKS = 1;
