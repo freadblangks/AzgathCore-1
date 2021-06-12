@@ -1,0 +1,10 @@
+ALTER TABLE characters
+    ADD COLUMN camp_x float(10) UNSIGNED NULL DEFAULT '1945.17' AFTER map;
+ALTER TABLE characters
+    ADD COLUMN camp_y float(10) UNSIGNED NULL DEFAULT '-4634.91' AFTER camp_x;
+ALTER TABLE characters
+    ADD COLUMN camp_z float(10) UNSIGNED NULL DEFAULT '33.4735' AFTER camp_y;
+ALTER TABLE characters
+    ADD COLUMN camp_o float(10) UNSIGNED NULL DEFAULT '5.513' AFTER camp_z;
+ALTER TABLE characters
+    ADD COLUMN camp_mapid INT(10) UNSIGNED NULL DEFAULT '1' AFTER camp_o;
