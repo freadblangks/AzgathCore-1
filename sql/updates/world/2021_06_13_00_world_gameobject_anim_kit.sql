@@ -27,6 +27,7 @@ UPDATE `gameobject_template` SET `Data5`=76876, `ContentTuningId`=826, `Verified
 UPDATE `gameobject_template` SET `ContentTuningId`=57, `VerifiedBuild`=36839 WHERE `entry`=323852; -- Portal to Honeydew Village
 UPDATE `gameobject_template` SET `ContentTuningId`=866, `VerifiedBuild`=36839 WHERE `entry`=323854; -- Portal to Silvermoon
 UPDATE `gameobject_template` SET `ContentTuningId`=189, `VerifiedBuild`=36839 WHERE `entry`=323855; -- Portal to Zuldazar
+UPDATE `gameobject_template` SET `Data0` = 271203 WHERE `entry` = 323855; -- Portal to Zuldazar
 
 UPDATE `gameobject_template_addon` SET `flags`=0x2000000, `AIAnimKitID`=3503 WHERE `entry`=323850; -- Portal to Azsuna
 UPDATE `gameobject_template_addon` SET `flags`=0x2000000, `AIAnimKitID`=3503 WHERE `entry`=323851; -- Portal to Dalaran, Crystalsong Forest
