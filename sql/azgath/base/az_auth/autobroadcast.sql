@@ -1,10 +1,10 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : ShalamayneDev
+ Source Server         : Developpement
  Source Server Type    : MariaDB
  Source Server Version : 100508
- Source Host           : localhost:3309
+ Source Host           : localhost:3306
  Source Schema         : az_auth
 
  Target Server Type    : MariaDB
