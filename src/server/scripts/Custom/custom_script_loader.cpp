@@ -27,6 +27,7 @@ void AddSC_azgath_gift_mount();
 void AddSC_azgath_achievement_first_mount();
 void AddSC_azgath_achievement_second_mount();
 void AddSC_azgath_achievement_third_mount();
+void AddSC_azgath_achievement_battlepet();
 
 // ADM declaration begin
 // ADM declaration end
@@ -46,6 +47,7 @@ void AddCustomScripts()
 	AddSC_azgath_achievement_first_mount();
 	AddSC_azgath_achievement_second_mount();
 	AddSC_azgath_achievement_third_mount();
+	AddSC_azgath_achievement_battlepet();
 
     // ADM call begin
     // ADM call end

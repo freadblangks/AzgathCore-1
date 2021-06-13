@@ -1,3 +1,8 @@
+/* ------------------------------------ */
+/* AUTHOR   Azgath                      */
+/*    FOR   Az'gath Private Server      */
+/* ------------------------------------ */
+
 #include "Player.h"
 #include "WorldSession.h"
 #include "CollectionMgr.h"
