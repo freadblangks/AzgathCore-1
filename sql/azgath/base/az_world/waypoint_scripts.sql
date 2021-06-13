@@ -1,0 +1,392 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : Developpement
+ Source Server Type    : MariaDB
+ Source Server Version : 100508
+ Source Host           : localhost:3306
+ Source Schema         : az_world
+
+ Target Server Type    : MariaDB
+ Target Server Version : 100508
+ File Encoding         : 65001
+
+ Date: 13/06/2021 21:18:22
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for waypoint_scripts
+-- ----------------------------
+DROP TABLE IF EXISTS `waypoint_scripts`;
+CREATE TABLE `waypoint_scripts`  (
+  `id` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `delay` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `command` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `datalong` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `datalong2` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `dataint` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `x` float NOT NULL DEFAULT 0,
+  `y` float NOT NULL DEFAULT 0,
+  `z` float NOT NULL DEFAULT 0,
+  `o` float NOT NULL DEFAULT 0,
+  `guid` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`guid`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Fixed;
+
+-- ----------------------------
+-- Records of waypoint_scripts
+-- ----------------------------
+INSERT INTO `waypoint_scripts` VALUES (27, 0, 0, 0, 0, 10141, 0, 0, 0, 0, 34);
+INSERT INTO `waypoint_scripts` VALUES (28, 0, 0, 0, 0, 10146, 0, 0, 0, 0, 35);
+INSERT INTO `waypoint_scripts` VALUES (29, 0, 0, 0, 0, 10152, 0, 0, 0, 0, 36);
+INSERT INTO `waypoint_scripts` VALUES (30, 0, 0, 0, 0, 10126, 0, 0, 0, 0, 37);
+INSERT INTO `waypoint_scripts` VALUES (39, 0, 0, 0, 0, 7194, 0, 0, 0, 0, 46);
+INSERT INTO `waypoint_scripts` VALUES (40, 0, 0, 0, 0, 7193, 0, 0, 0, 0, 47);
+INSERT INTO `waypoint_scripts` VALUES (41, 0, 0, 0, 0, 7191, 0, 0, 0, 0, 48);
+INSERT INTO `waypoint_scripts` VALUES (42, 0, 0, 0, 0, 10139, 0, 0, 0, 0, 49);
+INSERT INTO `waypoint_scripts` VALUES (45, 0, 0, 0, 0, 10158, 0, 0, 0, 0, 52);
+INSERT INTO `waypoint_scripts` VALUES (46, 0, 0, 0, 0, 22544, 0, 0, 0, 0, 53);
+INSERT INTO `waypoint_scripts` VALUES (71, 0, 0, 0, 0, 12833, 0, 0, 0, 0, 79);
+INSERT INTO `waypoint_scripts` VALUES (72, 0, 0, 0, 0, 14565, 0, 0, 0, 0, 80);
+INSERT INTO `waypoint_scripts` VALUES (73, 0, 0, 0, 0, 14567, 0, 0, 0, 0, 81);
+INSERT INTO `waypoint_scripts` VALUES (142, 0, 0, 0, 0, 17569, 0, 0, 0, 0, 152);
+INSERT INTO `waypoint_scripts` VALUES (143, 0, 0, 0, 0, 17563, 0, 0, 0, 0, 153);
+INSERT INTO `waypoint_scripts` VALUES (682921, 1, 30, 0, 0, 0, 0, 0, 0, 4.72984, 825);
+INSERT INTO `waypoint_scripts` VALUES (686261, 0, 30, 0, 0, 0, 0, 0, 0, 1.27409, 824);
+INSERT INTO `waypoint_scripts` VALUES (683091, 1, 30, 0, 0, 0, 0, 0, 0, 2.32129, 823);
+INSERT INTO `waypoint_scripts` VALUES (683081, 1, 30, 0, 0, 0, 0, 0, 0, 0.191986, 822);
+INSERT INTO `waypoint_scripts` VALUES (1128663, 0, 30, 0, 0, 0, 0, 0, 0, 0.0698132, 854);
+INSERT INTO `waypoint_scripts` VALUES (1128662, 0, 30, 0, 0, 0, 0, 0, 0, 0.890118, 853);
+INSERT INTO `waypoint_scripts` VALUES (1128661, 0, 30, 0, 0, 0, 0, 0, 0, 0.855211, 852);
+INSERT INTO `waypoint_scripts` VALUES (1128652, 0, 30, 0, 0, 0, 0, 0, 0, 5.20108, 851);
+INSERT INTO `waypoint_scripts` VALUES (1128651, 0, 30, 0, 0, 0, 0, 0, 0, 2.9147, 850);
+INSERT INTO `waypoint_scripts` VALUES (160, 0, 0, 0, 0, 16059, 0, 0, 0, 0, 170);
+INSERT INTO `waypoint_scripts` VALUES (215, 0, 0, 0, 0, 10119, 0, 0, 0, 0, 225);
+INSERT INTO `waypoint_scripts` VALUES (219, 0, 0, 0, 0, 17056, 0, 0, 0, 0, 231);
+INSERT INTO `waypoint_scripts` VALUES (220, 0, 0, 0, 0, 17486, 0, 0, 0, 0, 232);
+INSERT INTO `waypoint_scripts` VALUES (221, 0, 0, 0, 0, 17485, 0, 0, 0, 0, 233);
+INSERT INTO `waypoint_scripts` VALUES (222, 0, 0, 0, 0, 17485, 0, 0, 0, 0, 234);
+INSERT INTO `waypoint_scripts` VALUES (223, 0, 0, 0, 0, 17485, 0, 0, 0, 0, 235);
+INSERT INTO `waypoint_scripts` VALUES (226, 0, 0, 0, 0, 18816, 0, 0, 0, 0, 238);
+INSERT INTO `waypoint_scripts` VALUES (314, 0, 0, 0, 0, 10119, 0, 0, 0, 0, 326);
+INSERT INTO `waypoint_scripts` VALUES (329, 0, 0, 0, 0, 13572, 0, 0, 0, 0, 346);
+INSERT INTO `waypoint_scripts` VALUES (330, 0, 0, 0, 0, 13580, 0, 0, 0, 0, 347);
+INSERT INTO `waypoint_scripts` VALUES (331, 0, 0, 0, 0, 13576, 0, 0, 0, 0, 348);
+INSERT INTO `waypoint_scripts` VALUES (333, 0, 0, 0, 0, 15119, 0, 0, 0, 0, 350);
+INSERT INTO `waypoint_scripts` VALUES (48, 0, 1, 38, 0, 0, 0, 0, 0, 0, 67);
+INSERT INTO `waypoint_scripts` VALUES (447, 0, 0, 0, 0, 24425, 0, 0, 0, 0, 491);
+INSERT INTO `waypoint_scripts` VALUES (449, 0, 0, 0, 0, 24425, 0, 0, 0, 0, 493);
+INSERT INTO `waypoint_scripts` VALUES (455, 0, 0, 0, 0, 25086, 0, 0, 0, 0, 502);
+INSERT INTO `waypoint_scripts` VALUES (456, 0, 0, 0, 0, 25073, 0, 0, 0, 0, 503);
+INSERT INTO `waypoint_scripts` VALUES (457, 0, 0, 0, 0, 25074, 0, 0, 0, 0, 504);
+INSERT INTO `waypoint_scripts` VALUES (458, 0, 0, 0, 0, 25075, 0, 0, 0, 0, 505);
+INSERT INTO `waypoint_scripts` VALUES (459, 0, 0, 0, 0, 25076, 0, 0, 0, 0, 506);
+INSERT INTO `waypoint_scripts` VALUES (80, 0, 6, 530, 1, 0, 3915.08, 2111.54, 274.422, 0, 880);
+INSERT INTO `waypoint_scripts` VALUES (21, 0, 1, 0, 1, 0, 0, 0, 0, 0, 21);
+INSERT INTO `waypoint_scripts` VALUES (478, 1, 30, 0, 0, 0, 0, 0, 0, 5.3516, 537);
+INSERT INTO `waypoint_scripts` VALUES (479, 1, 30, 0, 0, 0, 0, 0, 0, 1.42, 538);
+INSERT INTO `waypoint_scripts` VALUES (475, 1, 1, 1, 0, 0, 0, 0, 0, 0, 532);
+INSERT INTO `waypoint_scripts` VALUES (475, 3, 1, 25, 0, 0, 0, 0, 0, 0, 533);
+INSERT INTO `waypoint_scripts` VALUES (477, 1, 1, 69, 1, 0, 0, 0, 0, 0, 536);
+INSERT INTO `waypoint_scripts` VALUES (477, 0, 30, 0, 0, 0, 0, 0, 0, 5.37, 535);
+INSERT INTO `waypoint_scripts` VALUES (476, 1, 1, 69, 1, 0, 0, 0, 0, 0, 534);
+INSERT INTO `waypoint_scripts` VALUES (473, 1, 30, 0, 0, 0, 0, 0, 0, 4.9635, 530);
+INSERT INTO `waypoint_scripts` VALUES (474, 1, 30, 0, 0, 0, 0, 0, 0, 3.3859, 531);
+INSERT INTO `waypoint_scripts` VALUES (470, 1, 30, 0, 0, 0, 0, 0, 0, 3.3185, 527);
+INSERT INTO `waypoint_scripts` VALUES (471, 1, 30, 0, 0, 0, 0, 0, 0, 1.804, 528);
+INSERT INTO `waypoint_scripts` VALUES (472, 1, 30, 0, 0, 0, 0, 0, 0, 4.9747, 529);
+INSERT INTO `waypoint_scripts` VALUES (480, 1, 30, 0, 0, 0, 0, 0, 0, 4.2214, 539);
+INSERT INTO `waypoint_scripts` VALUES (480, 1, 1, 69, 1, 0, 0, 0, 0, 0, 540);
+INSERT INTO `waypoint_scripts` VALUES (481, 1, 30, 0, 0, 0, 0, 0, 0, 5.3582, 541);
+INSERT INTO `waypoint_scripts` VALUES (481, 1, 1, 173, 1, 0, 0, 0, 0, 0, 542);
+INSERT INTO `waypoint_scripts` VALUES (1116, 1, 1, 69, 1, 0, 0, 0, 0, 0, 655);
+INSERT INTO `waypoint_scripts` VALUES (1115, 1, 1, 173, 1, 0, 0, 0, 0, 0, 654);
+INSERT INTO `waypoint_scripts` VALUES (1115, 0, 31, 2066, 0, 0, 0, 0, 0, 0, 653);
+INSERT INTO `waypoint_scripts` VALUES (1114, 1, 1, 69, 1, 0, 0, 0, 0, 0, 652);
+INSERT INTO `waypoint_scripts` VALUES (1114, 0, 31, 226, 0, 0, 0, 0, 0, 0, 651);
+INSERT INTO `waypoint_scripts` VALUES (1120, 0, 1, 16, 1, 0, 0, 0, 0, 0, 661);
+INSERT INTO `waypoint_scripts` VALUES (1120, 5, 1, 26, 1, 0, 0, 0, 0, 0, 662);
+INSERT INTO `waypoint_scripts` VALUES (1120, 6, 30, 0, 0, 0, 0, 0, 0, 4.67122, 663);
+INSERT INTO `waypoint_scripts` VALUES (1120, 10, 1, 22, 0, 0, 0, 0, 0, 0, 664);
+INSERT INTO `waypoint_scripts` VALUES (1120, 10, 0, 0, 0, 24439, 0, 0, 0, 0, 665);
+INSERT INTO `waypoint_scripts` VALUES (1121, 1, 0, 0, 0, 24443, 0, 0, 0, 0, 666);
+INSERT INTO `waypoint_scripts` VALUES (1122, 1, 1, 233, 1, 0, 0, 0, 0, 0, 667);
+INSERT INTO `waypoint_scripts` VALUES (1123, 1, 1, 379, 1, 0, 0, 0, 0, 0, 668);
+INSERT INTO `waypoint_scripts` VALUES (1124, 0, 1, 26, 1, 0, 0, 0, 0, 0, 669);
+INSERT INTO `waypoint_scripts` VALUES (1124, 1, 15, 56745, 1, 0, 0, 0, 0, 0, 670);
+INSERT INTO `waypoint_scripts` VALUES (1124, 4, 15, 56745, 1, 0, 0, 0, 0, 0, 671);
+INSERT INTO `waypoint_scripts` VALUES (1125, 1, 32, 21612, 0, 0, 0, 0, 0, 0, 672);
+INSERT INTO `waypoint_scripts` VALUES (1126, 1, 32, 21614, 0, 0, 0, 0, 0, 0, 673);
+INSERT INTO `waypoint_scripts` VALUES (1127, 1, 30, 0, 0, 0, 0, 0, 0, 4.97788, 674);
+INSERT INTO `waypoint_scripts` VALUES (1127, 1, 1, 69, 1, 0, 0, 0, 0, 0, 675);
+INSERT INTO `waypoint_scripts` VALUES (1128, 1, 30, 0, 0, 0, 0, 0, 0, 5.70399, 676);
+INSERT INTO `waypoint_scripts` VALUES (1128, 1, 1, 173, 1, 0, 0, 0, 0, 0, 677);
+INSERT INTO `waypoint_scripts` VALUES (1129, 1, 30, 0, 0, 0, 0, 0, 0, 0.436332, 678);
+INSERT INTO `waypoint_scripts` VALUES (1129, 1, 1, 69, 1, 0, 0, 0, 0, 0, 679);
+INSERT INTO `waypoint_scripts` VALUES (1023, 0, 1, 1, 0, 0, 0, 0, 0, 0, 556);
+INSERT INTO `waypoint_scripts` VALUES (1024, 0, 1, 1, 0, 0, 0, 0, 0, 0, 557);
+INSERT INTO `waypoint_scripts` VALUES (1025, 0, 1, 1, 0, 0, 0, 0, 0, 0, 558);
+INSERT INTO `waypoint_scripts` VALUES (1026, 0, 1, 1, 0, 0, 0, 0, 0, 0, 559);
+INSERT INTO `waypoint_scripts` VALUES (1027, 0, 1, 69, 0, 0, 0, 0, 0, 0, 560);
+INSERT INTO `waypoint_scripts` VALUES (1028, 0, 1, 69, 0, 0, 0, 0, 0, 0, 561);
+INSERT INTO `waypoint_scripts` VALUES (1029, 0, 1, 69, 0, 0, 0, 0, 0, 0, 562);
+INSERT INTO `waypoint_scripts` VALUES (1030, 0, 1, 69, 0, 0, 0, 0, 0, 0, 563);
+INSERT INTO `waypoint_scripts` VALUES (1031, 0, 1, 69, 0, 0, 0, 0, 0, 0, 564);
+INSERT INTO `waypoint_scripts` VALUES (1032, 0, 1, 69, 0, 0, 0, 0, 0, 0, 565);
+INSERT INTO `waypoint_scripts` VALUES (1033, 0, 1, 69, 0, 0, 0, 0, 0, 0, 566);
+INSERT INTO `waypoint_scripts` VALUES (1034, 0, 1, 69, 0, 0, 0, 0, 0, 0, 567);
+INSERT INTO `waypoint_scripts` VALUES (1035, 0, 1, 69, 0, 0, 0, 0, 0, 0, 568);
+INSERT INTO `waypoint_scripts` VALUES (1036, 0, 1, 69, 0, 0, 0, 0, 0, 0, 569);
+INSERT INTO `waypoint_scripts` VALUES (1037, 0, 1, 69, 0, 0, 0, 0, 0, 0, 570);
+INSERT INTO `waypoint_scripts` VALUES (1038, 0, 15, 746, 4, 32652, 1, 0, 0, 0, 571);
+INSERT INTO `waypoint_scripts` VALUES (1039, 0, 1, 1, 0, 0, 0, 0, 0, 0, 572);
+INSERT INTO `waypoint_scripts` VALUES (1040, 0, 1, 233, 0, 0, 0, 0, 0, 0, 573);
+INSERT INTO `waypoint_scripts` VALUES (1041, 0, 1, 233, 0, 0, 0, 0, 0, 0, 574);
+INSERT INTO `waypoint_scripts` VALUES (1042, 0, 1, 233, 0, 0, 0, 0, 0, 0, 575);
+INSERT INTO `waypoint_scripts` VALUES (1043, 0, 1, 69, 0, 0, 0, 0, 0, 0, 576);
+INSERT INTO `waypoint_scripts` VALUES (1044, 0, 1, 69, 0, 0, 0, 0, 0, 0, 577);
+INSERT INTO `waypoint_scripts` VALUES (1045, 0, 1, 69, 0, 0, 0, 0, 0, 0, 578);
+INSERT INTO `waypoint_scripts` VALUES (1046, 0, 15, 746, 0, 0, 0, 0, 0, 0, 579);
+INSERT INTO `waypoint_scripts` VALUES (1047, 0, 15, 746, 0, 0, 0, 0, 0, 0, 580);
+INSERT INTO `waypoint_scripts` VALUES (2026271, 1, 1, 234, 1, 0, 0, 0, 0, 0, 695);
+INSERT INTO `waypoint_scripts` VALUES (2026271, 0, 30, 0, 0, 0, 0, 0, 0, 4.79965, 694);
+INSERT INTO `waypoint_scripts` VALUES (2026270, 1, 1, 234, 1, 0, 0, 0, 0, 0, 693);
+INSERT INTO `waypoint_scripts` VALUES (2026270, 0, 30, 0, 0, 0, 0, 0, 0, 5.11381, 692);
+INSERT INTO `waypoint_scripts` VALUES (2026251, 1, 1, 234, 1, 0, 0, 0, 0, 0, 691);
+INSERT INTO `waypoint_scripts` VALUES (2026251, 0, 30, 0, 0, 0, 0, 0, 0, 0.191986, 690);
+INSERT INTO `waypoint_scripts` VALUES (2026250, 1, 1, 234, 1, 0, 0, 0, 0, 0, 689);
+INSERT INTO `waypoint_scripts` VALUES (2026250, 0, 30, 0, 0, 0, 0, 0, 0, 2.33874, 688);
+INSERT INTO `waypoint_scripts` VALUES (1065, 0, 1, 69, 0, 0, 0, 0, 0, 0, 598);
+INSERT INTO `waypoint_scripts` VALUES (2026161, 1, 1, 234, 1, 0, 0, 0, 0, 0, 687);
+INSERT INTO `waypoint_scripts` VALUES (2026161, 0, 30, 0, 0, 0, 0, 0, 0, 3.29867, 686);
+INSERT INTO `waypoint_scripts` VALUES (2026160, 1, 1, 234, 1, 0, 0, 0, 0, 0, 685);
+INSERT INTO `waypoint_scripts` VALUES (2026160, 0, 30, 0, 0, 0, 0, 0, 0, 0.907571, 684);
+INSERT INTO `waypoint_scripts` VALUES (1070, 0, 1, 69, 0, 0, 0, 0, 0, 0, 603);
+INSERT INTO `waypoint_scripts` VALUES (1071, 0, 1, 381, 0, 0, 0, 0, 0, 0, 604);
+INSERT INTO `waypoint_scripts` VALUES (1072, 0, 1, 69, 0, 0, 0, 0, 0, 0, 605);
+INSERT INTO `waypoint_scripts` VALUES (1073, 0, 1, 69, 0, 0, 0, 0, 0, 0, 606);
+INSERT INTO `waypoint_scripts` VALUES (1074, 0, 1, 69, 0, 0, 0, 0, 0, 0, 607);
+INSERT INTO `waypoint_scripts` VALUES (1075, 0, 1, 69, 0, 0, 0, 0, 0, 0, 608);
+INSERT INTO `waypoint_scripts` VALUES (1076, 0, 1, 69, 0, 0, 0, 0, 0, 0, 609);
+INSERT INTO `waypoint_scripts` VALUES (1077, 0, 15, 746, 4, 32651, 1, 0, 0, 0, 610);
+INSERT INTO `waypoint_scripts` VALUES (1078, 0, 1, 16, 0, 0, 0, 0, 0, 0, 611);
+INSERT INTO `waypoint_scripts` VALUES (1079, 0, 15, 746, 4, 32650, 1, 0, 0, 0, 612);
+INSERT INTO `waypoint_scripts` VALUES (1080, 0, 1, 24, 0, 0, 0, 0, 0, 0, 613);
+INSERT INTO `waypoint_scripts` VALUES (1081, 0, 1, 6, 0, 0, 0, 0, 0, 0, 614);
+INSERT INTO `waypoint_scripts` VALUES (115879, 0, 16, 7274, 0, 0, 0, 0, 0, 0, 0);
+INSERT INTO `waypoint_scripts` VALUES (1134, 0, 30, 0, 0, 0, 0, 0, 0, 0.104771, 696);
+INSERT INTO `waypoint_scripts` VALUES (1135, 0, 1, 1, 0, 0, 0, 0, 0, 0, 698);
+INSERT INTO `waypoint_scripts` VALUES (1136, 0, 15, 36804, 4, 21404, 30, 0, 0, 0, 699);
+INSERT INTO `waypoint_scripts` VALUES (1137, 1, 1, 1, 0, 0, 0, 0, 0, 0, 700);
+INSERT INTO `waypoint_scripts` VALUES (1138, 1, 30, 0, 0, 0, 0, 0, 0, 2.79253, 701);
+INSERT INTO `waypoint_scripts` VALUES (1138, 2, 1, 1, 0, 0, 0, 0, 0, 0, 702);
+INSERT INTO `waypoint_scripts` VALUES (1138, 7, 1, 15, 0, 0, 0, 0, 0, 0, 703);
+INSERT INTO `waypoint_scripts` VALUES (1139, 1, 6, 571, 1, 0, 4370.97, -4934.86, 29.1214, 0.982114, 704);
+INSERT INTO `waypoint_scripts` VALUES (1140, 1, 6, 571, 1, 0, 4374.84, -4770.08, 52.848, 1.1487, 705);
+INSERT INTO `waypoint_scripts` VALUES (1141, 1, 6, 571, 1, 0, 4306.51, -4766.24, 56.8766, 0.465818, 706);
+INSERT INTO `waypoint_scripts` VALUES (1142, 1, 6, 571, 1, 0, 4463.83, -4644.89, 84.6203, 2.40181, 707);
+INSERT INTO `waypoint_scripts` VALUES (1143, 1, 6, 571, 1, 0, 4353.19, -4571.79, 118.402, 1.35635, 708);
+INSERT INTO `waypoint_scripts` VALUES (1144, 1, 6, 571, 1, 0, 4131.99, -4889.01, 60.1083, 0.369627, 709);
+INSERT INTO `waypoint_scripts` VALUES (1145, 1, 6, 571, 1, 0, 4051.38, -5111.15, 12.6903, 0.341522, 710);
+INSERT INTO `waypoint_scripts` VALUES (1146, 1, 6, 571, 1, 0, 4182, -4758.6, 71.2506, 6.20304, 711);
+INSERT INTO `waypoint_scripts` VALUES (1147, 1, 6, 571, 1, 0, 3940.79, -4923.88, 81.667, 0.583063, 712);
+INSERT INTO `waypoint_scripts` VALUES (1148, 1, 6, 571, 1, 0, 4137.97, -4969.12, 36.8373, 1.16219, 713);
+INSERT INTO `waypoint_scripts` VALUES (1149, 1, 6, 571, 1, 0, 4116.99, -5024.95, 30.5289, 0.607674, 714);
+INSERT INTO `waypoint_scripts` VALUES (1150, 1, 6, 571, 1, 0, 4388.64, -4820.43, 41.3801, 0.994674, 715);
+INSERT INTO `waypoint_scripts` VALUES (1151, 1, 6, 571, 1, 0, 3859.19, -5204.08, 71.2207, 5.69976, 716);
+INSERT INTO `waypoint_scripts` VALUES (1152, 1, 6, 571, 1, 0, 3879.8, -4989.44, 85.9219, 0.275225, 717);
+INSERT INTO `waypoint_scripts` VALUES (1153, 1, 6, 571, 1, 0, 3922.52, -5267.12, 7.26294, 0.90739, 718);
+INSERT INTO `waypoint_scripts` VALUES (1154, 1, 6, 571, 1, 0, 3863.01, -5340.63, 4.19676, 0.484555, 719);
+INSERT INTO `waypoint_scripts` VALUES (1155, 1, 6, 571, 1, 0, 3707.78, -5226.12, 125.551, 6.2721, 720);
+INSERT INTO `waypoint_scripts` VALUES (1156, 1, 6, 571, 1, 0, 3658.67, -5436.73, 26.487, 0.949674, 721);
+INSERT INTO `waypoint_scripts` VALUES (1157, 1, 6, 571, 1, 0, 3521.14, -5462.94, 168.445, 0.93554, 722);
+INSERT INTO `waypoint_scripts` VALUES (1158, 1, 6, 571, 1, 0, 3632.08, -5536.6, 12.9124, 1.18737, 723);
+INSERT INTO `waypoint_scripts` VALUES (1159, 0, 1, 66, 0, 0, 0, 0, 0, 0, 724);
+INSERT INTO `waypoint_scripts` VALUES (1160, 0, 14, 44385, 1, 1, 0, 0, 0, 0, 725);
+INSERT INTO `waypoint_scripts` VALUES (1160, 0, 30, 0, 0, 0, 0, 0, 0, 1.26624, 726);
+INSERT INTO `waypoint_scripts` VALUES (1160, 17, 30, 0, 0, 0, 0, 0, 0, 2.31755, 727);
+INSERT INTO `waypoint_scripts` VALUES (1160, 35, 30, 0, 0, 0, 0, 0, 0, 1.33832, 728);
+INSERT INTO `waypoint_scripts` VALUES (1160, 66, 30, 0, 0, 0, 0, 0, 0, 2.41372, 729);
+INSERT INTO `waypoint_scripts` VALUES (1160, 83, 30, 0, 0, 0, 0, 0, 0, 2.52903, 730);
+INSERT INTO `waypoint_scripts` VALUES (1160, 96, 30, 0, 0, 0, 0, 0, 0, 4.18812, 731);
+INSERT INTO `waypoint_scripts` VALUES (1160, 112, 30, 0, 0, 0, 0, 0, 0, 3.9892, 732);
+INSERT INTO `waypoint_scripts` VALUES (1160, 126, 30, 0, 0, 0, 0, 0, 0, 2.95678, 733);
+INSERT INTO `waypoint_scripts` VALUES (1160, 146, 30, 0, 0, 0, 0, 0, 0, 0.742216, 734);
+INSERT INTO `waypoint_scripts` VALUES (1161, 0, 15, 44385, 2, 0, 0, 0, 0, 0, 735);
+INSERT INTO `waypoint_scripts` VALUES (1162, 0, 14, 44385, 1, 1, 0, 0, 0, 0, 736);
+INSERT INTO `waypoint_scripts` VALUES (1162, 17, 30, 0, 0, 0, 0, 0, 0, 1.21163, 737);
+INSERT INTO `waypoint_scripts` VALUES (1162, 34, 30, 0, 0, 0, 0, 0, 0, 1.55871, 738);
+INSERT INTO `waypoint_scripts` VALUES (1163, 0, 14, 44385, 1, 1, 0, 0, 0, 0, 739);
+INSERT INTO `waypoint_scripts` VALUES (1163, 6, 30, 0, 0, 0, 0, 0, 0, 1.13962, 740);
+INSERT INTO `waypoint_scripts` VALUES (1164, 0, 30, 0, 0, 0, 0, 0, 0, 5.18363, 741);
+INSERT INTO `waypoint_scripts` VALUES (1165, 0, 30, 0, 0, 0, 0, 0, 0, 4.10152, 742);
+INSERT INTO `waypoint_scripts` VALUES (1166, 0, 1, 69, 1, 0, 0, 0, 0, 0, 743);
+INSERT INTO `waypoint_scripts` VALUES (1167, 0, 1, 0, 0, 0, 0, 0, 0, 0, 744);
+INSERT INTO `waypoint_scripts` VALUES (1168, 1, 30, 0, 0, 0, 0, 0, 0, 1.32645, 745);
+INSERT INTO `waypoint_scripts` VALUES (1169, 1, 30, 0, 0, 0, 0, 0, 0, 0.541052, 746);
+INSERT INTO `waypoint_scripts` VALUES (1170, 1, 30, 0, 0, 0, 0, 0, 0, 4.15388, 747);
+INSERT INTO `waypoint_scripts` VALUES (1171, 1, 30, 0, 0, 0, 0, 0, 0, 3.68265, 748);
+INSERT INTO `waypoint_scripts` VALUES (1172, 1, 30, 0, 0, 0, 0, 0, 0, 3.7001, 749);
+INSERT INTO `waypoint_scripts` VALUES (1175, 1, 30, 0, 0, 0, 0, 0, 0, 2.61799, 752);
+INSERT INTO `waypoint_scripts` VALUES (1176, 0, 1, 133, 0, 0, 0, 0, 0, 0, 753);
+INSERT INTO `waypoint_scripts` VALUES (1177, 1, 30, 0, 0, 0, 0, 0, 0, 4.83456, 756);
+INSERT INTO `waypoint_scripts` VALUES (1177, 14, 30, 0, 0, 0, 0, 0, 0, 4.39823, 757);
+INSERT INTO `waypoint_scripts` VALUES (1178, 1, 30, 0, 0, 0, 0, 0, 0, 0.331613, 758);
+INSERT INTO `waypoint_scripts` VALUES (1179, 1, 30, 0, 0, 0, 0, 0, 0, 2.37365, 759);
+INSERT INTO `waypoint_scripts` VALUES (1180, 1, 30, 0, 0, 0, 0, 0, 0, 3.12414, 760);
+INSERT INTO `waypoint_scripts` VALUES (1181, 1, 30, 0, 0, 0, 0, 0, 0, 5.46288, 761);
+INSERT INTO `waypoint_scripts` VALUES (1190, 1, 30, 0, 0, 0, 0, 0, 0, 5.42797, 770);
+INSERT INTO `waypoint_scripts` VALUES (1191, 1, 30, 0, 0, 0, 0, 0, 0, 1.48353, 771);
+INSERT INTO `waypoint_scripts` VALUES (1192, 1, 30, 0, 0, 0, 0, 0, 0, 5.77704, 772);
+INSERT INTO `waypoint_scripts` VALUES (1188, 1, 18, 1000, 0, 0, 0, 0, 0, 0, 768);
+INSERT INTO `waypoint_scripts` VALUES (1185, 1, 30, 0, 0, 0, 0, 0, 0, 2.84489, 765);
+INSERT INTO `waypoint_scripts` VALUES (1186, 1, 30, 0, 0, 0, 0, 0, 0, 4.72984, 766);
+INSERT INTO `waypoint_scripts` VALUES (1187, 1, 30, 0, 0, 0, 0, 0, 0, 2.49582, 767);
+INSERT INTO `waypoint_scripts` VALUES (1193, 0, 1, 38, 0, 0, 0, 0, 0, 0, 773);
+INSERT INTO `waypoint_scripts` VALUES (1193, 1, 16, 6675, 0, 0, 0, 0, 0, 0, 774);
+INSERT INTO `waypoint_scripts` VALUES (1193, 2, 1, 375, 1, 0, 0, 0, 0, 0, 775);
+INSERT INTO `waypoint_scripts` VALUES (1194, 0, 15, 52059, 4, 28387, 30, 0, 0, 0, 776);
+INSERT INTO `waypoint_scripts` VALUES (1195, 0, 1, 30, 0, 0, 0, 0, 0, 3.26776, 777);
+INSERT INTO `waypoint_scripts` VALUES (1196, 1, 30, 0, 0, 0, 0, 0, 0, 5.84679, 778);
+INSERT INTO `waypoint_scripts` VALUES (1197, 1, 30, 0, 0, 0, 0, 0, 0, 1.48722, 779);
+INSERT INTO `waypoint_scripts` VALUES (1198, 0, 15, 45612, 1, 0, 0, 0, 0, 0, 780);
+INSERT INTO `waypoint_scripts` VALUES (1198, 2, 15, 45609, 1, 0, 0, 0, 0, 0, 781);
+INSERT INTO `waypoint_scripts` VALUES (1200, 0, 1, 1, 153, 0, 0, 0, 0, 0, 783);
+INSERT INTO `waypoint_scripts` VALUES (1201, 1, 1, 233, 1, 0, 0, 0, 0, 0, 784);
+INSERT INTO `waypoint_scripts` VALUES (1202, 1, 1, 18, 0, 0, 0, 0, 0, 0, 785);
+INSERT INTO `waypoint_scripts` VALUES (1203, 1, 1, 438, 1, 0, 0, 0, 0, 0, 786);
+INSERT INTO `waypoint_scripts` VALUES (8319701, 0, 30, 0, 0, 0, 0, 0, 0, 3.33358, 817);
+INSERT INTO `waypoint_scripts` VALUES (8319702, 0, 30, 0, 0, 0, 0, 0, 0, 3.03687, 818);
+INSERT INTO `waypoint_scripts` VALUES (8319501, 0, 30, 0, 0, 0, 0, 0, 0, 2.96706, 819);
+INSERT INTO `waypoint_scripts` VALUES (8319502, 0, 30, 0, 0, 0, 0, 0, 0, 3.26377, 820);
+INSERT INTO `waypoint_scripts` VALUES (682922, 1, 30, 0, 0, 0, 0, 0, 0, 6.0912, 826);
+INSERT INTO `waypoint_scripts` VALUES (682923, 1, 30, 0, 0, 0, 0, 0, 0, 1.81514, 827);
+INSERT INTO `waypoint_scripts` VALUES (682924, 1, 30, 0, 0, 0, 0, 0, 0, 3.56047, 828);
+INSERT INTO `waypoint_scripts` VALUES (682961, 1, 30, 0, 0, 0, 0, 0, 0, 2.37365, 829);
+INSERT INTO `waypoint_scripts` VALUES (682962, 1, 30, 0, 0, 0, 0, 0, 0, 2.16421, 830);
+INSERT INTO `waypoint_scripts` VALUES (682963, 1, 30, 0, 0, 0, 0, 0, 0, 0.349066, 831);
+INSERT INTO `waypoint_scripts` VALUES (682964, 1, 30, 0, 0, 0, 0, 0, 0, 2.16421, 832);
+INSERT INTO `waypoint_scripts` VALUES (682901, 1, 30, 0, 0, 0, 0, 0, 0, 2.80998, 833);
+INSERT INTO `waypoint_scripts` VALUES (682902, 1, 30, 0, 0, 0, 0, 0, 0, 6.02139, 834);
+INSERT INTO `waypoint_scripts` VALUES (682903, 1, 30, 0, 0, 0, 0, 0, 0, 6.16101, 835);
+INSERT INTO `waypoint_scripts` VALUES (682904, 1, 30, 0, 0, 0, 0, 0, 0, 6.00393, 836);
+INSERT INTO `waypoint_scripts` VALUES (1378561, 0, 30, 0, 0, 0, 0, 0, 0, 5.75959, 89);
+INSERT INTO `waypoint_scripts` VALUES (1378561, 3, 1, 69, 1, 0, 0, 0, 0, 0, 90);
+INSERT INTO `waypoint_scripts` VALUES (1378562, 0, 30, 0, 0, 0, 0, 0, 0, 0.715585, 91);
+INSERT INTO `waypoint_scripts` VALUES (1378562, 4, 1, 133, 1, 0, 0, 0, 0, 0, 92);
+INSERT INTO `waypoint_scripts` VALUES (1378562, 39, 1, 0, 1, 0, 0, 0, 0, 0, 93);
+INSERT INTO `waypoint_scripts` VALUES (1378563, 0, 30, 0, 0, 0, 0, 0, 0, 1.80131, 94);
+INSERT INTO `waypoint_scripts` VALUES (1378563, 1, 1, 28, 1, 0, 0, 0, 0, 0, 95);
+INSERT INTO `waypoint_scripts` VALUES (1378563, 22, 1, 0, 1, 0, 0, 0, 0, 0, 96);
+INSERT INTO `waypoint_scripts` VALUES (1380452, 0, 30, 0, 0, 0, 0, 0, 0, 3.89208, 100);
+INSERT INTO `waypoint_scripts` VALUES (1380452, 7, 1, 69, 1, 0, 0, 0, 0, 0, 101);
+INSERT INTO `waypoint_scripts` VALUES (1380452, 16, 1, 0, 1, 0, 0, 0, 0, 0, 102);
+INSERT INTO `waypoint_scripts` VALUES (12698101, 0, 14, 52092, 1, 0, 0, 0, 0, 0, 855);
+INSERT INTO `waypoint_scripts` VALUES (12698101, 2, 15, 52098, 1, 0, 0, 0, 0, 0, 856);
+INSERT INTO `waypoint_scripts` VALUES (12698102, 0, 14, 52092, 1, 0, 0, 0, 0, 0, 857);
+INSERT INTO `waypoint_scripts` VALUES (49, 1, 1, 378, 1, 0, 0, 0, 0, 0, 68);
+INSERT INTO `waypoint_scripts` VALUES (50, 0, 1, 25, 0, 0, 0, 0, 0, 0, 69);
+INSERT INTO `waypoint_scripts` VALUES (51, 1, 1, 402, 0, 0, 0, 0, 0, 0, 70);
+INSERT INTO `waypoint_scripts` VALUES (52, 2, 1, 418, 1, 0, 0, 0, 0, 0, 71);
+INSERT INTO `waypoint_scripts` VALUES (52, 10, 1, 0, 1, 0, 0, 0, 0, 0, 72);
+INSERT INTO `waypoint_scripts` VALUES (11026001, 0, 30, 0, 0, 0, 0, 0, 0, 3.00197, 858);
+INSERT INTO `waypoint_scripts` VALUES (11026001, 1, 15, 51733, 1, 0, 0, 0, 0, 0, 859);
+INSERT INTO `waypoint_scripts` VALUES (11026002, 1, 15, 51733, 1, 0, 0, 0, 0, 0, 860);
+INSERT INTO `waypoint_scripts` VALUES (11026401, 1, 15, 51733, 1, 0, 0, 0, 0, 0, 861);
+INSERT INTO `waypoint_scripts` VALUES (11026402, 1, 15, 51733, 1, 0, 0, 0, 0, 0, 862);
+INSERT INTO `waypoint_scripts` VALUES (2, 0, 1, 173, 0, 0, 0, 0, 0, 0, 2);
+INSERT INTO `waypoint_scripts` VALUES (10, 0, 1, 5, 0, 0, 0, 0, 0, 0, 10);
+INSERT INTO `waypoint_scripts` VALUES (11, 0, 1, 18, 0, 0, 0, 0, 0, 0, 11);
+INSERT INTO `waypoint_scripts` VALUES (12, 0, 1, 21, 0, 0, 0, 0, 0, 0, 12);
+INSERT INTO `waypoint_scripts` VALUES (13, 0, 1, 273, 0, 0, 0, 0, 0, 0, 13);
+INSERT INTO `waypoint_scripts` VALUES (14, 0, 1, 22, 0, 0, 0, 0, 0, 0, 14);
+INSERT INTO `waypoint_scripts` VALUES (14, 0, 16, 9739, 0, 0, 0, 0, 0, 0, 15);
+INSERT INTO `waypoint_scripts` VALUES (81, 0, 6, 530, 1, 0, 3887.31, 2258.43, 214.298, 0, 881);
+INSERT INTO `waypoint_scripts` VALUES (82, 0, 6, 530, 1, 0, 3726.48, 1961.26, 249.912, 0, 882);
+INSERT INTO `waypoint_scripts` VALUES (83, 0, 6, 530, 1, 0, 4044.87, 2025.38, 267.544, 0, 883);
+INSERT INTO `waypoint_scripts` VALUES (84, 0, 6, 530, 1, 0, 4148.98, 2042.91, 164.712, 0, 884);
+INSERT INTO `waypoint_scripts` VALUES (85, 0, 6, 530, 1, 0, 3827.96, 1979.83, 275.021, 0, 885);
+INSERT INTO `waypoint_scripts` VALUES (86, 0, 6, 530, 1, 0, 4151.25, 2042.39, 245.592, 0, 886);
+INSERT INTO `waypoint_scripts` VALUES (87, 0, 6, 530, 1, 0, 3957.74, 1894.36, 269.926, 0, 887);
+INSERT INTO `waypoint_scripts` VALUES (88, 0, 6, 530, 1, 0, 3990.15, 1735.37, 270.177, 0, 888);
+INSERT INTO `waypoint_scripts` VALUES (89, 0, 6, 530, 1, 0, 4001.01, 1683.55, 137.226, 0, 889);
+INSERT INTO `waypoint_scripts` VALUES (90, 0, 6, 530, 1, 0, 3696.55, 1954.49, 134.377, 0, 890);
+INSERT INTO `waypoint_scripts` VALUES (5, 0, 1, 0, 1, 0, 0, 0, 0, 0, 5);
+INSERT INTO `waypoint_scripts` VALUES (6, 0, 1, 92, 0, 0, 0, 0, 0, 0, 6);
+INSERT INTO `waypoint_scripts` VALUES (7, 0, 1, 482, 0, 0, 0, 0, 0, 0, 7);
+INSERT INTO `waypoint_scripts` VALUES (488, 3, 15, 63295, 4, 33575, 30, 0, 0, 0, 891);
+INSERT INTO `waypoint_scripts` VALUES (489, 3, 15, 63292, 4, 33575, 30, 0, 0, 0, 892);
+INSERT INTO `waypoint_scripts` VALUES (490, 3, 15, 63294, 4, 33575, 30, 0, 0, 0, 893);
+INSERT INTO `waypoint_scripts` VALUES (491, 1, 1, 432, 0, 0, 0, 0, 0, 0, 894);
+INSERT INTO `waypoint_scripts` VALUES (491, 4, 1, 432, 0, 0, 0, 0, 0, 0, 895);
+INSERT INTO `waypoint_scripts` VALUES (492, 2, 1, 22, 0, 0, 0, 0, 0, 0, 896);
+INSERT INTO `waypoint_scripts` VALUES (154599041, 0, 1, 66, 0, 0, 0, 0, 0, 0, 154599041);
+INSERT INTO `waypoint_scripts` VALUES (154599042, 0, 18, 0, 0, 0, 0, 0, 0, 0, 154599042);
+INSERT INTO `waypoint_scripts` VALUES (210019480, 6, 1, 30, 1, 0, 0, 0, 0, 0, 154599089);
+INSERT INTO `waypoint_scripts` VALUES (210019480, 0, 1, 27, 1, 0, 0, 0, 0, 0, 154599088);
+INSERT INTO `waypoint_scripts` VALUES (210019340, 5, 1, 30, 1, 0, 0, 0, 0, 0, 154599087);
+INSERT INTO `waypoint_scripts` VALUES (210019340, 0, 1, 333, 1, 0, 0, 0, 0, 0, 154599086);
+INSERT INTO `waypoint_scripts` VALUES (210019330, 8, 1, 30, 1, 0, 0, 0, 0, 0, 154599085);
+INSERT INTO `waypoint_scripts` VALUES (210019330, 0, 1, 333, 1, 0, 0, 0, 0, 0, 154599084);
+INSERT INTO `waypoint_scripts` VALUES (210018191, 0, 1, 30, 1, 0, 0, 0, 0, 0, 154599083);
+INSERT INTO `waypoint_scripts` VALUES (210018191, 3, 15, 129315, 1, 0, 0, 0, 0, 0, 154599082);
+INSERT INTO `waypoint_scripts` VALUES (210018191, 0, 1, 428, 1, 0, 0, 0, 0, 0, 154599081);
+INSERT INTO `waypoint_scripts` VALUES (210018190, 0, 1, 30, 1, 0, 0, 0, 0, 0, 154599080);
+INSERT INTO `waypoint_scripts` VALUES (210018190, 3, 14, 129315, 1, 0, 0, 0, 0, 0, 154599079);
+INSERT INTO `waypoint_scripts` VALUES (210018190, 0, 1, 428, 1, 0, 0, 0, 0, 0, 154599078);
+INSERT INTO `waypoint_scripts` VALUES (210018141, 2, 1, 30, 1, 0, 0, 0, 0, 0, 154599077);
+INSERT INTO `waypoint_scripts` VALUES (210018141, 2, 14, 129315, 1, 0, 0, 0, 0, 0, 154599076);
+INSERT INTO `waypoint_scripts` VALUES (210018141, 0, 1, 428, 1, 0, 0, 0, 0, 0, 154599075);
+INSERT INTO `waypoint_scripts` VALUES (210018140, 2, 1, 30, 1, 0, 0, 0, 0, 0, 154599074);
+INSERT INTO `waypoint_scripts` VALUES (210018140, 2, 15, 129315, 1, 0, 0, 0, 0, 0, 154599073);
+INSERT INTO `waypoint_scripts` VALUES (210018140, 0, 1, 428, 1, 0, 0, 0, 0, 0, 154599072);
+INSERT INTO `waypoint_scripts` VALUES (210016350, 4, 1, 30, 1, 0, 0, 0, 0, 0, 154599069);
+INSERT INTO `waypoint_scripts` VALUES (210016350, 0, 1, 433, 1, 0, 0, 0, 0, 0, 154599068);
+INSERT INTO `waypoint_scripts` VALUES (210012350, 6, 1, 11, 0, 0, 0, 0, 0, 0, 154599061);
+INSERT INTO `waypoint_scripts` VALUES (210012350, 3, 1, 404, 0, 0, 0, 0, 0, 0, 154599060);
+INSERT INTO `waypoint_scripts` VALUES (210012330, 0, 1, 381, 0, 0, 0, 0, 0, 0, 154599059);
+INSERT INTO `waypoint_scripts` VALUES (210012321, 11, 1, 30, 1, 0, 0, 0, 0, 0, 154599058);
+INSERT INTO `waypoint_scripts` VALUES (210012321, 5, 1, 69, 1, 0, 0, 0, 0, 0, 154599057);
+INSERT INTO `waypoint_scripts` VALUES (210012321, 3, 1, 25, 0, 0, 0, 0, 0, 0, 154599056);
+INSERT INTO `waypoint_scripts` VALUES (210012320, 30, 1, 404, 0, 0, 0, 0, 0, 0, 154599055);
+INSERT INTO `waypoint_scripts` VALUES (210012320, 25, 1, 11, 0, 0, 0, 0, 0, 0, 154599054);
+INSERT INTO `waypoint_scripts` VALUES (210012320, 21, 1, 25, 0, 0, 0, 0, 0, 0, 154599053);
+INSERT INTO `waypoint_scripts` VALUES (210012320, 11, 1, 30, 1, 0, 0, 0, 0, 0, 154599052);
+INSERT INTO `waypoint_scripts` VALUES (210012320, 5, 1, 69, 1, 0, 0, 0, 0, 0, 154599051);
+INSERT INTO `waypoint_scripts` VALUES (210011970, 4, 1, 30, 1, 0, 0, 0, 0, 0, 154599050);
+INSERT INTO `waypoint_scripts` VALUES (210011970, 0, 1, 173, 1, 0, 0, 0, 0, 0, 154599049);
+INSERT INTO `waypoint_scripts` VALUES (210011310, 3, 1, 30, 1, 0, 0, 0, 0, 0, 154599048);
+INSERT INTO `waypoint_scripts` VALUES (210011310, 0, 1, 173, 1, 0, 0, 0, 0, 0, 154599047);
+INSERT INTO `waypoint_scripts` VALUES (210010350, 2, 36, 3143, 0, 0, 0, 0, 0, 0, 154599046);
+INSERT INTO `waypoint_scripts` VALUES (210001621, 2, 36, 2704, 0, 0, 0, 0, 0, 0, 154599045);
+INSERT INTO `waypoint_scripts` VALUES (210001621, 0, 1, 16, 0, 0, 0, 0, 0, 0, 154599044);
+INSERT INTO `waypoint_scripts` VALUES (210001620, 2, 36, 2704, 0, 0, 0, 0, 0, 0, 154599043);
+INSERT INTO `waypoint_scripts` VALUES (11393600, 13, 1, 53, 0, 0, 0, 0, 0, 0, 943);
+INSERT INTO `waypoint_scripts` VALUES (5753900, 2, 1, 7, 0, 0, 0, 0, 0, 0, 938);
+INSERT INTO `waypoint_scripts` VALUES (9, 7, 31, 2, 0, 0, 0, 0, 0, 0, 950);
+INSERT INTO `waypoint_scripts` VALUES (9, 9, 1, 234, 0, 0, 0, 0, 0, 0, 951);
+INSERT INTO `waypoint_scripts` VALUES (9, 14, 1, 0, 0, 0, 0, 0, 0, 0, 952);
+INSERT INTO `waypoint_scripts` VALUES (9, 16, 31, 1, 0, 0, 0, 0, 0, 0, 953);
+INSERT INTO `waypoint_scripts` VALUES (3853710, 4, 1, 381, 0, 0, 0, 0, 0, 0, 956);
+INSERT INTO `waypoint_scripts` VALUES (3853710, 8, 1, 381, 0, 0, 0, 0, 0, 0, 957);
+INSERT INTO `waypoint_scripts` VALUES (3848250, 5, 1, 54, 0, 0, 0, 0, 0, 0, 962);
+INSERT INTO `waypoint_scripts` VALUES (3848250, 7, 1, 54, 0, 0, 0, 0, 0, 0, 963);
+INSERT INTO `waypoint_scripts` VALUES (3848250, 9, 1, 54, 0, 0, 0, 0, 0, 0, 964);
+INSERT INTO `waypoint_scripts` VALUES (12556600, 2, 15, 68442, 1, 0, 0, 0, 0, 0, 912);
+INSERT INTO `waypoint_scripts` VALUES (12556600, 10, 1, 1, 0, 0, 0, 0, 0, 0, 913);
+INSERT INTO `waypoint_scripts` VALUES (12556600, 18, 14, 68442, 1, 0, 0, 0, 0, 0, 914);
+INSERT INTO `waypoint_scripts` VALUES (6556600, 15, 0, 0, 0, 16960, 0, 0, 0, 0, 915);
+INSERT INTO `waypoint_scripts` VALUES (11730800, 1, 1, 36, 0, 0, 0, 0, 0, 0, 937);
+INSERT INTO `waypoint_scripts` VALUES (5862800, 2, 1, 69, 1, 0, 0, 0, 0, 0, 946);
+INSERT INTO `waypoint_scripts` VALUES (5862800, 42, 1, 0, 1, 0, 0, 0, 0, 0, 947);
+INSERT INTO `waypoint_scripts` VALUES (6873300, 1, 35, 1, 8, 0, 0, 0, 0, 0, 948);
+INSERT INTO `waypoint_scripts` VALUES (6873300, 60, 18, 1000, 0, 0, 0, 0, 0, 0, 949);
+INSERT INTO `waypoint_scripts` VALUES (11130700, 2, 1, 69, 1, 0, 0, 0, 0, 0, 916);
+INSERT INTO `waypoint_scripts` VALUES (11130700, 17, 1, 0, 1, 0, 0, 0, 0, 0, 917);
+INSERT INTO `waypoint_scripts` VALUES (13036300, 1, 15, 26047, 1, 0, 0, 0, 0, 0, 918);
+INSERT INTO `waypoint_scripts` VALUES (13036300, 4, 1, 0, 1, 0, 0, 0, 0, 0, 919);
+
+SET FOREIGN_KEY_CHECKS = 1;

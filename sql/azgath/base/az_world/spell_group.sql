@@ -1,0 +1,303 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : Developpement
+ Source Server Type    : MariaDB
+ Source Server Version : 100508
+ Source Host           : localhost:3306
+ Source Schema         : az_world
+
+ Target Server Type    : MariaDB
+ Target Server Version : 100508
+ File Encoding         : 65001
+
+ Date: 13/06/2021 21:15:05
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for spell_group
+-- ----------------------------
+DROP TABLE IF EXISTS `spell_group`;
+CREATE TABLE `spell_group`  (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `spell_id` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`, `spell_id`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'Spell System' ROW_FORMAT = Fixed;
+
+-- ----------------------------
+-- Records of spell_group
+-- ----------------------------
+INSERT INTO `spell_group` VALUES (1, 2367);
+INSERT INTO `spell_group` VALUES (1, 2374);
+INSERT INTO `spell_group` VALUES (1, 3160);
+INSERT INTO `spell_group` VALUES (1, 3164);
+INSERT INTO `spell_group` VALUES (1, 7844);
+INSERT INTO `spell_group` VALUES (1, 8212);
+INSERT INTO `spell_group` VALUES (1, 10667);
+INSERT INTO `spell_group` VALUES (1, 10669);
+INSERT INTO `spell_group` VALUES (1, 11328);
+INSERT INTO `spell_group` VALUES (1, 11334);
+INSERT INTO `spell_group` VALUES (1, 11390);
+INSERT INTO `spell_group` VALUES (1, 11405);
+INSERT INTO `spell_group` VALUES (1, 11406);
+INSERT INTO `spell_group` VALUES (1, 11474);
+INSERT INTO `spell_group` VALUES (1, 16322);
+INSERT INTO `spell_group` VALUES (1, 16323);
+INSERT INTO `spell_group` VALUES (1, 16329);
+INSERT INTO `spell_group` VALUES (1, 17038);
+INSERT INTO `spell_group` VALUES (1, 17537);
+INSERT INTO `spell_group` VALUES (1, 17538);
+INSERT INTO `spell_group` VALUES (1, 17539);
+INSERT INTO `spell_group` VALUES (1, 17624);
+INSERT INTO `spell_group` VALUES (1, 17626);
+INSERT INTO `spell_group` VALUES (1, 17627);
+INSERT INTO `spell_group` VALUES (1, 17628);
+INSERT INTO `spell_group` VALUES (1, 21920);
+INSERT INTO `spell_group` VALUES (1, 26276);
+INSERT INTO `spell_group` VALUES (1, 28486);
+INSERT INTO `spell_group` VALUES (1, 28488);
+INSERT INTO `spell_group` VALUES (1, 28490);
+INSERT INTO `spell_group` VALUES (1, 28491);
+INSERT INTO `spell_group` VALUES (1, 28493);
+INSERT INTO `spell_group` VALUES (1, 28497);
+INSERT INTO `spell_group` VALUES (1, 28501);
+INSERT INTO `spell_group` VALUES (1, 28503);
+INSERT INTO `spell_group` VALUES (1, 28518);
+INSERT INTO `spell_group` VALUES (1, 28519);
+INSERT INTO `spell_group` VALUES (1, 28520);
+INSERT INTO `spell_group` VALUES (1, 28521);
+INSERT INTO `spell_group` VALUES (1, 28540);
+INSERT INTO `spell_group` VALUES (1, 33720);
+INSERT INTO `spell_group` VALUES (1, 33721);
+INSERT INTO `spell_group` VALUES (1, 33726);
+INSERT INTO `spell_group` VALUES (1, 38954);
+INSERT INTO `spell_group` VALUES (1, 40567);
+INSERT INTO `spell_group` VALUES (1, 40568);
+INSERT INTO `spell_group` VALUES (1, 40572);
+INSERT INTO `spell_group` VALUES (1, 40573);
+INSERT INTO `spell_group` VALUES (1, 40575);
+INSERT INTO `spell_group` VALUES (1, 40576);
+INSERT INTO `spell_group` VALUES (1, 41608);
+INSERT INTO `spell_group` VALUES (1, 41609);
+INSERT INTO `spell_group` VALUES (1, 41610);
+INSERT INTO `spell_group` VALUES (1, 41611);
+INSERT INTO `spell_group` VALUES (1, 45373);
+INSERT INTO `spell_group` VALUES (1, 46837);
+INSERT INTO `spell_group` VALUES (1, 46839);
+INSERT INTO `spell_group` VALUES (1, 53746);
+INSERT INTO `spell_group` VALUES (1, 53748);
+INSERT INTO `spell_group` VALUES (1, 53749);
+INSERT INTO `spell_group` VALUES (1, 53752);
+INSERT INTO `spell_group` VALUES (1, 53755);
+INSERT INTO `spell_group` VALUES (1, 53758);
+INSERT INTO `spell_group` VALUES (1, 53760);
+INSERT INTO `spell_group` VALUES (1, 54212);
+INSERT INTO `spell_group` VALUES (1, 54452);
+INSERT INTO `spell_group` VALUES (1, 54494);
+INSERT INTO `spell_group` VALUES (1, 60340);
+INSERT INTO `spell_group` VALUES (1, 60341);
+INSERT INTO `spell_group` VALUES (1, 60344);
+INSERT INTO `spell_group` VALUES (1, 60346);
+INSERT INTO `spell_group` VALUES (1, 63729);
+INSERT INTO `spell_group` VALUES (2, 673);
+INSERT INTO `spell_group` VALUES (2, 2378);
+INSERT INTO `spell_group` VALUES (2, 3166);
+INSERT INTO `spell_group` VALUES (2, 3219);
+INSERT INTO `spell_group` VALUES (2, 3220);
+INSERT INTO `spell_group` VALUES (2, 3222);
+INSERT INTO `spell_group` VALUES (2, 3223);
+INSERT INTO `spell_group` VALUES (2, 3593);
+INSERT INTO `spell_group` VALUES (2, 10668);
+INSERT INTO `spell_group` VALUES (2, 10692);
+INSERT INTO `spell_group` VALUES (2, 10693);
+INSERT INTO `spell_group` VALUES (2, 11319);
+INSERT INTO `spell_group` VALUES (2, 11348);
+INSERT INTO `spell_group` VALUES (2, 11349);
+INSERT INTO `spell_group` VALUES (2, 11371);
+INSERT INTO `spell_group` VALUES (2, 11396);
+INSERT INTO `spell_group` VALUES (2, 15231);
+INSERT INTO `spell_group` VALUES (2, 15233);
+INSERT INTO `spell_group` VALUES (2, 16321);
+INSERT INTO `spell_group` VALUES (2, 16325);
+INSERT INTO `spell_group` VALUES (2, 16326);
+INSERT INTO `spell_group` VALUES (2, 16327);
+INSERT INTO `spell_group` VALUES (2, 17535);
+INSERT INTO `spell_group` VALUES (2, 17624);
+INSERT INTO `spell_group` VALUES (2, 17626);
+INSERT INTO `spell_group` VALUES (2, 17627);
+INSERT INTO `spell_group` VALUES (2, 17628);
+INSERT INTO `spell_group` VALUES (2, 24361);
+INSERT INTO `spell_group` VALUES (2, 24363);
+INSERT INTO `spell_group` VALUES (2, 24382);
+INSERT INTO `spell_group` VALUES (2, 24383);
+INSERT INTO `spell_group` VALUES (2, 24417);
+INSERT INTO `spell_group` VALUES (2, 27652);
+INSERT INTO `spell_group` VALUES (2, 27653);
+INSERT INTO `spell_group` VALUES (2, 28502);
+INSERT INTO `spell_group` VALUES (2, 28509);
+INSERT INTO `spell_group` VALUES (2, 28514);
+INSERT INTO `spell_group` VALUES (2, 28518);
+INSERT INTO `spell_group` VALUES (2, 28519);
+INSERT INTO `spell_group` VALUES (2, 28520);
+INSERT INTO `spell_group` VALUES (2, 28521);
+INSERT INTO `spell_group` VALUES (2, 28540);
+INSERT INTO `spell_group` VALUES (2, 29348);
+INSERT INTO `spell_group` VALUES (2, 39625);
+INSERT INTO `spell_group` VALUES (2, 39626);
+INSERT INTO `spell_group` VALUES (2, 39627);
+INSERT INTO `spell_group` VALUES (2, 39628);
+INSERT INTO `spell_group` VALUES (2, 40567);
+INSERT INTO `spell_group` VALUES (2, 40568);
+INSERT INTO `spell_group` VALUES (2, 40572);
+INSERT INTO `spell_group` VALUES (2, 40573);
+INSERT INTO `spell_group` VALUES (2, 40575);
+INSERT INTO `spell_group` VALUES (2, 40576);
+INSERT INTO `spell_group` VALUES (2, 41608);
+INSERT INTO `spell_group` VALUES (2, 41609);
+INSERT INTO `spell_group` VALUES (2, 41610);
+INSERT INTO `spell_group` VALUES (2, 41611);
+INSERT INTO `spell_group` VALUES (2, 46837);
+INSERT INTO `spell_group` VALUES (2, 46839);
+INSERT INTO `spell_group` VALUES (2, 53747);
+INSERT INTO `spell_group` VALUES (2, 53751);
+INSERT INTO `spell_group` VALUES (2, 53752);
+INSERT INTO `spell_group` VALUES (2, 53755);
+INSERT INTO `spell_group` VALUES (2, 53758);
+INSERT INTO `spell_group` VALUES (2, 53760);
+INSERT INTO `spell_group` VALUES (2, 53763);
+INSERT INTO `spell_group` VALUES (2, 53764);
+INSERT INTO `spell_group` VALUES (2, 54212);
+INSERT INTO `spell_group` VALUES (2, 60343);
+INSERT INTO `spell_group` VALUES (2, 60347);
+INSERT INTO `spell_group` VALUES (3, 40567);
+INSERT INTO `spell_group` VALUES (3, 40568);
+INSERT INTO `spell_group` VALUES (3, 40572);
+INSERT INTO `spell_group` VALUES (3, 40573);
+INSERT INTO `spell_group` VALUES (3, 40575);
+INSERT INTO `spell_group` VALUES (3, 40576);
+INSERT INTO `spell_group` VALUES (4, 41608);
+INSERT INTO `spell_group` VALUES (4, 41609);
+INSERT INTO `spell_group` VALUES (4, 41610);
+INSERT INTO `spell_group` VALUES (4, 41611);
+INSERT INTO `spell_group` VALUES (4, 46837);
+INSERT INTO `spell_group` VALUES (4, 46839);
+INSERT INTO `spell_group` VALUES (1001, 18125);
+INSERT INTO `spell_group` VALUES (1001, 18141);
+INSERT INTO `spell_group` VALUES (1001, 19705);
+INSERT INTO `spell_group` VALUES (1001, 19706);
+INSERT INTO `spell_group` VALUES (1001, 19708);
+INSERT INTO `spell_group` VALUES (1001, 19709);
+INSERT INTO `spell_group` VALUES (1001, 19710);
+INSERT INTO `spell_group` VALUES (1001, 19711);
+INSERT INTO `spell_group` VALUES (1001, 20875);
+INSERT INTO `spell_group` VALUES (1001, 23697);
+INSERT INTO `spell_group` VALUES (1001, 24799);
+INSERT INTO `spell_group` VALUES (1001, 24870);
+INSERT INTO `spell_group` VALUES (1001, 25037);
+INSERT INTO `spell_group` VALUES (1001, 25694);
+INSERT INTO `spell_group` VALUES (1001, 25722);
+INSERT INTO `spell_group` VALUES (1001, 25804);
+INSERT INTO `spell_group` VALUES (1001, 25941);
+INSERT INTO `spell_group` VALUES (1001, 33254);
+INSERT INTO `spell_group` VALUES (1001, 33256);
+INSERT INTO `spell_group` VALUES (1001, 33257);
+INSERT INTO `spell_group` VALUES (1001, 33259);
+INSERT INTO `spell_group` VALUES (1001, 33261);
+INSERT INTO `spell_group` VALUES (1001, 33263);
+INSERT INTO `spell_group` VALUES (1001, 33265);
+INSERT INTO `spell_group` VALUES (1001, 33268);
+INSERT INTO `spell_group` VALUES (1001, 33272);
+INSERT INTO `spell_group` VALUES (1001, 35272);
+INSERT INTO `spell_group` VALUES (1001, 42293);
+INSERT INTO `spell_group` VALUES (1001, 43722);
+INSERT INTO `spell_group` VALUES (1001, 43764);
+INSERT INTO `spell_group` VALUES (1001, 43771);
+INSERT INTO `spell_group` VALUES (1001, 44097);
+INSERT INTO `spell_group` VALUES (1001, 44098);
+INSERT INTO `spell_group` VALUES (1001, 44099);
+INSERT INTO `spell_group` VALUES (1001, 44100);
+INSERT INTO `spell_group` VALUES (1001, 44101);
+INSERT INTO `spell_group` VALUES (1001, 44102);
+INSERT INTO `spell_group` VALUES (1001, 44104);
+INSERT INTO `spell_group` VALUES (1001, 44105);
+INSERT INTO `spell_group` VALUES (1001, 44106);
+INSERT INTO `spell_group` VALUES (1001, 45245);
+INSERT INTO `spell_group` VALUES (1001, 45619);
+INSERT INTO `spell_group` VALUES (1001, 45694);
+INSERT INTO `spell_group` VALUES (1001, 46682);
+INSERT INTO `spell_group` VALUES (1001, 46687);
+INSERT INTO `spell_group` VALUES (1001, 46899);
+INSERT INTO `spell_group` VALUES (1001, 53284);
+INSERT INTO `spell_group` VALUES (1001, 57079);
+INSERT INTO `spell_group` VALUES (1001, 57097);
+INSERT INTO `spell_group` VALUES (1001, 57100);
+INSERT INTO `spell_group` VALUES (1001, 57102);
+INSERT INTO `spell_group` VALUES (1001, 57107);
+INSERT INTO `spell_group` VALUES (1001, 57111);
+INSERT INTO `spell_group` VALUES (1001, 57139);
+INSERT INTO `spell_group` VALUES (1001, 57286);
+INSERT INTO `spell_group` VALUES (1001, 57288);
+INSERT INTO `spell_group` VALUES (1001, 57291);
+INSERT INTO `spell_group` VALUES (1001, 57294);
+INSERT INTO `spell_group` VALUES (1001, 57325);
+INSERT INTO `spell_group` VALUES (1001, 57327);
+INSERT INTO `spell_group` VALUES (1001, 57329);
+INSERT INTO `spell_group` VALUES (1001, 57332);
+INSERT INTO `spell_group` VALUES (1001, 57334);
+INSERT INTO `spell_group` VALUES (1001, 57356);
+INSERT INTO `spell_group` VALUES (1001, 57358);
+INSERT INTO `spell_group` VALUES (1001, 57360);
+INSERT INTO `spell_group` VALUES (1001, 57363);
+INSERT INTO `spell_group` VALUES (1001, 57365);
+INSERT INTO `spell_group` VALUES (1001, 57367);
+INSERT INTO `spell_group` VALUES (1001, 57371);
+INSERT INTO `spell_group` VALUES (1001, 57373);
+INSERT INTO `spell_group` VALUES (1001, 57399);
+INSERT INTO `spell_group` VALUES (1001, 58468);
+INSERT INTO `spell_group` VALUES (1001, 58479);
+INSERT INTO `spell_group` VALUES (1001, 59230);
+INSERT INTO `spell_group` VALUES (1001, 62349);
+INSERT INTO `spell_group` VALUES (1001, 64057);
+INSERT INTO `spell_group` VALUES (1001, 65247);
+INSERT INTO `spell_group` VALUES (1001, 65365);
+INSERT INTO `spell_group` VALUES (1001, 65410);
+INSERT INTO `spell_group` VALUES (1001, 65412);
+INSERT INTO `spell_group` VALUES (1001, 65414);
+INSERT INTO `spell_group` VALUES (1001, 65415);
+INSERT INTO `spell_group` VALUES (1001, 65416);
+INSERT INTO `spell_group` VALUES (1001, 66623);
+INSERT INTO `spell_group` VALUES (1001, 69559);
+INSERT INTO `spell_group` VALUES (1106, 6562);
+INSERT INTO `spell_group` VALUES (1107, 12042);
+INSERT INTO `spell_group` VALUES (1107, 31884);
+INSERT INTO `spell_group` VALUES (1109, 51442);
+INSERT INTO `spell_group` VALUES (1109, 52119);
+INSERT INTO `spell_group` VALUES (1110, 74826);
+INSERT INTO `spell_group` VALUES (1110, 74827);
+INSERT INTO `spell_group` VALUES (1110, 74828);
+INSERT INTO `spell_group` VALUES (1110, 74829);
+INSERT INTO `spell_group` VALUES (1110, 74830);
+INSERT INTO `spell_group` VALUES (1110, 74831);
+INSERT INTO `spell_group` VALUES (1110, 74832);
+INSERT INTO `spell_group` VALUES (1110, 74833);
+INSERT INTO `spell_group` VALUES (1110, 74834);
+INSERT INTO `spell_group` VALUES (1110, 74835);
+INSERT INTO `spell_group` VALUES (1110, 74836);
+INSERT INTO `spell_group` VALUES (1111, 62727);
+INSERT INTO `spell_group` VALUES (1111, 63438);
+INSERT INTO `spell_group` VALUES (1111, 63439);
+INSERT INTO `spell_group` VALUES (1111, 63440);
+INSERT INTO `spell_group` VALUES (1111, 63441);
+INSERT INTO `spell_group` VALUES (1111, 63442);
+INSERT INTO `spell_group` VALUES (1111, 63443);
+INSERT INTO `spell_group` VALUES (1111, 63444);
+INSERT INTO `spell_group` VALUES (1111, 63445);
+INSERT INTO `spell_group` VALUES (1111, 63446);
+INSERT INTO `spell_group` VALUES (1121, 3671);
+INSERT INTO `spell_group` VALUES (1121, 3672);
+INSERT INTO `spell_group` VALUES (1121, 3673);
+
+SET FOREIGN_KEY_CHECKS = 1;
