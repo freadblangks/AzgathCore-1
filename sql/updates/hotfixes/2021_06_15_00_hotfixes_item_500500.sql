@@ -1,0 +1,1 @@
+INSERT INTO `item`(`ID`, `ClassID`, `SubclassID`, `Material`, `InventoryType`, `SheatheType`, `SoundOverrideSubclassID`, `IconFileDataID`, `ItemGroupSoundsID`, `VerifiedBuild`) VALUES (500500, 0, 0, 0, 0, 0, 0, 1120721, 0, 0)
