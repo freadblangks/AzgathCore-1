@@ -111,6 +111,10 @@ INSERT INTO `creature_template` VALUES (5000202, 0, 0, 0, 0, 0, 'Héritage (Acce
 UPDATE `creature_template` SET `name` = 'Crick Serre-Boulons' WHERE `entry` = 1000000;
 UPDATE `creature_template` SET `subname` = 'Rate Modifier EXP' WHERE `entry` = 1000000;
 
+UPDATE `creature_template` SET `name` = 'Heirloom (Accessory)' WHERE `entry` = 5000202;
+UPDATE `creature_template` SET `name` = 'Heirloom (Weapons)' WHERE `entry` = 5000201;
+UPDATE `creature_template` SET `name` = 'Heirloom (Armor)' WHERE `entry` = 5000200;
+
 -- Creature_template_model
 
 INSERT INTO `creature_template_model` VALUES (5000200, 0, 45694, 1, 0, 28153);
