@@ -109,6 +109,7 @@ INSERT INTO `creature_template` VALUES (5000201, 0, 0, 0, 0, 0, 'Héritage (Arme
 INSERT INTO `creature_template` VALUES (5000202, 0, 0, 0, 0, 0, 'Héritage (Accessoire)', NULL, 'Az\'gath', NULL, NULL, 0, 120, 120, 0, 0, 0, 35, 128, 1, 1.14286, 1, 0, 0, 1500, 2000, 1, 1, 1, 0, 2048, 0, 0, 0, 0, 0, 0, 7, 0, 0, 5000200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, '', 28153);
 
 UPDATE `creature_template` SET `name` = 'Crick Serre-Boulons' WHERE `entry` = 1000000;
+UPDATE `creature_template` SET `subname` = 'Rate Modifier EXP' WHERE `entry` = 1000000;
 
 -- Creature_template_model
 
