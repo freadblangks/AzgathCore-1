@@ -6,10 +6,14 @@ DELETE FROM `creature` WHERE `guid` = 280001220;
 DELETE FROM `creature` WHERE `guid` = 280001218;
 DELETE FROM `creature` WHERE `guid` = 280001217;
 DELETE FROM `creature` WHERE `guid` = 280001216;
+DELETE FROM `creature` WHERE `guid` = 3530203330003162;
+DELETE FROM `creature` WHERE `guid` = 2103360742289;
+DELETE FROM `creature` WHERE `guid` = 2103360742288;
 
 INSERT INTO `creature` VALUES (3530203330003170, 135211, 1, 0, 0, '0', 0, 0, 0, -1, 0, 0, 1400.22, -4372.35, 73.9059, 0.127052, 300, 0, 0, 216806, 0, 0, 0, 0, 0, 0, 0, '', 0);
 INSERT INTO `creature` VALUES (3530203330003169, 135211, 1, 0, 0, '0', 0, 0, 0, -1, 0, 0, 1398.68, -4360.25, 73.8999, 0.127052, 300, 0, 0, 216806, 0, 0, 0, 0, 0, 0, 0, '', 0);
 INSERT INTO `creature` VALUES (3530203330003168, 135211, 1, 0, 0, '0', 0, 0, 0, -1, 0, 0, 1397.1, -4347.94, 73.9773, 0.127052, 300, 0, 0, 216806, 0, 0, 0, 0, 0, 0, 0, '', 0);
+INSERT INTO `creature`(`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnDifficulties`, `phaseUseFlags`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `unit_flags2`, `unit_flags3`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES (3530203330003162, 39605, 1, 0, 0, '0', 0, 0, 0, -1, 0, 1, 1672.49, -4341.5, 29.1892, 3.65996, 300, 0, 0, 6217273, 0, 0, 0, 0, 0, 0, 0, '', 0);
 
 -- Creature_template
 
