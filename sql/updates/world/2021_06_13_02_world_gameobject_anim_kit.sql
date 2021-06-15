@@ -1,48 +1,48 @@
 -- Gameobject
-UPDATE `gameobject` SET `id` = 323845 WHERE `guid` = 280200679
-UPDATE `gameobject` SET `id` = 323841 WHERE `guid` = 280200678
-UPDATE `gameobject` SET `id` = 323840 WHERE `guid` = 280200664
-UPDATE `gameobject` SET `id` = 323842 WHERE `guid` = 280200695
-DELETE FROM `gameobject` WHERE `guid` = 280200696
-INSERT INTO `gameobject`(`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnDifficulties`, `phaseUseFlags`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`, `isActive`, `ScriptName`, `VerifiedBuild`) VALUES (4000000015623, 323843, 0, 1519, 10523, '0', 0, 0, 0, -1, -9006.19, 965.365, 68.2277, 5.36689, 0, 0, -0.442288, 0.896873, 120, 255, 1, 0, '', 37474)
-UPDATE `gameobject` SET `id` = 323846 WHERE `guid` = 280200666
-UPDATE `gameobject` SET `id` = 323844 WHERE `guid` = 280200667
+UPDATE `gameobject` SET `id` = 323845 WHERE `guid` = 280200679;
+UPDATE `gameobject` SET `id` = 323841 WHERE `guid` = 280200678;
+UPDATE `gameobject` SET `id` = 323840 WHERE `guid` = 280200664;
+UPDATE `gameobject` SET `id` = 323842 WHERE `guid` = 280200695;
+DELETE FROM `gameobject` WHERE `guid` = 280200696;
+INSERT INTO `gameobject`(`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnDifficulties`, `phaseUseFlags`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`, `isActive`, `ScriptName`, `VerifiedBuild`) VALUES (4000000015623, 323843, 0, 1519, 10523, '0', 0, 0, 0, -1, -9006.19, 965.365, 68.2277, 5.36689, 0, 0, -0.442288, 0.896873, 120, 255, 1, 0, '', 37474);
+UPDATE `gameobject` SET `id` = 323846 WHERE `guid` = 280200666;
+UPDATE `gameobject` SET `id` = 323844 WHERE `guid` = 280200667;
 
 -- Gameobject_template_addon
-UPDATE `gameobject_template_addon` SET `entry` = 323845, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323845
-UPDATE `gameobject_template_addon` SET `entry` = 323841, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323841
-INSERT INTO `gameobject_template_addon`(`entry`, `faction`, `flags`, `mingold`, `maxgold`, `WorldEffectID`, `AIAnimKitID`) VALUES (323840, 1732, 33554432, 0, 0, 0, 3503)
-UPDATE `gameobject_template_addon` SET `entry` = 323842, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323842
-UPDATE `gameobject_template_addon` SET `entry` = 323843, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323843
-UPDATE `gameobject_template_addon` SET `entry` = 323846, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323846
-UPDATE `gameobject_template_addon` SET `entry` = 323844, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323844
+UPDATE `gameobject_template_addon` SET `entry` = 323845, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323845;
+UPDATE `gameobject_template_addon` SET `entry` = 323841, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323841;
+INSERT INTO `gameobject_template_addon`(`entry`, `faction`, `flags`, `mingold`, `maxgold`, `WorldEffectID`, `AIAnimKitID`) VALUES (323840, 1732, 33554432, 0, 0, 0, 3503);
+UPDATE `gameobject_template_addon` SET `entry` = 323842, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323842;
+UPDATE `gameobject_template_addon` SET `entry` = 323843, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323843;
+UPDATE `gameobject_template_addon` SET `entry` = 323846, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323846;
+UPDATE `gameobject_template_addon` SET `entry` = 323844, `faction` = 1732, `flags` = 33554432, `mingold` = 0, `maxgold` = 0, `WorldEffectID` = 0, `AIAnimKitID` = 3503 WHERE `entry` = 323844;
 
 -- Gameobject_template
-UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323845
-UPDATE `gameobject_template` SET `ContentTuningId` = 331 WHERE `entry` = 323841
-UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323840
-UPDATE `gameobject_template` SET `ContentTuningId` = 826 WHERE `entry` = 323842
-UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323843
-UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323846
-UPDATE `gameobject_template` SET `ContentTuningId` = 57 WHERE `entry` = 323844
+UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323845;
+UPDATE `gameobject_template` SET `ContentTuningId` = 331 WHERE `entry` = 323841;
+UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323840;
+UPDATE `gameobject_template` SET `ContentTuningId` = 826 WHERE `entry` = 323842;
+UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323843;
+UPDATE `gameobject_template` SET `ContentTuningId` = 864 WHERE `entry` = 323846;
+UPDATE `gameobject_template` SET `ContentTuningId` = 57 WHERE `entry` = 323844;
 
 -- Creature
-UPDATE `creature` SET `PhaseId` = 0 WHERE `guid` = 3400000000002038
-UPDATE `creature` SET `curhealth` = 34 WHERE `guid` = 3400000000002038
-UPDATE `creature` SET `curmana` = 120 WHERE `guid` = 3400000000002038
-UPDATE `creature` SET `PhaseId` = 0 WHERE `guid` = 3400000000002039
-UPDATE `creature` SET `curhealth` = 34 WHERE `guid` = 3400000000002039
-UPDATE `creature` SET `curmana` = 120 WHERE `guid` = 3400000000002039
-DELETE FROM `creature` WHERE `guid` = 3400000000001972
-DELETE FROM `creature` WHERE `guid` = 3400000000001981
-DELETE FROM `creature` WHERE `guid` = 3400000000001967
-UPDATE `creature` SET `PhaseId` = 6666 WHERE `guid` = 3400000000001969
-UPDATE `creature` SET `PhaseId` = 6666 WHERE `guid` = 3400000000001973
-UPDATE `creature` SET `MovementType` = 2 WHERE `guid` = 300005844
-UPDATE `creature` SET `PhaseId` = 0 WHERE `guid` = 3400000000002063
+UPDATE `creature` SET `PhaseId` = 0 WHERE `guid` = 3400000000002038;
+UPDATE `creature` SET `curhealth` = 34 WHERE `guid` = 3400000000002038;
+UPDATE `creature` SET `curmana` = 120 WHERE `guid` = 3400000000002038;
+UPDATE `creature` SET `PhaseId` = 0 WHERE `guid` = 3400000000002039;
+UPDATE `creature` SET `curhealth` = 34 WHERE `guid` = 3400000000002039;
+UPDATE `creature` SET `curmana` = 120 WHERE `guid` = 3400000000002039;
+DELETE FROM `creature` WHERE `guid` = 3400000000001972;
+DELETE FROM `creature` WHERE `guid` = 3400000000001981;
+DELETE FROM `creature` WHERE `guid` = 3400000000001967;
+UPDATE `creature` SET `PhaseId` = 6666 WHERE `guid` = 3400000000001969;
+UPDATE `creature` SET `PhaseId` = 6666 WHERE `guid` = 3400000000001973;
+UPDATE `creature` SET `MovementType` = 2 WHERE `guid` = 300005844;
+UPDATE `creature` SET `PhaseId` = 0 WHERE `guid` = 3400000000002063;
 
 -- Creature_template_addon
-UPDATE `creature_template_addon` SET `entry` = 148233, `path_id` = 0, `mount` = 0, `bytes1` = 0, `bytes2` = 1, `emote` = 0, `aiAnimKit` = 0, `movementAnimKit` = 0, `meleeAnimKit` = 0, `visibilityDistanceType` = 0, `auras` = '287193' WHERE `entry` = 148233
+UPDATE `creature_template_addon` SET `entry` = 148233, `path_id` = 0, `mount` = 0, `bytes1` = 0, `bytes2` = 1, `emote` = 0, `aiAnimKit` = 0, `movementAnimKit` = 0, `meleeAnimKit` = 0, `visibilityDistanceType` = 0, `auras` = '287193' WHERE `entry` = 148233;
 
 -- Waypoint_data
 

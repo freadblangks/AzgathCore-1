@@ -27,14 +27,14 @@ INSERT INTO `creature` VALUES (280010981, 161711, 2297, 12951, 12951, '0', 0, 0,
 INSERT INTO `creature` VALUES (280010978, 161711, 2297, 12951, 12951, '0', 0, 0, 0, -1, 0, 0, 506.412, -2132.8, 840.858, 1.631, 300, 0, 0, 26282, 4258, 0, 0, 0, 0, 0, 0, '', 0);
 INSERT INTO `creature` VALUES (280011120, 161711, 2297, 12951, 12951, '0', 0, 0, 0, -1, 0, 0, 518.954, -2132.31, 840.857, 1.57551, 300, 0, 0, 26282, 4258, 0, 0, 0, 0, 0, 0, '', 0);
 
-UPDATE `creature` SET `position_z` = 865.533 WHERE `guid` = 300005738
+UPDATE `creature` SET `position_z` = 865.533 WHERE `guid` = 300005738;
 
 -- Quest_template_addon
 
-UPDATE `quest_template_addon` SET `PrevQuestID` = 0 WHERE `ID` = 13189
-UPDATE `quest_template_addon` SET `PrevQuestID` = 0 WHERE `ID` = 13188
+UPDATE `quest_template_addon` SET `PrevQuestID` = 0 WHERE `ID` = 13189;
+UPDATE `quest_template_addon` SET `PrevQuestID` = 0 WHERE `ID` = 13188;
 
 -- Creature_queststarter
 
-INSERT INTO `creature_queststarter`(`id`, `quest`) VALUES (163016, 13189)
-INSERT INTO `creature_queststarter`(`id`, `quest`) VALUES (163016, 13188)
+INSERT INTO `creature_queststarter`(`id`, `quest`) VALUES (163016, 13189);
+INSERT INTO `creature_queststarter`(`id`, `quest`) VALUES (163016, 13188);
