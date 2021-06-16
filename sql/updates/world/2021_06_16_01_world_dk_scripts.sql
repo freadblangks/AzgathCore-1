@@ -21,4 +21,11 @@ INSERT INTO `smart_scripts` VALUES (2844400, 9, 5, 0, 0, 0, 100, 0, 0, 0, 0, 0, 
 INSERT INTO `smart_scripts` VALUES (2844400, 9, 6, 0, 0, 0, 100, 0, 16000, 16000, 0, 0, 0, '', 5, 22, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 'Highlord Darion Mograine - On Script - Play Emote 22');
 INSERT INTO `smart_scripts` VALUES (2844400, 9, 7, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, '', 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 'Highlord Darion Mograine - On Script - Say Line 1');
 
+-- Creature
+
 INSERT INTO `creature`(`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnDifficulties`, `phaseUseFlags`, `PhaseId`, `PhaseGroup`, `terrainSwapMap`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `unit_flags2`, `unit_flags3`, `dynamicflags`, `ScriptName`, `VerifiedBuild`) VALUES (280010232, 31084, 609, 4298, 4298, '0', 0, 0, 0, -1, 0, 1, 2413.9, -5589.62, 420.643, 5.67298, 300, 0, 0, 3510102, 2129000, 0, 0, 134218496, 0, 0, 0, '', 0);
+
+-- Creature_template
+
+UPDATE `creature_template` SET `speed_walk` = 1 WHERE `entry` = 28357;
+UPDATE `creature_template` SET `speed_run` = 1.11429 WHERE `entry` = 28357;
